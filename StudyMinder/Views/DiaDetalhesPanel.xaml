@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="utf-8"?>
+<UserControl x:Class="StudyMinder.Views.DiaDetalhesPanel"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:icon="http://metro.mahapps.com/winfx/xaml/iconpacks"
+             Background="{DynamicResource BackgroundBrush}"
+             Foreground="{DynamicResource TextPrimaryBrush}">
+    
+    <Border Style="{DynamicResource PrimaryCardStyle}"
+            Margin="20,8,20,20"
+            Padding="20">
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+
+            <!-- Cabeçalho -->
+            <Grid Grid.Row="0" Margin="0,0,0,16">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+
+                <StackPanel Grid.Column="0" Orientation="Vertical">
+                    <TextBlock Text="Detalhes do Dia"
+                               Style="{DynamicResource Title2Style}"
+                               Margin="0,0,0,8" />
+                    <TextBlock Name="TxtData"
+                               Text="{Binding DataFormatada}"
+                               Style="{DynamicResource Text2Style}"
+                               Foreground="{DynamicResource TextSecondaryBrush}" />
+                </StackPanel>
+
+                <Button Grid.Column="1"
+                        Style="{StaticResource IconButtonStyle}"
+                        Click="BtnFechar_Click"
+                        ToolTip="Fechar">
+                    <icon:PackIconMaterial Kind="Close"
+                                           Width="20"
+                                           Height="20" />
+                </Button>
+            </Grid>
+
+            <!-- Conteúdo -->
+            <ScrollViewer Grid.Row="1"
+                          Style="{DynamicResource ModernScrollViewerStyle}"
+                          VerticalScrollBarVisibility="Auto">
+                <StackPanel Margin="0,0,0,16">
+                    <!-- Estudos -->
+                    <StackPanel Name="PanelEstudos"
+                                Visibility="Collapsed"
+                                Margin="0,0,0,16">
+                        <TextBlock Text="📚 Estudos"
+                                   Style="{DynamicResource Title3Style}"
+                                   Margin="0,0,0,8"
+                                   Foreground="{DynamicResource PrimaryBrush}" />
+                        <ItemsControl Name="ListEstudos"
+                                      ItemsSource="{Binding Estudos}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <Border Style="{DynamicResource SecondaryCardStyle}"
+                                            Margin="0,0,0,8"
+                                            Padding="12">
+                                        <StackPanel>
+                                            <TextBlock Text="{Binding Assunto.Nome}"
+                                                       FontWeight="SemiBold"
+                                                       Margin="0,0,0,4" />
+                                            <TextBlock Text="{Binding Data, StringFormat='{}{0:HH:mm}'}"
+                                                       FontSize="12"
+                                                       Foreground="{DynamicResource TextSecondaryBrush}" />
+                                        </StackPanel>
+                                    </Border>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </StackPanel>
+
+                    <!-- Eventos de Editais -->
+                    <StackPanel Name="PanelEventos"
+                                Visibility="Collapsed"
+                                Margin="0,0,0,16">
+                        <TextBlock Text="📋 Eventos de Editais"
+                                   Style="{DynamicResource Title3Style}"
+                                   Margin="0,0,0,8"
+                                   Foreground="{DynamicResource SuccessBrush}" />
+                        <ItemsControl Name="ListEventos"
+                                      ItemsSource="{Binding EventosEditais}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <Border Style="{DynamicResource SecondaryCardStyle}"
+                                            Margin="0,0,0,8"
+                                            Padding="12">
+                                        <StackPanel>
+                                            <TextBlock Text="{Binding Evento}"
+                                                       FontWeight="SemiBold"
+                                                       Margin="0,0,0,4" />
+                                            <TextBlock Text="{Binding DataEvento, StringFormat='{}{0:HH:mm}'}"
+                                                       FontSize="12"
+                                                       Foreground="{DynamicResource TextSecondaryBrush}" />
+                                        </StackPanel>
+                                    </Border>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </StackPanel>
+
+                    <!-- Revisões -->
+                    <StackPanel Name="PanelRevisoes"
+                                Visibility="Collapsed">
+                        <TextBlock Text="🔄 Revisões Programadas"
+                                   Style="{DynamicResource Title3Style}"
+                                   Margin="0,0,0,8"
+                                   Foreground="{DynamicResource WarningBrush}" />
+                        <ItemsControl Name="ListRevisoes"
+                                      ItemsSource="{Binding Revisoes}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <Border Style="{DynamicResource SecondaryCardStyle}"
+                                            Margin="0,0,0,8"
+                                            Padding="12">
+                                        <StackPanel>
+                                            <TextBlock Text="{Binding EstudoOrigem.Assunto.Nome}"
+                                                       FontWeight="SemiBold"
+                                                       Margin="0,0,0,4" />
+                                            <TextBlock Text="{Binding DataProgramada, StringFormat='{}{0:HH:mm}'}"
+                                                       FontSize="12"
+                                                       Foreground="{DynamicResource TextSecondaryBrush}" />
+                                        </StackPanel>
+                                    </Border>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </StackPanel>
+                </StackPanel>
+            </ScrollViewer>
+
+            <!-- Rodapé -->
+            <Border Grid.Row="2"
+                    BorderThickness="0,1,0,0"
+                    BorderBrush="{DynamicResource BorderBrush}"
+                    Padding="0,16,0,0">
+                <TextBlock Name="TxtResumo"
+                           Text="{Binding Resumo}"
+                           Style="{DynamicResource Text2Style}"
+                           Foreground="{DynamicResource TextSecondaryBrush}"
+                           TextAlignment="Center" />
+            </Border>
+        </Grid>
+    </Border>
+</UserControl>

@@ -1,0 +1,418 @@
+// 📋 SNIPPETS DE CÓDIGO - PRONTOS PARA IMPLEMENTAR
+// Copie e cole conforme necessário durante a implementação
+
+// ═══════════════════════════════════════════════════════════════════════════
+// OBJETIVO 1: GRÁFICOS
+// ═══════════════════════════════════════════════════════════════════════════
+
+// 📄 ComparadorEditaisViewModel.cs - Método AtualizarGraficos() [COMPLETO]
+private void AtualizarGraficos(ResultadoComparacao res)
+{
+    // 1. Gráfico de Afinidade (O quanto os editais se parecem)
+    DadosGraficoAfinidade.Clear();
+
+    int totalComuns = res.AssuntosConciliaveisPendentes.Count 
+                    + res.AssuntosConciliaveisConcluidos.Count;
+    int totalNovos = res.AssuntosExclusivosAlvoPendentes.Count 
+                   + res.AssuntosExclusivosAlvoConcluidos.Count;
+
+    // Fatia: Aproveitável
+    if (totalComuns > 0)
+    {
+        DadosGraficoAfinidade.Add(new PizzaChartData
+        {
+            Title = "Aproveitável",
+            Value = totalComuns,
+            Color = "#4CAF50" // Verde Material Design
+        });
+    }
+
+    // Fatia: Novo Conteúdo
+    if (totalNovos > 0)
+    {
+        DadosGraficoAfinidade.Add(new PizzaChartData
+        {
+            Title = "Novo Conteúdo",
+            Value = totalNovos,
+            Color = "#9E9E9E" // Cinza (Neutro)
+        });
+    }
+
+    // 2. Gráfico de Conquista (Status Real)
+    DadosGraficoConquista.Clear();
+
+    // Fatia A: Já Garantido (Comum + Concluído)
+    if (res.AssuntosConciliaveisConcluidos.Count > 0)
+    {
+        DadosGraficoConquista.Add(new PizzaChartData
+        {
+            Title = "Garantido",
+            Value = res.AssuntosConciliaveisConcluidos.Count,
+            Color = "#2E7D32" // Verde Escuro (Sucesso)
+        });
+    }
+
+    // Fatia B: Ouro (Comum + Pendente) -> Alta Prioridade
+    if (res.AssuntosConciliaveisPendentes.Count > 0)
+    {
+        DadosGraficoConquista.Add(new PizzaChartData
+        {
+            Title = "Alta Prioridade",
+            Value = res.AssuntosConciliaveisPendentes.Count,
+            Color = "#FFC107" // Âmbar/Amarelo (Atenção)
+        });
+    }
+
+    // Fatia C: Gap (Exclusivo Alvo + Pendente)
+    if (res.AssuntosExclusivosAlvoPendentes.Count > 0)
+    {
+        DadosGraficoConquista.Add(new PizzaChartData
+        {
+            Title = "Específico",
+            Value = res.AssuntosExclusivosAlvoPendentes.Count,
+            Color = "#D32F2F" // Vermelho (Falta fazer)
+        });
+    }
+}
+
+
+// ═══════════════════════════════════════════════════════════════════════════
+// OBJETIVO 2: VALIDAÇÕES
+// ═══════════════════════════════════════════════════════════════════════════
+
+// 📄 ComparadorEditaisService.cs - Método CarregarEditalCompleto() [MELHORADO]
+private async Task<Edital> CarregarEditalCompleto(int id)
+{
+    var edital = await _context.Editais
+        .AsNoTracking()
+        .Include(e => e.EditalAssuntos)
+            .ThenInclude(ea => ea.Assunto)
+                .ThenInclude(a => a.Disciplina)
+        .FirstOrDefaultAsync(e => e.Id == id);
+
+    // VALIDAÇÃO 1: Edital existe?
+    if (edital == null)
+        throw new KeyNotFoundException(
+            $"Edital com ID {id} não encontrado no banco de dados.");
+    
+    // VALIDAÇÃO 2: Edital possui assuntos?
+    if (edital.EditalAssuntos == null || edital.EditalAssuntos.Count == 0)
+        throw new InvalidOperationException(
+            $"Edital '{edital.Cargo}' não possui assuntos cadastrados. " +
+            $"Adicione assuntos antes de comparar.");
+
+    return edital;
+}
+
+// 📄 ResultadoComparacao.cs - Método CalcularPrioridadeTemporal() [MELHORADO]
+public void CalcularPrioridadeTemporal()
+{
+    var hoje = DateTime.Today;
+
+    // VALIDAÇÃO: DataProva válida para Base?
+    if (EditalBase.DataProva == default || EditalBase.DataProva < new DateTime(2020, 1, 1))
+    {
+        MensagemEstrategicaTempo = "⚠️ Data de prova não definida para o edital base.";
+        return;
+    }
+
+    // VALIDAÇÃO: DataProva válida para Alvo?
+    if (EditalAlvo.DataProva == default || EditalAlvo.DataProva < new DateTime(2020, 1, 1))
+    {
+        MensagemEstrategicaTempo = "⚠️ Data de prova não definida para o edital alvo.";
+        return;
+    }
+
+    DiasAteProvaBase = (EditalBase.DataProva - hoje).Days;
+    DiasAteProvaAlvo = (EditalAlvo.DataProva - hoje).Days;
+
+    IsBasePrioritaria = false;
+    IsAlvoPrioritario = false;
+
+    // Lógica de decisão
+    if (DiasAteProvaBase < 0 && DiasAteProvaAlvo < 0)
+    {
+        MensagemEstrategicaTempo = "Ambas as provas já foram realizadas.";
+    }
+    else if (DiasAteProvaBase >= 0 && (DiasAteProvaBase < DiasAteProvaAlvo || DiasAteProvaAlvo < 0))
+    {
+        IsBasePrioritaria = true;
+        MensagemEstrategicaTempo = $"⚠️ URGÊNCIA: A prova de {EditalBase.Orgao} é em {DiasAteProvaBase} dias (mais próxima). Foque nos exclusivos da esquerda!";
+    }
+    else if (DiasAteProvaAlvo >= 0)
+    {
+        IsAlvoPrioritario = true;
+        MensagemEstrategicaTempo = $"⚠️ URGÊNCIA: A prova de {EditalAlvo.Orgao} é em {DiasAteProvaAlvo} dias (mais próxima). Foque nos exclusivos da direita!";
+    }
+    else
+    {
+        MensagemEstrategicaTempo = "Datas de prova não definidas ou inconsistentes.";
+    }
+}
+
+// 📄 ComparadorEditaisViewModel.cs - Método CompararAsync() [MELHORADO COM TRY-CATCH]
+[RelayCommand(CanExecute = nameof(PodeComparar))]
+private async Task CompararAsync()
+{
+    if (EditalBaseSelecionado == null || EditalAlvoSelecionado == null) 
+        return;
+
+    if (EditalBaseSelecionado.Id == EditalAlvoSelecionado.Id)
+    {
+        _notificationService.ShowWarning(
+            "Atenção", 
+            "Selecione dois editais diferentes para comparar.");
+        return;
+    }
+
+    IsBusy = true;
+    try
+    {
+        var resultado = await _comparadorService.CompararAsync(
+            EditalBaseSelecionado.Id,
+            EditalAlvoSelecionado.Id
+        );
+
+        Resultado = resultado;
+        TemResultado = true;
+        AtualizarGraficos(resultado);
+    }
+    catch (KeyNotFoundException ex)
+    {
+        _notificationService.ShowError(
+            "Edital Não Encontrado", 
+            ex.Message);
+    }
+    catch (InvalidOperationException ex)
+    {
+        _notificationService.ShowError(
+            "Edital Incompleto", 
+            ex.Message);
+    }
+    catch (Exception ex)
+    {
+        _notificationService.ShowError(
+            "Erro ao Comparar", 
+            $"Falha inesperada: {ex.Message}");
+    }
+    finally
+    {
+        IsBusy = false;
+    }
+}
+
+
+// ═══════════════════════════════════════════════════════════════════════════
+// OBJETIVO 3: CACHING
+// ═══════════════════════════════════════════════════════════════════════════
+
+// 📄 ComparadorEditaisService.cs - Adicionar cache [INÍCIO DA CLASSE]
+public class ComparadorEditaisService
+{
+    private readonly StudyMinderContext _context;
+    
+    // NOVO: Cache de editais
+    private readonly Dictionary<int, Edital> _cacheEditais = new();
+    private readonly object _cacheLock = new(); // Thread-safety
+
+    public ComparadorEditaisService(StudyMinderContext context)
+    {
+        _context = context;
+    }
+
+    /// <summary>
+    /// Limpa o cache de editais. Chamar ao recarregar dados.
+    /// </summary>
+    public void ClearCache()
+    {
+        lock (_cacheLock)
+        {
+            System.Diagnostics.Debug.WriteLine($"[CACHE] Limpando cache ({_cacheEditais.Count} itens)");
+            _cacheEditais.Clear();
+        }
+    }
+
+    private async Task<Edital> CarregarEditalCompleto(int id)
+    {
+        lock (_cacheLock)
+        {
+            if (_cacheEditais.TryGetValue(id, out var cached))
+            {
+                System.Diagnostics.Debug.WriteLine(
+                    $"[CACHE HIT] Edital ID {id} carregado do cache");
+                return cached;
+            }
+        }
+
+        System.Diagnostics.Debug.WriteLine(
+            $"[CACHE MISS] Carregando Edital ID {id} do banco de dados...");
+
+        var edital = await _context.Editais
+            .AsNoTracking()
+            .Include(e => e.EditalAssuntos)
+                .ThenInclude(ea => ea.Assunto)
+                    .ThenInclude(a => a.Disciplina)
+            .FirstOrDefaultAsync(e => e.Id == id);
+
+        if (edital == null)
+            throw new KeyNotFoundException(
+                $"Edital com ID {id} não encontrado.");
+
+        if (edital.EditalAssuntos == null || edital.EditalAssuntos.Count == 0)
+            throw new InvalidOperationException(
+                $"Edital '{edital.Cargo}' não possui assuntos cadastrados.");
+
+        // Adicionar ao cache
+        lock (_cacheLock)
+        {
+            _cacheEditais[id] = edital;
+            System.Diagnostics.Debug.WriteLine(
+                $"[CACHE STORE] Edital ID {id} adicionado ao cache");
+        }
+
+        return edital;
+    }
+}
+
+// 📄 ComparadorEditaisViewModel.cs - Invalidar cache [EM MÉTODOS ESPECÍFICOS]
+private async Task CarregarEditaisAsync()
+{
+    IsBusy = true;
+    try
+    {
+        // Invalidar cache antes de recarregar
+        _comparadorService.ClearCache();
+        
+        var editais = await _editalService.ObterTodosAsync();
+        ListaEditais.Clear();
+        foreach (var edital in editais)
+        {
+            ListaEditais.Add(edital);
+        }
+    }
+    finally
+    {
+        IsBusy = false;
+    }
+}
+
+[RelayCommand]
+private void LimparSelecao()
+{
+    EditalBaseSelecionado = null;
+    EditalAlvoSelecionado = null;
+    TemResultado = false;
+    Resultado = null;
+    DadosGraficoAfinidade.Clear();
+    DadosGraficoConquista.Clear();
+    
+    // Limpar cache também
+    _comparadorService.ClearCache();
+}
+
+
+// ═══════════════════════════════════════════════════════════════════════════
+// TESTES UNITÁRIOS (EXEMPLOS)
+// ═══════════════════════════════════════════════════════════════════════════
+
+// 📄 ComparadorEditaisServiceTests.cs [NOVO ARQUIVO]
+[TestClass]
+public class ComparadorEditaisServiceTests
+{
+    [TestMethod]
+    [ExpectedException(typeof(KeyNotFoundException))]
+    public async Task CompararAsync_EditalNaoExiste_ThrowsException()
+    {
+        // Arrange
+        var mockContext = new Mock<StudyMinderContext>();
+        var service = new ComparadorEditaisService(mockContext.Object);
+
+        // Act
+        await service.CompararAsync(999, 1);
+
+        // Assert: Exception lançada
+    }
+
+    [TestMethod]
+    [ExpectedException(typeof(InvalidOperationException))]
+    public async Task CompararAsync_EditalSemAssuntos_ThrowsException()
+    {
+        // Arrange: Edital sem assuntos
+        // Act & Assert: InvalidOperationException esperada
+    }
+
+    [TestMethod]
+    public async Task Cache_Hit_RetornsFromMemory()
+    {
+        // Arrange
+        var service = new ComparadorEditaisService(mockContext);
+        
+        // Act
+        var resultado1 = await service.CarregarEditalCompleto(1);
+        var resultado2 = await service.CarregarEditalCompleto(1); // Cache HIT
+
+        // Assert
+        Assert.AreEqual(resultado1.Id, resultado2.Id);
+        // Verificar logs contêm [CACHE HIT]
+    }
+
+    [TestMethod]
+    public void ClearCache_RemovesAllEntries()
+    {
+        // Arrange
+        var service = new ComparadorEditaisService(mockContext);
+        // ... adicionar itens ao cache
+
+        // Act
+        service.ClearCache();
+
+        // Assert: Cache vazio
+    }
+}
+
+
+// ═══════════════════════════════════════════════════════════════════════════
+// PERFORMANCE BENCHMARK
+// ═══════════════════════════════════════════════════════════════════════════
+
+// 📄 Código para medir performance [MANUAL]
+var watch = System.Diagnostics.Stopwatch.StartNew();
+
+// SEM CACHE:
+for (int i = 0; i < 3; i++)
+{
+    var resultado = await _comparadorService.CompararAsync(1, 2);
+}
+
+watch.Stop();
+Console.WriteLine($"SEM CACHE: {watch.ElapsedMilliseconds}ms");
+
+// COM CACHE:
+watch.Restart();
+_comparadorService.ClearCache();
+
+for (int i = 0; i < 3; i++)
+{
+    var resultado = await _comparadorService.CompararAsync(1, 2);
+}
+
+watch.Stop();
+Console.WriteLine($"COM CACHE: {watch.ElapsedMilliseconds}ms");
+
+
+═══════════════════════════════════════════════════════════════════════════════
+
+INSTRUÇÕES DE USO:
+
+1. Copie o código do OBJETIVO 1 e substitua AtualizarGraficos() em 
+   ComparadorEditaisViewModel.cs
+
+2. Copie o código do OBJETIVO 2 para validações e tratamento de exceções
+
+3. Copie o código do OBJETIVO 3 para implementar cache
+
+4. Use os testes unitários como referência para criar testes no seu projeto
+
+5. Execute a aplicação e valide usando o CHECKLIST em RESUMO_PLANO.txt
+
+═══════════════════════════════════════════════════════════════════════════════

@@ -1,0 +1,260 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:icon="http://metro.mahapps.com/winfx/xaml/iconpacks">
+
+    <!-- Loading -->
+    <Style x:Key="LoadingIconStyle"
+           TargetType="icon:PackIconMaterial">
+        <Setter Property="Kind"
+                Value="Autorenew" />
+        <Setter Property="Margin"
+                Value="0,0,4,0" />
+        <Setter Property="VerticalAlignment"
+                Value="Center" />
+        <Setter Property="HorizontalAlignment"
+                Value="Center" />
+        <Setter Property="Height"
+                Value="48" />
+        <Setter Property="Width"
+                Value="48" />
+        <Setter Property="Foreground"
+                Value="{DynamicResource TextPrimaryBrush}" />
+        <Setter Property="Spin"
+                Value="True" />
+        <Setter Property="SpinDuration"
+                Value="2" />
+    </Style>
+
+    <!-- Estatísticas -->
+    <Style x:Key="StatisticsIconBaseStyle"
+           TargetType="icon:PackIconMaterial">
+        <Setter Property="Margin"
+                Value="0,0,4,0" />
+        <Setter Property="VerticalAlignment"
+                Value="Center" />
+        <Setter Property="HorizontalAlignment"
+                Value="Right" />
+        <Setter Property="Height"
+                Value="16" />
+        <Setter Property="Width"
+                Value="16" />
+    </Style>
+
+    <Style x:Key="AcertosIconStyle"
+           TargetType="icon:PackIconMaterial"
+           BasedOn="{StaticResource StatisticsIconBaseStyle}">
+        <Setter Property="Kind"
+                Value="CheckCircleOutline" />
+        <Setter Property="Foreground"
+                Value="{DynamicResource AcertosBrush}" />
+    </Style>
+
+    <Style x:Key="ErrosIconStyle"
+           TargetType="icon:PackIconMaterial"
+           BasedOn="{StaticResource StatisticsIconBaseStyle}">
+        <Setter Property="Kind"
+                Value="CloseCircleOutline" />
+        <Setter Property="Foreground"
+                Value="{DynamicResource ErrosBrush}" />
+    </Style>
+
+    <Style x:Key="QuestoesIconStyle"
+           TargetType="icon:PackIconMaterial"
+           BasedOn="{StaticResource StatisticsIconBaseStyle}">
+        <Setter Property="Kind"
+                Value="FormatListChecks" />
+        <Setter Property="Foreground"
+                Value="{DynamicResource QuestoesBrush}" />
+    </Style>
+
+    <Style x:Key="RendimentoIconStyle"
+           TargetType="icon:PackIconMaterial"
+           BasedOn="{StaticResource StatisticsIconBaseStyle}">
+        <Setter Property="Kind"
+                Value="TrendingUp" />
+        <Setter Property="Foreground"
+                Value="{DynamicResource RendimentoBrush}" />
+    </Style>
+
+    <Style x:Key="HorasEstudadasIconStyle"
+           TargetType="icon:PackIconMaterial"
+           BasedOn="{StaticResource StatisticsIconBaseStyle}">
+        <Setter Property="Kind"
+                Value="ClockOutline" />
+        <Setter Property="Foreground"
+                Value="{DynamicResource HorasEstudadasBrush}" />
+    </Style>
+
+    <Style x:Key="EstudosTotalIconStyle"
+           TargetType="icon:PackIconMaterial"
+           BasedOn="{StaticResource StatisticsIconBaseStyle}">
+        <Setter Property="Kind"
+                Value="BookOpenPageVariant" />
+        <Setter Property="Foreground"
+                Value="{DynamicResource EstudosTotalBrush}" />
+    </Style>
+
+    <Style x:Key="AssuntosTotalIconStyle"
+           TargetType="icon:PackIconMaterial"
+           BasedOn="{StaticResource StatisticsIconBaseStyle}">
+        <Setter Property="Kind"
+                Value="FileDocumentOutline" />
+        <Setter Property="Foreground"
+                Value="{DynamicResource AssuntosBrush}" />
+    </Style>
+
+    <Style x:Key="PaginasLidasIconStyle"
+           TargetType="icon:PackIconMaterial"
+           BasedOn="{StaticResource StatisticsIconBaseStyle}">
+        <Setter Property="Kind"
+                Value="BookOpenPageVariant" />
+        <Setter Property="Foreground"
+                Value="{DynamicResource PaginasLidasBrush}" />
+    </Style>
+
+    <Style x:Key="ProgressoIconStyle"
+           TargetType="icon:PackIconMaterial"
+           BasedOn="{StaticResource StatisticsIconBaseStyle}">
+        <Setter Property="Kind"
+                Value="FileChartOutline" />
+        <Setter Property="Foreground"
+                Value="{DynamicResource ProgressoBrush}" />
+    </Style>
+
+    <Style x:Key="AssuntosConcluidosIconStyle"
+           TargetType="icon:PackIconMaterial"
+           BasedOn="{StaticResource StatisticsIconBaseStyle}">
+        <Setter Property="Kind"
+                Value="CheckboxMarkedCircleOutline" />
+        <Setter Property="Foreground"
+                Value="{DynamicResource AssuntosConcluidosBrush}" />
+    </Style>
+
+    <Style x:Key="CalendarioIconStyle"
+           TargetType="icon:PackIconMaterial"
+           BasedOn="{StaticResource StatisticsIconBaseStyle}">
+        <Setter Property="Kind"
+                Value="Calendar" />
+        <Setter Property="Foreground"
+                Value="{DynamicResource TextSecondaryBrush}" />
+    </Style>
+
+    <Style x:Key="MediaHorasIconStyle"
+           TargetType="icon:PackIconMaterial"
+           BasedOn="{StaticResource StatisticsIconBaseStyle}">
+        <Setter Property="Kind"
+                Value="ClockOutline" />
+        <Setter Property="Foreground"
+                Value="{DynamicResource PrimaryBrush}" />
+    </Style>
+
+    <!-- Botões de Ação -->
+    <Style x:Key="ActionsIconBaseStyle"
+           TargetType="icon:PackIconMaterial">
+        <Setter Property="Height"
+                Value="18" />
+        <Setter Property="Width"
+                Value="18" />
+    </Style>
+
+    <Style x:Key="AbrirIconStyle"
+           TargetType="icon:PackIconMaterial"
+           BasedOn="{StaticResource ActionsIconBaseStyle}">
+        <Setter Property="Kind"
+                Value="Folder" />
+        <Setter Property="Foreground"
+                Value="{DynamicResource AbrirBrush}" />
+    </Style>
+
+    <Style x:Key="ExcluirIconStyle"
+           TargetType="icon:PackIconMaterial"
+           BasedOn="{StaticResource ActionsIconBaseStyle}">
+        <Setter Property="Kind"
+                Value="TrashCan" />
+        <Setter Property="Foreground"
+                Value="{DynamicResource ExcluirBrush}" />
+    </Style>
+
+    <Style x:Key="InfoIconStyle"
+           TargetType="icon:PackIconMaterial"
+           BasedOn="{StaticResource ActionsIconBaseStyle}">
+        <Setter Property="Kind"
+                Value="Information" />
+        <Setter Property="Foreground"
+                Value="{DynamicResource PrimaryBrush}" />
+    </Style>
+
+    <Style x:Key="EditarIconStyle"
+           TargetType="icon:PackIconMaterial"
+           BasedOn="{StaticResource ActionsIconBaseStyle}">
+        <Setter Property="Kind"
+                Value="FileEdit" />
+        <Setter Property="Foreground"
+                Value="{DynamicResource EditarBrush}" />
+    </Style>
+
+    <Style x:Key="MoverIconStyle"
+           TargetType="icon:PackIconMaterial"
+           BasedOn="{StaticResource ActionsIconBaseStyle}">
+        <Setter Property="Kind"
+                Value="ArrowRightBold" />
+        <Setter Property="Foreground"
+                Value="{DynamicResource MoverBrush}" />
+    </Style>
+
+    <Style x:Key="DuplicarIconStyle"
+           TargetType="icon:PackIconMaterial"
+           BasedOn="{StaticResource ActionsIconBaseStyle}">
+        <Setter Property="Kind"
+                Value="ContentDuplicate" />
+        <Setter Property="Foreground"
+                Value="{DynamicResource EditarBrush}" />
+    </Style>
+
+    <Style x:Key="SalvarIconStyle"
+           TargetType="icon:PackIconMaterial"
+           BasedOn="{StaticResource ActionsIconBaseStyle}">
+        <Setter Property="Kind"
+                Value="ContentSave" />
+        <Setter Property="Foreground"
+                Value="{DynamicResource SalvarBrush}" />
+    </Style>
+
+    <!-- Outros -->
+    <Style x:Key="AdicionarIconStyle"
+           TargetType="icon:PackIconMaterial"
+           BasedOn="{StaticResource ActionsIconBaseStyle}">
+        <Setter Property="Height"
+                Value="16" />
+        <Setter Property="Width"
+                Value="16" />
+        <Setter Property="Kind"
+                Value="Plus" />
+        <Setter Property="Foreground"
+                Value="{DynamicResource TextOnPrimaryBrush}" />
+    </Style>
+
+    <!-- Ícone para cards -->
+    <!--
+    <Style x:Key="CardIconStyle" TargetType="icon:PackIconMaterial">
+        <Setter Property="Foreground" Value="{DynamicResource TextSecondaryBrush}"/>
+        <Setter Property="Margin" Value="1.5,0,10,0"/>
+        <Setter Property="VerticalAlignment" Value="Center"/>
+        <Setter Property="HorizontalAlignment" Value="Left"/>
+        <Setter Property="Height" Value="15"/>
+        <Setter Property="Width" Value="15"/>
+    </Style>
+
+    -->
+    <!-- Ícone para título de página -->
+    <!--
+    <Style x:Key="IconPageTitleStyle" TargetType="icon:PackIconMaterial">
+        <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}"/>
+        <Setter Property="Margin" Value="0,0,0,0"/>
+        <Setter Property="VerticalAlignment" Value="Center"/>
+        <Setter Property="HorizontalAlignment" Value="Left"/>
+        <Setter Property="Height" Value="25"/>
+        <Setter Property="Width" Value="25"/>
+    </Style>-->
+
+</ResourceDictionary>

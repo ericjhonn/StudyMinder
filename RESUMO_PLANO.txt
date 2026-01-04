@@ -1,0 +1,187 @@
+╔════════════════════════════════════════════════════════════════════════════════════════╗
+║                 PLANO DE AÇÃO: MELHORIAS COMPARADOR DE EDITAIS                          ║
+║                                                                                          ║
+║  Data: 3 de Janeiro de 2026  |  Timeline: 6-8 horas  |  Status: 🔴 NÃO INICIADO      ║
+╚════════════════════════════════════════════════════════════════════════════════════════╝
+
+┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+┃ 🎯 OBJETIVO 1: ATIVAR VISUALIZAÇÕES GRÁFICAS                                 [2 HORAS] ┃
+┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+
+PROBLEMA:    Código dos gráficos está comentado, não exibe visualizações
+SOLUÇÃO:     Descomentar + validar bindings em XAML
+IMPACTO:     ✅ Usuário visualiza Afinidade e Conquista dos editais
+
+📋 Tarefas:
+  □ 1.1  Descomentar código em ComparadorEditaisViewModel.AtualizarGraficos()
+         └─ Linhas 49-92: Gráfico de Afinidade (Verde + Cinza)
+         └─ Gráfico de Conquista (Verde Escuro + Âmbar + Vermelho)
+
+  □ 1.2  Validar bindings em ViewComparadorEditais.xaml
+         └─ Linhas 156-160: Gráfico 1
+         └─ Linhas 189-193: Gráfico 2
+
+  □ 1.3  Testar visualização
+         └─ Executar app → Selecionar 2 editais → Comparar
+         └─ Validar cores, labels, estados vazios
+
+
+┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+┃ 🛡️  OBJETIVO 2: VALIDAR EDGE CASES                                           [3 HORAS] ┃
+┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+
+CENÁRIOS CRÍTICOS:
+  🔴 Edital sem assuntos              → Divisão por zero em métricas
+  🔴 DataProva nula/inválida           → Cálculo de dias incorreto
+  🟡 Edital deletado entre seleção     → Erro 404
+  🟡 Ambos editais sem data de prova   → Mensagem ambígua
+  🟡 ID de edital inválido             → Exceção não tratada
+
+SOLUÇÃO: Validações robustas + Tratamento de exceções
+
+📋 Tarefas:
+  □ 2.1  Validar em CarregarEditalCompleto() [ComparadorEditaisService.cs]
+         └─ if (edital == null) → throw KeyNotFoundException
+         └─ if (EditalAssuntos.Count == 0) → throw InvalidOperationException
+
+  □ 2.2  Validar datas em CalcularPrioridadeTemporal() [ResultadoComparacao.cs]
+         └─ Se DataProva < 2020 ou == default → retornar mensagem
+         └─ Não calcular dias inválidos
+
+  □ 2.3  Tratar exceções em CompararAsync() [ComparadorEditaisViewModel.cs]
+         └─ try-catch para KeyNotFoundException
+         └─ try-catch para InvalidOperationException
+         └─ Notificações amigáveis ao usuário
+
+  □ 2.4  Testes unitários
+         └─ Edital NULL
+         └─ Assuntos vazios
+         └─ Datas inválidas
+         └─ Validar mensagens de erro
+
+
+┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+┃ ⚡ OBJETIVO 3: IMPLEMENTAR CACHING                                           [2 HORAS] ┃
+┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+
+PROBLEMA:    Cada comparação carrega editais do BD (2 queries)
+SOLUÇÃO:     Dictionary<int, Edital> + invalidação inteligente
+IMPACTO:     ✅ Comparações subsequentes 80% mais rápidas
+
+📋 Tarefas:
+  □ 3.1  Implementar cache em ComparadorEditaisService
+         └─ private Dictionary<int, Edital> _cacheEditais = new()
+         └─ Modificar CarregarEditalCompleto() para: verificar → miss → salvar
+
+  □ 3.2  Implementar ClearCache()
+         └─ public void ClearCache() { lock {...} _cacheEditais.Clear() }
+         └─ Thread-safe com lock
+
+  □ 3.3  Invalidar cache em ViewModel
+         └─ Chamar em CarregarEditaisAsync() (antes de recarregar)
+         └─ Chamar em LimparSelecao() (ao limpar seleção)
+
+  □ 3.4  Testes de performance
+         └─ Comparar 3 pares de editais
+         └─ Medir tempo total com/sem cache
+         └─ Esperado: 80% melhoria
+
+
+┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+┃ 📊 IMPACTO DE PERFORMANCE                                                              ┃
+┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+
+Cenário: Comparar 3 pares de editais
+
+  Métrica              │  SEM CACHE  │  COM CACHE  │  GANHO
+  ─────────────────────┼─────────────┼─────────────┼──────────
+  1ª Comparação        │   250ms     │   250ms     │   -
+  2ª Comparação        │   250ms     │    50ms     │  80% ⬇️
+  3ª Comparação        │   250ms     │    50ms     │  80% ⬇️
+  ─────────────────────┼─────────────┼─────────────┼──────────
+  TOTAL                │   750ms     │   350ms     │  53% ⬇️
+
+
+┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+┃ 🗓️ CRONOGRAMA                                                                         ┃
+┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+
+FASE 1: DESENVOLVIMENTO (5 horas)
+  ├─ Objetivo 1 (Gráficos)    ······· 2 horas
+  ├─ Objetivo 2 (Validações)  ······· 3 horas  ← Mais complexo
+  └─ Objetivo 3 (Caching)     ······· 2 horas
+
+FASE 2: TESTES (3 horas)
+  ├─ Testes Unitários         ······· 1 hora
+  ├─ Testes Integração        ······· 1 hora
+  └─ Testes UI (Manual)       ······· 1 hora
+
+FASE 3: DEPLOY (1 hora)
+  ├─ Code Review Final        ······· 20 min
+  ├─ Merge → Staging          ······· 10 min
+  └─ Deploy + Docs            ······· 30 min
+
+TOTAL ESTIMADO: 9-10 horas (1 dia de trabalho)
+
+
+┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+┃ ✅ CHECKLIST DE VALIDAÇÃO                                                             ┃
+┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+
+GRÁFICOS:
+  ☐ Código descomentado e funcionando
+  ☐ Bindings XAML validados
+  ☐ Cores corretas (Verde, Âmbar, Vermelho)
+  ☐ Labels legíveis
+  ☐ Estados vazios tratados
+
+VALIDAÇÕES:
+  ☐ Edital NULL → exceção tratada
+  ☐ Assuntos vazios → exceção tratada
+  ☐ DataProva inválida → mensagem amigável
+  ☐ Notificações ao usuário funcionando
+  ☐ Zero crashes ou exceções não tratadas
+
+CACHING:
+  ☐ Cache implementado com thread-safety
+  ☐ Hit/Miss funcionando corretamente
+  ☐ Invalidação automática
+  ☐ Performance melhorada (80%)
+  ☐ Sem memory leaks
+
+
+┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+┃ 📝 ARQUIVOS AFETADOS                                                                  ┃
+┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+
+Modificações:
+  ✏️  ComparadorEditaisViewModel.cs        (Objetivo 1 + 2 + 3)
+  ✏️  ComparadorEditaisService.cs          (Objetivo 2 + 3)
+  ✏️  ResultadoComparacao.cs               (Objetivo 2)
+  📋 ViewComparadorEditais.xaml            (Validar bindings - Objetivo 1)
+
+Novos Testes:
+  ✨ ComparadorEditaisServiceTests.cs      (Testes Unitários)
+  ✨ ComparadorEditaisViewModelTests.cs    (Testes de UI)
+
+
+┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+┃ 🚀 PRÓXIMOS PASSOS                                                                    ┃
+┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+
+1. ✅ Leia o arquivo PLANO_ACAO_COMPARADOR.md para detalhes completos
+2. ✅ Use o TODO LIST no VS Code para rastrear progresso
+3. ✅ Implemente os objetivos nesta ordem:
+       - Objetivo 1 (Gráficos) - Mais simples, visual rápido
+       - Objetivo 2 (Validações) - Mais complexo, crítico
+       - Objetivo 3 (Caching) - Melhoria de performance
+4. ✅ Execute testes após cada objetivo
+5. ✅ Faça commits regularmente
+6. ✅ Ao terminar, atualizar documentação
+
+
+═══════════════════════════════════════════════════════════════════════════════════════════
+
+                           💡 BORA IMPLEMENTAR! 💡
+
+═══════════════════════════════════════════════════════════════════════════════════════════

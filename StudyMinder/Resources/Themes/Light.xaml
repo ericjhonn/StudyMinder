@@ -1,0 +1,121 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <Color x:Key="Color.Brand.Primary">#0078D4</Color>
+    <Color x:Key="Color.Brand.PrimaryDark">#005A9E</Color>
+
+    <Color x:Key="Color.Status.Success">#107C10</Color>
+    <Color x:Key="Color.Status.Info">#0078D4</Color>
+    <Color x:Key="Color.Status.Warning">#9D5D00</Color>
+    <Color x:Key="Color.Status.Error">#C50F1F</Color>
+    <Color x:Key="Color.Neutral.Background">#F3F3F3</Color>
+    <Color x:Key="Color.Neutral.Surface">#FFFFFF</Color>
+    <Color x:Key="Color.Neutral.Card">#FFFFFF</Color>
+    <Color x:Key="Color.Neutral.Border">#D1D1D1</Color>
+    <Color x:Key="Color.Text.Primary">#212121</Color>
+    <Color x:Key="Color.Text.Secondary">#616161</Color>
+    <Color x:Key="Color.Text.Disabled">#A0A0A0</Color>
+
+    <SolidColorBrush x:Key="PrimaryBrush"
+                     Color="{StaticResource Color.Brand.Primary}" />
+    <SolidColorBrush x:Key="PrimaryDarkBrush"
+                     Color="{StaticResource Color.Brand.PrimaryDark}" />
+
+    <SolidColorBrush x:Key="BackgroundBrush"
+                     Color="{StaticResource Color.Neutral.Background}" />
+    <SolidColorBrush x:Key="SurfaceBrush"
+                     Color="{StaticResource Color.Neutral.Surface}" />
+    <SolidColorBrush x:Key="CardBrush"
+                     Color="{StaticResource Color.Neutral.Card}" />
+    <SolidColorBrush x:Key="BorderBrush"
+                     Color="{StaticResource Color.Neutral.Border}" />
+
+    <SolidColorBrush x:Key="TextPrimaryBrush"
+                     Color="{StaticResource Color.Text.Primary}" />
+    <SolidColorBrush x:Key="TextSecondaryBrush"
+                     Color="{StaticResource Color.Text.Secondary}" />
+    <SolidColorBrush x:Key="TextDisabledBrush"
+                     Color="{StaticResource Color.Text.Disabled}" />
+    
+    <SolidColorBrush x:Key="TextOnPrimaryBrush"
+                     Color="#FFFFFF" />
+    <SolidColorBrush x:Key="TextOnAccentBrush"
+                     Color="#FFFFFF" />
+    
+    <SolidColorBrush x:Key="NavigationBackgroundBrush"
+                     Color="{StaticResource Color.Neutral.Surface}" />
+    <SolidColorBrush x:Key="NavigationForegroundBrush"
+                     Color="{StaticResource Color.Text.Primary}" />
+
+    <SolidColorBrush x:Key="NavigationHoverBrush"
+                     Color="#F0F0F0" />
+
+    <SolidColorBrush x:Key="NavigationSelectedBrush"
+                     Color="{StaticResource Color.Brand.Primary}" />
+    <SolidColorBrush x:Key="NavigationIndicatorBrush"
+                     Color="{StaticResource Color.Brand.Primary}" />
+
+    <SolidColorBrush x:Key="InputBackgroundBrush"
+                     Color="#FFFFFF" />
+    <SolidColorBrush x:Key="InputBorderBrush"
+                     Color="#8A8886" />
+    <SolidColorBrush x:Key="InputFocusBorderBrush"
+                     Color="{StaticResource Color.Brand.Primary}" />
+
+    <SolidColorBrush x:Key="ScrollBarBrush"
+                     Color="Transparent" />
+    <SolidColorBrush x:Key="ScrollBarThumbBrush"
+                     Color="#C1C1C1" />
+
+    <SolidColorBrush x:Key="SuccessBrush"
+                     Color="{StaticResource Color.Status.Success}" />
+    <SolidColorBrush x:Key="InfoBrush"
+                     Color="{StaticResource Color.Status.Info}" />
+    <SolidColorBrush x:Key="WarningBrush"
+                     Color="{StaticResource Color.Status.Warning}" />
+    <SolidColorBrush x:Key="ErrorBrush"
+                     Color="{StaticResource Color.Status.Error}" />
+
+    <SolidColorBrush x:Key="AcertosBrush"
+                     Color="#4CAF50" />
+    <SolidColorBrush x:Key="ErrosBrush"
+                     Color="#F44336" />
+
+    <SolidColorBrush x:Key="EstudosTotalBrush"
+                     Color="#1976D2" />
+    <SolidColorBrush x:Key="RendimentoBrush"
+                     Color="#1565C0" />
+    <SolidColorBrush x:Key="HorasEstudadasBrush"
+                     Color="#E65100" />
+    <SolidColorBrush x:Key="QuestoesBrush"
+                     Color="#F44336" />
+    <SolidColorBrush x:Key="AssuntosBrush"
+                     Color="#0078D4" />
+    <SolidColorBrush x:Key="PaginasLidasBrush"
+                     Color="#F9A825" />
+    <SolidColorBrush x:Key="ProgressoBrush"
+                     Color="#7B1FA2" />
+    <SolidColorBrush x:Key="AssuntosConcluidosBrush"
+                     Color="#00897B" />
+
+    <SolidColorBrush x:Key="ActionPrimaryBrush"
+                     Color="{StaticResource Color.Status.Info}" />
+    <SolidColorBrush x:Key="ActionDestructiveBrush"
+                     Color="{StaticResource Color.Status.Error}" />
+    <SolidColorBrush x:Key="ActionAuxiliaryBrush"
+                     Color="#7B1FA2" />
+    <SolidColorBrush x:Key="AbrirBrush"
+                     Color="{StaticResource Color.Status.Info}" />
+    <SolidColorBrush x:Key="EditarBrush"
+                     Color="{StaticResource Color.Status.Info}" />
+    <SolidColorBrush x:Key="SalvarBrush"
+                     Color="{StaticResource Color.Status.Info}" />
+    <SolidColorBrush x:Key="ExcluirBrush"
+                     Color="{StaticResource Color.Status.Error}" />
+    <SolidColorBrush x:Key="MoverBrush"
+                     Color="#7B1FA2" />
+
+    <SolidColorBrush x:Key="CauseBrush"
+                     Color="#FF008060" />
+
+</ResourceDictionary>

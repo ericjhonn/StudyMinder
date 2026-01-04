@@ -1,0 +1,264 @@
+<UserControl x:Class="StudyMinder.Views.ViewRevisoesClassicas"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:icon="http://metro.mahapps.com/winfx/xaml/iconpacks"
+             xmlns:viewmodels="clr-namespace:StudyMinder.ViewModels"
+             xmlns:models="clr-namespace:StudyMinder.Models"
+             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+             xmlns:converters="clr-namespace:StudyMinder.Converters"
+             xmlns:views="clr-namespace:StudyMinder.Views"
+             mc:Ignorable="d"
+             d:DesignHeight="600"
+             d:DesignWidth="800"
+             d:DataContext="{d:DesignInstance Type=viewmodels:RevisoesClassicasViewModel}">
+
+    <UserControl.Resources>
+        <converters:NotEqualToFirstPageConverter x:Key="NotEqualToFirstPageConverter" />
+        <converters:NotEqualToLastPageConverter x:Key="NotEqualToLastPageConverter" />
+    </UserControl.Resources>
+
+    <Grid Background="{DynamicResource BackgroundBrush}">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <!-- Cabeçalho -->
+        <Border Grid.Row="0"
+                Style="{DynamicResource ViewHeaderStyle}">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+
+                <TextBlock Grid.Column="0"
+                           Text="Revisões - Clássico"
+                           Style="{StaticResource Title1Style}" />
+
+                <TextBox Grid.Column="1"
+                         Style="{StaticResource TextBoxPesquisarStyle}"
+                         Width="300"
+                         Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}"
+                         Tag="Pesquisar revisão"/>
+
+            </Grid>
+        </Border>
+
+        <!-- Conteúdo Principal -->
+        <Border Grid.Row="1" Style="{DynamicResource PrimaryCardStyle}"
+                Margin="20">
+
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+
+                <!-- Loading Indicator e Estado Vazio -->
+                <views:LoadingAndEmptyStatePanel Grid.Row="0" />
+
+                <!-- Revisões ListView -->
+                <ListView x:Name="RevisoesClassicasListView"
+                          Grid.Row="0"
+                          ItemsSource="{Binding RevisoesPendentes}"
+                          Style="{StaticResource ModernListViewStyle}"
+                          Margin="0,0,-16,20"
+                          ScrollViewer.VerticalScrollBarVisibility="Visible"
+                          VirtualizingPanel.IsVirtualizing="True"
+                          VirtualizingPanel.VirtualizationMode="Recycling"
+                          ScrollViewer.IsDeferredScrollingEnabled="True"
+                          VirtualizingPanel.ScrollUnit="Item"
+                          VirtualizingPanel.CacheLength="10,10"
+                          VirtualizingPanel.CacheLengthUnit="Page"
+                          Visibility="{Binding Carregando, Converter={StaticResource InverseBooleanToVisibilityConverter}}">
+                    <ListView.ItemTemplate>
+                        <DataTemplate>
+                            <Border Background="{DynamicResource SurfaceBrush}"
+                                    BorderBrush="{DynamicResource BorderBrush}"
+                                    BorderThickness="1"
+                                    CornerRadius="8"
+                                    Padding="0"
+                                    Margin="0,0,0,8">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="4" />
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="Auto" />
+                                    </Grid.ColumnDefinitions>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="Auto" />
+                                    </Grid.RowDefinitions>
+
+                                    <!-- Barra de cor lateral esquerda (cor da disciplina) -->
+                                    <Border Grid.Column="0"
+                                            Grid.Row="0"
+                                            Grid.RowSpan="2"
+                                            Background="{Binding EstudoOrigem.Assunto.Disciplina.Cor}"
+                                            CornerRadius="8,0,0,8" />
+
+                                    <!-- Conteúdo principal -->
+                                    <Border Grid.Column="1"
+                                            Grid.Row="0"
+                                            Grid.RowSpan="2"
+                                            Padding="16,8"
+                                            Background="Transparent">
+
+                                        <Grid>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="*" />
+                                                <ColumnDefinition Width="Auto" />
+                                                <ColumnDefinition Width="Auto" />
+                                            </Grid.ColumnDefinitions>
+                                            <Grid.RowDefinitions>
+                                                <RowDefinition Height="Auto" />
+                                                <RowDefinition Height="Auto" />
+                                            </Grid.RowDefinitions>
+
+                                            <!-- Nome da Revisão (Assunto) -->
+                                            <TextBlock Grid.Column="0"
+                                                       Grid.Row="0"
+                                                       Text="{Binding EstudoOrigem.Assunto.Nome}"
+                                                       Style="{DynamicResource Title3Style}"
+                                                       Margin="0" />
+
+                                            <!-- Estatísticas com Ícones -->
+                                            <StackPanel Grid.Column="0"
+                                                        Grid.Row="1"
+                                                        Orientation="Horizontal"
+                                                        Margin="0,8,12,0"
+                                                        VerticalAlignment="Center">
+                                                <!-- Data -->
+                                                <StackPanel Orientation="Horizontal"
+                                                            VerticalAlignment="Center"
+                                                            Margin="0,0,16,0">
+                                                    <icon:PackIconMaterial Style="{DynamicResource CalendarioIconStyle}" />
+                                                    <TextBlock Text="{Binding DataProgramada, StringFormat='dd/MM/yyyy'}"
+                                                               Style="{DynamicResource Title4Style}"
+                                                               Margin="0" />
+                                                </StackPanel>
+
+                                                <!-- Tipo de Revisão Classíca (24h, 7 dias, 30 dias) -->
+                                                <Border CornerRadius="12"
+                                                        Padding="8,4"
+                                                        Background="{DynamicResource PrimaryBrush}"
+                                                        Margin="0,0,16,0">
+                                                    <TextBlock Text="{Binding TipoRevisao, StringFormat='{}{0}'}"
+                                                               Style="{DynamicResource Text2Style}" />
+                                                </Border>
+                                            </StackPanel>
+
+                                            <!-- Botões de Ação -->
+                                            <StackPanel Grid.Column="2"
+                                                        Grid.Row="1"
+                                                        Orientation="Horizontal"
+                                                        VerticalAlignment="Center"
+                                                        HorizontalAlignment="Right">
+
+                                                <!-- Botão Iniciar Revisão -->
+                                                <Button Style="{StaticResource IconButtonStyle}"
+                                                        Command="{Binding DataContext.IniciarRevisaoCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                        CommandParameter="{Binding}"
+                                                        ToolTip="Iniciar Revisão"
+                                                        Margin="0,0,8,0">
+                                                    <icon:PackIconMaterial Kind="Play"
+                                                                           Style="{DynamicResource EditarIconStyle}" />
+                                                </Button>
+
+                                                <!-- Botão Excluir Revisão -->
+                                                <Button Style="{StaticResource IconButtonStyle}"
+                                                        Command="{Binding DataContext.ExcluirRevisaoCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                        CommandParameter="{Binding}"
+                                                        ToolTip="Excluir Revisão">
+                                                    <icon:PackIconMaterial Style="{DynamicResource ExcluirIconStyle}" />
+                                                </Button>
+                                            </StackPanel>
+                                        </Grid>
+                                    </Border>
+                                </Grid>
+                            </Border>
+                        </DataTemplate>
+                    </ListView.ItemTemplate>
+                </ListView>
+
+                <!-- Controles de rodapé integrados ancorados na parte inferior -->
+                <Border Grid.Row="1"
+                        Style="{DynamicResource ViewFooterStyle}">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+
+                        <!-- Total de itens -->
+                        <TextBlock Grid.Column="0"
+                                   Style="{DynamicResource Text2Style}">
+                            <TextBlock.Text>
+                                <MultiBinding StringFormat="Total de {0} revisões">
+                                    <Binding Path="FilteredCount" />
+                                </MultiBinding>
+                            </TextBlock.Text>
+                        </TextBlock>
+
+                        <!-- Controles de paginação -->
+                        <StackPanel Grid.Column="1"
+                                    Orientation="Horizontal"
+                                    VerticalAlignment="Center">
+                            <Button Style="{StaticResource PaginationButtonStyle}"
+                                    Command="{Binding FirstPageCommand}"
+                                    ToolTip="Primeira página">
+                                <icon:PackIconMaterial Kind="PageFirst"
+                                                       Width="16"
+                                                       Height="16" />
+                            </Button>
+
+                            <Button Style="{StaticResource PaginationButtonStyle}"
+                                    Command="{Binding PreviousPageCommand}"
+                                    ToolTip="Página anterior">
+                                <icon:PackIconMaterial Kind="ChevronLeft"
+                                                       Width="16"
+                                                       Height="16" />
+                            </Button>
+
+                            <Border Background="{DynamicResource SurfaceBrush}"
+                                    BorderBrush="{DynamicResource BorderBrush}"
+                                    BorderThickness="1"
+                                    CornerRadius="4"
+                                    Padding="12,6"
+                                    Margin="4,0">
+                                <TextBlock Style="{DynamicResource Text3Style}">
+                                    <TextBlock.Text>
+                                        <MultiBinding StringFormat="Página {0} de {1}">
+                                            <Binding Path="CurrentPage" />
+                                            <Binding Path="TotalPages" />
+                                        </MultiBinding>
+                                    </TextBlock.Text>
+                                </TextBlock>
+                            </Border>
+
+                            <Button Style="{StaticResource PaginationButtonStyle}"
+                                    Command="{Binding NextPageCommand}"
+                                    ToolTip="Próxima página">
+                                <icon:PackIconMaterial Kind="ChevronRight"
+                                                       Width="16"
+                                                       Height="16" />
+                            </Button>
+
+                            <Button Style="{StaticResource PaginationButtonStyle}"
+                                    Command="{Binding LastPageCommand}"
+                                    ToolTip="Última página">
+                                <icon:PackIconMaterial Kind="PageLast"
+                                                       Width="16"
+                                                       Height="16" />
+                            </Button>
+                        </StackPanel>
+                    </Grid>
+                </Border>
+            </Grid>
+        </Border>
+    </Grid>
+</UserControl>

@@ -1,0 +1,367 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <!-- Estilo Base Moderno para todos os botões -->
+    <Style x:Key="ModernButtonBaseStyle"
+           TargetType="Button">
+        <Setter Property="Background"
+                Value="{DynamicResource PrimaryBrush}" />
+        <Setter Property="Foreground"
+                Value="{DynamicResource TextOnPrimaryBrush}" />
+        <Setter Property="BorderThickness"
+                Value="0" />
+        <Setter Property="Padding"
+                Value="16,8" />
+        <Setter Property="FontWeight"
+                Value="SemiBold" />
+        <Setter Property="Cursor"
+                Value="Hand" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="Button">
+                    <Border x:Name="border"
+                            Background="{TemplateBinding Background}"
+                            CornerRadius="4"
+                            Padding="{TemplateBinding Padding}">
+                        <ContentPresenter HorizontalAlignment="Center"
+                                          VerticalAlignment="Center" />
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver"
+                                 Value="True">
+                            <Setter TargetName="border"
+                                    Property="Background"
+                                    Value="{DynamicResource PrimaryDarkBrush}" />
+                        </Trigger>
+                        <Trigger Property="IsPressed"
+                                 Value="True">
+                            <Setter TargetName="border"
+                                    Property="RenderTransform">
+                                <Setter.Value>
+                                    <ScaleTransform ScaleX="0.98"
+                                                    ScaleY="0.98" />
+                                </Setter.Value>
+                            </Setter>
+                        </Trigger>
+                        <Trigger Property="IsEnabled"
+                                 Value="False">
+                            <Setter Property="Background"
+                                    Value="{DynamicResource BorderBrush}" />
+                            <Setter Property="Cursor"
+                                    Value="Arrow" />
+                            <Setter Property="Opacity"
+                                    Value="0.6" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <!-- Botão Primário (estilo principal) -->
+    <Style x:Key="ModernButtonStyle"
+           TargetType="Button"
+           BasedOn="{StaticResource ModernButtonBaseStyle}" />
+
+    <!-- Botão Secundário/Cancelar -->
+    <Style x:Key="SecondaryButtonStyle"
+           TargetType="Button"
+           BasedOn="{StaticResource ModernButtonBaseStyle}">
+        <Setter Property="Background"
+                Value="{DynamicResource SurfaceBrush}" />
+        <Setter Property="Foreground"
+                Value="{DynamicResource TextPrimaryBrush}" />
+        <Style.Triggers>
+            <Trigger Property="IsMouseOver"
+                     Value="True">
+                <Setter Property="Background"
+                        Value="{DynamicResource BorderBrush}" />
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+
+    <!-- Botão Terciário -->
+    <Style x:Key="TerciaryButtonStyle"
+           TargetType="Button"
+           BasedOn="{StaticResource ModernButtonBaseStyle}">
+        <Setter Property="Background"
+                Value="{DynamicResource BackgroundBrush}" />
+        <Setter Property="Foreground"
+                Value="{DynamicResource TextPrimaryBrush}" />
+        <Setter Property="BorderBrush"
+                Value="{DynamicResource BorderBrush}" />
+        <Style.Triggers>
+            <Trigger Property="IsMouseOver"
+                     Value="True">
+                <Setter Property="Background"
+                        Value="{DynamicResource BorderBrush}" />
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+
+    <!-- Botão de Ícone (transparente) -->
+    <Style x:Key="IconButtonStyle"
+           TargetType="Button"
+           BasedOn="{StaticResource ModernButtonBaseStyle}">
+        <Setter Property="Background"
+                Value="Transparent" />
+        <Setter Property="Foreground"
+                Value="{DynamicResource TextSecondaryBrush}" />
+        <Setter Property="Padding"
+                Value="8" />
+        <Setter Property="MinWidth"
+                Value="32" />
+        <Setter Property="MinHeight"
+                Value="32" />
+        <Setter Property="BorderThickness"
+                Value="0" />
+        <Style.Triggers>
+            <Trigger Property="IsMouseOver"
+                     Value="True">
+                <Setter Property="Background"
+                        Value="{DynamicResource NavigationHoverBrush}" />
+                <Setter Property="Foreground"
+                        Value="{DynamicResource TextPrimaryBrush}" />
+            </Trigger>
+            <Trigger Property="IsPressed"
+                     Value="True">
+                <Setter Property="Background"
+                        Value="{DynamicResource NavigationSelectedBrush}" />
+                <Setter Property="Foreground"
+                        Value="White" />
+            </Trigger>
+            <Trigger Property="IsEnabled"
+                     Value="False">
+                <Setter Property="Opacity"
+                        Value="0.5" />
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+
+    <!-- Botões de Controle da Janela (minimizar, maximizar) -->
+    <Style x:Key="WindowControlButtonStyle"
+           TargetType="Button"
+           BasedOn="{StaticResource ModernButtonBaseStyle}">
+        <Setter Property="Background"
+                Value="Transparent" />
+        <Setter Property="Foreground"
+                Value="{DynamicResource TextSecondaryBrush}" />
+        <Setter Property="Width"
+                Value="40" />
+        <Setter Property="Height"
+                Value="30" />
+        <Setter Property="Padding"
+                Value="0" />
+        <Setter Property="BorderThickness"
+                Value="0" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="Button">
+                    <Border x:Name="border"
+                            Background="{TemplateBinding Background}"
+                            CornerRadius="4">
+                        <ContentPresenter HorizontalAlignment="Center"
+                                          VerticalAlignment="Center" />
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver"
+                                 Value="True">
+                            <Setter TargetName="border"
+                                    Property="Background"
+                                    Value="{DynamicResource NavigationHoverBrush}" />
+                            <Setter Property="Foreground"
+                                    Value="{DynamicResource TextPrimaryBrush}" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <!-- Botão Fechar (controle da janela) -->
+    <Style x:Key="WindowCloseButtonStyle"
+           TargetType="Button"
+           BasedOn="{StaticResource WindowControlButtonStyle}">
+        <Style.Triggers>
+            <Trigger Property="IsMouseOver"
+                     Value="True">
+                <Setter Property="Background"
+                        Value="#E81123" />
+                <Setter Property="Foreground"
+                        Value="White" />
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+
+    <!-- Botão de Paginação -->
+    <Style x:Key="PaginationButtonStyle"
+           TargetType="Button"
+           BasedOn="{StaticResource ModernButtonBaseStyle}">
+        <Setter Property="Width"
+                Value="32" />
+        <Setter Property="Height"
+                Value="32" />
+        <Setter Property="Margin"
+                Value="2" />
+        <Setter Property="Padding"
+                Value="0" />
+    </Style>
+
+    <!-- Botão de Ação (para usar cores específicas) -->
+    <Style x:Key="ActionButtonStyle"
+           TargetType="Button"
+           BasedOn="{StaticResource ModernButtonBaseStyle}">
+        <Setter Property="FontWeight"
+                Value="Medium" />
+        <Setter Property="Padding"
+                Value="12,6" />
+    </Style>
+
+    <!-- Botão de Ação Abrir -->
+    <Style x:Key="OpenButtonStyle"
+           TargetType="Button"
+           BasedOn="{StaticResource ActionButtonStyle}">
+        <Setter Property="Background"
+                Value="{DynamicResource AbrirBrush}" />
+        <Setter Property="Foreground"
+                Value="White" />
+    </Style>
+
+    <!-- Botão de Ação Editar -->
+    <Style x:Key="EditButtonStyle"
+           TargetType="Button"
+           BasedOn="{StaticResource ActionButtonStyle}">
+        <Setter Property="Background"
+                Value="{DynamicResource EditarBrush}" />
+        <Setter Property="Foreground"
+                Value="White" />
+    </Style>
+
+    <!-- Botão de Ação Excluir -->
+    <Style x:Key="DeleteButtonStyle"
+           TargetType="Button"
+           BasedOn="{StaticResource ActionButtonStyle}">
+        <Setter Property="Background"
+                Value="{DynamicResource ExcluirBrush}" />
+        <Setter Property="Foreground"
+                Value="White" />
+    </Style>
+
+    <!-- Botão de Ação Salvar -->
+    <Style x:Key="SaveButtonStyle"
+           TargetType="Button"
+           BasedOn="{StaticResource ActionButtonStyle}">
+        <Setter Property="Background"
+                Value="{DynamicResource SalvarBrush}" />
+        <Setter Property="Foreground"
+                Value="White" />
+    </Style>
+
+    <!-- Botão de Ação Mover -->
+    <Style x:Key="MoveButtonStyle"
+           TargetType="Button"
+           BasedOn="{StaticResource ActionButtonStyle}">
+        <Setter Property="Background"
+                Value="{DynamicResource MoverBrush}" />
+        <Setter Property="Foreground"
+                Value="White" />
+    </Style>
+
+    <!-- Botão de Navegação em Abas (para ViewEditalEditar e similares) -->
+    <Style x:Key="NavigationTabButtonStyle"
+           TargetType="Button">
+        <Setter Property="Background"
+                Value="Transparent" />
+        <Setter Property="BorderThickness"
+                Value="0" />
+        <Setter Property="Foreground"
+                Value="{DynamicResource TextSecondaryBrush}" />
+        <Setter Property="FontWeight"
+                Value="Medium" />
+        <Setter Property="FontSize"
+                Value="14" />
+        <Setter Property="Padding"
+                Value="20,12" />
+        <Setter Property="Margin"
+                Value="0,0,8,0" />
+        <Setter Property="Cursor"
+                Value="Hand" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="Button">
+                    <Border Name="Border"
+                            Background="{TemplateBinding Background}"
+                            BorderThickness="{TemplateBinding BorderThickness}"
+                            BorderBrush="{DynamicResource BorderBrush}"
+                            CornerRadius="8"
+                            Padding="{TemplateBinding Padding}">
+                        <ContentPresenter VerticalAlignment="Center"
+                                          HorizontalAlignment="Center"
+                                          RecognizesAccessKey="True" />
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsPressed"
+                                 Value="True">
+                            <Setter Property="Background"
+                                    TargetName="Border"
+                                    Value="{DynamicResource PrimaryBrush}" />
+                            <Setter Property="Foreground"
+                                    Value="White" />
+                            <Setter Property="BorderBrush"
+                                    TargetName="Border"
+                                    Value="{DynamicResource PrimaryBrush}" />
+                        </Trigger>
+                        <Trigger Property="IsMouseOver"
+                                 Value="True">
+                            <Setter TargetName="Border"
+                                    Property="Background"
+                                    Value="{DynamicResource BorderBrush}" />
+                            <Setter Property="Foreground"
+                                    Value="{DynamicResource TextPrimaryBrush}" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <!-- Legado: Mantido para compatibilidade -->
+    <Style x:Key="ControlButtonStyle"
+           TargetType="Button"
+           BasedOn="{StaticResource WindowControlButtonStyle}" />
+    <Style x:Key="CloseButtonStyle"
+           TargetType="Button"
+           BasedOn="{StaticResource WindowCloseButtonStyle}" />
+
+    <!-- Estilo para Botões de Filtro do Gráfico -->
+    <Style x:Key="FilterButtonStyle"
+           TargetType="Button"
+           BasedOn="{StaticResource ModernButtonStyle}">
+        <Setter Property="Padding"
+                Value="8,4" />
+        <Setter Property="FontSize"
+                Value="10" />
+        <Setter Property="MinWidth"
+                Value="50" />
+        <Setter Property="Background"
+                Value="{DynamicResource BorderBrush}" />
+        <Setter Property="Foreground"
+                Value="{DynamicResource TextSecondaryBrush}" />
+        <Style.Triggers>
+            <!-- Trigger para estado ativo - quando CommandParameter é igual a FiltroGraficoAtivo -->
+            <DataTrigger Value="True">
+                <DataTrigger.Binding>
+                    <MultiBinding Converter="{StaticResource StringToBooleanConverter}">
+                        <Binding Path="FiltroGraficoAtivo" />
+                        <Binding Path="CommandParameter" RelativeSource="{RelativeSource Self}" />
+                    </MultiBinding>
+                </DataTrigger.Binding>
+                <Setter Property="Background"
+                        Value="{DynamicResource PrimaryBrush}" />
+                <Setter Property="Foreground"
+                        Value="White" />
+            </DataTrigger>
+        </Style.Triggers>
+    </Style>
+
+</ResourceDictionary>

@@ -1,0 +1,94 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<OutputType>WinExe</OutputType>
+		<TargetFramework>net9.0-windows</TargetFramework>
+		<Nullable>enable</Nullable>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<UseWPF>true</UseWPF>
+		<UseWindowsForms>true</UseWindowsForms>
+		<StartupObject>StudyMinder.App</StartupObject>
+		<ApplicationIcon>Images\StudyMinder.ico</ApplicationIcon>
+		<SignAssembly>False</SignAssembly>
+		<Title>StudyMinder</Title>
+		<Authors>Eric Jhon</Authors>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<Using Remove="System.Windows.Forms" />
+		<Using Remove="System.Drawing" />
+	</ItemGroup>
+
+	<PropertyGroup Condition="'$(Configuration)' == 'Release'">
+		<RuntimeIdentifier>win-x64</RuntimeIdentifier>
+
+		<SelfContained>true</SelfContained>
+
+		<PublishSingleFile>true</PublishSingleFile>
+
+		<PublishReadyToRun>true</PublishReadyToRun>
+		<IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
+		<PublishTrimmed>false</PublishTrimmed>
+	</PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.0" />
+    <PackageReference Include="FluentWPF" Version="0.10.2" />
+    <PackageReference Include="MahApps.Metro.IconPacks.Material" Version="6.2.1" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="9.0.0" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="9.0.0">
+      <IncludeAssets>build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="10.0.1" />
+    <PackageReference Include="Microsoft.Xaml.Behaviors.Wpf" Version="1.1.135" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.4" />
+    <PackageReference Include="OxyPlot.Wpf" Version="2.1.2" />
+    <PackageReference Include="System.Drawing.Common" Version="8.0.10" />
+	  <!--<PackageReference Include="System.Windows.Forms" Version="4.0.0" />-->
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="Resources\Themes\*.xaml" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="DEBUG_EditalStatus.cs" />
+    <Compile Remove="Views\AdicionarEstudoDialog.xaml.cs" />
+    <Compile Remove="Views\ViewAssuntoEditar.xaml.cs" />
+    <Compile Remove="Views\ViewDisciplinas.Refatorada.xaml.cs" />
+    <Compile Remove="Views\ViewEditarAssunto.xaml.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="Images\logo.png" />
+    <None Remove="Images\Play.ico" />
+    <None Remove="Images\Stop.ico" />
+    <None Remove="ViewModels\EditarEditalViewModel.IEditableViewModel.cs.bak" />
+    <None Remove="Views\a2cn1muy.ehi~" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Page Remove="Views\AdicionarEstudoDialog.xaml" />
+    <Page Remove="Views\ViewAssuntoEditar.xaml" />
+    <Page Remove="Views\ViewDisciplinas.Refatorada.xaml" />
+    <Page Remove="Views\ViewEditarAssunto.xaml" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="Images\StudyMinder.ico" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="Images\logo.png" />
+    <Resource Include="Images\Play.ico" />
+    <Resource Include="Images\Stop.ico" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="StudyMinder.db">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
+</Project>

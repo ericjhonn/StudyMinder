@@ -1,0 +1,20 @@
+﻿StudyMinder
+1.0.0.0
+
+winexe
+C#
+.cs
+C:\Users\Usuário\Desktop\Eric Jhon\Projects\StudyMinder\StudyMinder 3.0\StudyMinder\obj\Debug\net9.0-windows\
+StudyMinder
+none
+false
+TRACE;DEBUG;NET;NET9_0;NETCOREAPP;WINDOWS;WINDOWS7_0;NET5_0_OR_GREATER;NET6_0_OR_GREATER;NET7_0_OR_GREATER;NET8_0_OR_GREATER;NET9_0_OR_GREATER;NETCOREAPP3_0_OR_GREATER;NETCOREAPP3_1_OR_GREATER;WINDOWS7_0_OR_GREATER
+C:\Users\Usuário\Desktop\Eric Jhon\Projects\StudyMinder\StudyMinder 3.0\StudyMinder\App.xaml
+391957595548
+1-1615602283
+147365634405
+237-1396602975
+Controls\AccuracyPieChartControl.xaml;Controls\KPICard.xaml;Controls\PieChartControl.xaml;MainWindow.xaml;Styles\Button.xaml;Styles\Card.xaml;Styles\Fields.xaml;Styles\HeaderFooter.xaml;Styles\Icon.xaml;Styles\ListView.xaml;Styles\Other.xaml;Styles\Pagination.xaml;Styles\Text.xaml;Styles\Toast.xaml;Views\AdicionarAssuntosEmLoteDialog.xaml;Views\CustomMessageBoxWindow.xaml;Views\DiaDetalhesPanel.xaml;Views\LoadingAndEmptyStatePanel.xaml;Views\MoverAssuntoDialog.xaml;Views\SplashScreen.xaml;Views\ViewCalendario.xaml;Views\ViewCicloEstudo.xaml;Views\ViewComparadorEditais.xaml;Views\ViewConfiguracoes.xaml;Views\ViewDisciplinaEditar.xaml;Views\ViewDisciplinas.xaml;Views\ViewEditais.xaml;Views\ViewEditalEditar.xaml;Views\ViewEditalEditarAssuntos.xaml;Views\ViewEditalEditarCronograma.xaml;Views\ViewEditalEditarInformacoes.xaml;Views\ViewEstudoEditar.xaml;Views\ViewEstudos.xaml;Views\ViewGraficos.xaml;Views\ViewHome.xaml;Views\ViewRevisoes42.xaml;Views\ViewRevisoesCiclicas.xaml;Views\ViewRevisoesClassicas.xaml;Views\ViewSobre.xaml;
+
+False
+

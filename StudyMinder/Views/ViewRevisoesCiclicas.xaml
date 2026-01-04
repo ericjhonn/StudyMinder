@@ -1,0 +1,415 @@
+<UserControl x:Class="StudyMinder.Views.ViewRevisoesCiclicas"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:icon="http://metro.mahapps.com/winfx/xaml/iconpacks"
+             xmlns:viewmodels="clr-namespace:StudyMinder.ViewModels"
+             xmlns:models="clr-namespace:StudyMinder.Models"
+             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+             xmlns:converters="clr-namespace:StudyMinder.Converters"
+             xmlns:views="clr-namespace:StudyMinder.Views"
+             mc:Ignorable="d"
+             d:DesignHeight="600"
+             d:DesignWidth="800"
+             d:DataContext="{d:DesignInstance Type=viewmodels:RevisoesCiclicasViewModel}"
+             Loaded="ViewRevisoesCiclicas_Loaded">
+
+    <UserControl.Resources>
+        <converters:BooleanToColorConverter x:Key="BooleanToColorConverter" />
+        <converters:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
+        <converters:InverseBooleanToVisibilityConverter x:Key="InverseBooleanToVisibilityConverter" />
+        <converters:AssuntoAcertosConverter x:Key="AssuntoAcertosConverter" />
+        <converters:AssuntoErrosConverter x:Key="AssuntoErrosConverter" />
+        <converters:AssuntoTotalQuestoesConverter x:Key="AssuntoTotalQuestoesConverter" />
+        <converters:AssuntoRendimentoConverter x:Key="AssuntoRendimentoConverter" />
+        <converters:AssuntoHorasEstudadasConverter x:Key="AssuntoHorasEstudadasConverter" />
+        <converters:StringToBooleanConverter x:Key="StringToBooleanConverter" />
+    </UserControl.Resources>
+
+    <Grid Background="{DynamicResource BackgroundBrush}">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <!-- Cabeçalho -->
+        <Border Grid.Row="0"
+                Style="{DynamicResource ViewHeaderStyle}">
+
+            <Grid Grid.Row="0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+
+                <StackPanel Grid.Column="0"
+                            Orientation="Horizontal">
+                    <TextBlock Text="Revisão Cíclica"
+                               Style="{DynamicResource Title1Style}" />
+
+                </StackPanel>
+
+                <!-- TextBox de Pesquisa (Comum aos dois modos) -->
+                <TextBox Grid.Column="1"
+                         Margin="0,0,8,0"
+                         Style="{StaticResource TextBoxPesquisarStyle}"
+                         Width="300"
+                         Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}"
+                         Tag="Pesquisar assuntos ou disciplinas" />
+
+                <!--<ComboBox Grid.Column="2"
+                          ItemsSource="{Binding Editais}"
+                          SelectedValue="{Binding EditalId, UpdateSourceTrigger=PropertyChanged}"
+                          DisplayMemberPath="Órgão + Cargo + Ano"
+                          SelectedValuePath="Id"
+                          Style="{DynamicResource ModernComboBoxStyle}"
+                          Margin="0,0,0,0"
+                          Tag="Edital" />-->
+
+                <!-- Botão Cancelar (Visível apenas em modo edição) -->
+                <Button Grid.Column="2"
+                        Style="{StaticResource SecondaryButtonStyle}"
+                        Command="{Binding CancelarEdicaoAssuntosCommandCommand}"
+                        Visibility="{Binding IsEditingAssuntos, Converter={StaticResource BooleanToVisibilityConverter}}"
+                        VerticalAlignment="Center"
+                        Margin="0,0,8,0">
+                    <StackPanel Orientation="Horizontal">
+                        <icon:PackIconMaterial Kind="Close"
+                                               Width="16"
+                                               Height="16"
+                                               VerticalAlignment="Center"
+                                               Margin="0,0,8,0" />
+                        <TextBlock Text="Cancelar"
+                                   VerticalAlignment="Center" />
+                    </StackPanel>
+                </Button>
+
+                <!-- Botão Selecionar/Salvar Edição -->
+                <Button Grid.Column="3"
+                        Style="{StaticResource ModernButtonStyle}"
+                        Command="{Binding ToggleEditAssuntosCommandCommand}"
+                        VerticalAlignment="Center"
+                        HorizontalAlignment="Stretch"
+                        Margin="0">
+                    <StackPanel Orientation="Horizontal">
+                        <!-- Ícone e texto que mudam com IsEditingAssuntos -->
+                        <StackPanel.Style>
+                            <Style TargetType="StackPanel">
+                                <Setter Property="Visibility"
+                                        Value="Visible" />
+                            </Style>
+                        </StackPanel.Style>
+
+                        <!-- Modo Visualização (Selecionar) -->
+                        <StackPanel Orientation="Horizontal"
+                                    Visibility="{Binding IsEditingAssuntos, Converter={StaticResource InverseBooleanToVisibilityConverter}}">
+                            <icon:PackIconMaterial Kind="Pencil"
+                                                   Width="16"
+                                                   Height="16"
+                                                   VerticalAlignment="Center"
+                                                   Margin="0,0,8,0" />
+                            <TextBlock Text="Selecionar"
+                                       VerticalAlignment="Center" />
+                        </StackPanel>
+
+                        <!-- Modo Edição (Salvar) -->
+                        <StackPanel Orientation="Horizontal"
+                                    Visibility="{Binding IsEditingAssuntos, Converter={StaticResource BooleanToVisibilityConverter}}"
+                                    d:Visibility="Collapsed">
+
+                            <icon:PackIconMaterial Kind="ContentSave"
+                                                   Width="16"
+                                                   Height="16"
+                                                   VerticalAlignment="Center"
+                                                   Margin="0,0,8,0" />
+                            <TextBlock Text="Salvar"
+                                       VerticalAlignment="Center" />
+                        </StackPanel>
+                    </StackPanel>
+                </Button>
+            </Grid>
+        </Border>
+
+        <!-- Conteúdo Principal -->
+        <Border Grid.Row="1"
+                Style="{DynamicResource PrimaryCardStyle}"
+                Margin="20">
+
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+
+                <!-- Loading Indicator e Estado Vazio -->
+                <views:LoadingAndEmptyStatePanel Grid.Row="0" />
+
+                <!-- MODO VISUALIZAÇÃO: Lista de assuntos ativos por disciplina -->
+                <ListView Grid.Row="0"
+                          Style="{DynamicResource ModernListViewStyle}"
+                          Visibility="{Binding IsEditingAssuntos, Converter={StaticResource InverseBooleanToVisibilityConverter}}"
+                          ItemsSource="{Binding AssuntosPaginados}"
+                          VirtualizingPanel.IsVirtualizing="True"
+                          VirtualizingPanel.VirtualizationMode="Recycling"
+                          ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                          ScrollViewer.VerticalScrollBarVisibility="Visible"
+                          Margin="0,0,-20,0">
+                    <ListView.ItemTemplate>
+                        <DataTemplate DataType="{x:Type models:Assunto}">
+                            <Border Style="{DynamicResource SecondaryCardStyle}"
+                                    Margin="0,0,0,8"
+                                    Padding="0">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="4" />
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="Auto" />
+                                    </Grid.ColumnDefinitions>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="Auto" />
+                                    </Grid.RowDefinitions>
+
+                                    <!-- Barra de cor lateral esquerda (cor da disciplina) -->
+                                    <Border Grid.Column="0"
+                                            Grid.Row="0"
+                                            Grid.RowSpan="2"
+                                            Background="{Binding Disciplina.Cor}"
+                                            CornerRadius="8,0,0,8" />
+
+                                    <!-- Conteúdo principal -->
+                                    <Border Grid.Column="1"
+                                            Grid.Row="0"
+                                            Grid.RowSpan="2"
+                                            Padding="16,8"
+                                            Background="Transparent">
+
+                                        <Grid>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="*" />
+                                                <ColumnDefinition Width="Auto" />
+                                                <ColumnDefinition Width="Auto" />
+                                            </Grid.ColumnDefinitions>
+                                            <Grid.RowDefinitions>
+                                                <RowDefinition Height="Auto" />
+                                                <RowDefinition Height="Auto" />
+                                            </Grid.RowDefinitions>
+
+                                            <!-- Nome da Disciplina - Assunto -->
+                                            <TextBlock Grid.Column="0"
+                                                       Grid.Row="0"
+                                                       Style="{DynamicResource Title3Style}"
+                                                       Margin="0">
+                                                <TextBlock.Text>
+                                                    <MultiBinding StringFormat="{}{0} - {1}">
+                                                        <Binding Path="Disciplina.Nome" />
+                                                        <Binding Path="Nome" />
+                                                    </MultiBinding>
+                                                </TextBlock.Text>
+                                            </TextBlock>
+
+                                            <!-- Informações do Assunto -->
+                                            <StackPanel Grid.Column="0"
+                                                        Grid.Row="1"
+                                                        Orientation="Horizontal"
+                                                        Margin="0,8,12,0"
+                                                        VerticalAlignment="Center">
+                                                
+                                                <!-- Data do Último Estudo (se disponível) -->
+                                                <StackPanel Orientation="Horizontal"
+                                                            VerticalAlignment="Center"
+                                                            Width="120"
+                                                            Margin="0,0,16,0">
+                                                    <icon:PackIconMaterial Style="{DynamicResource CalendarioIconStyle}" />
+                                                    <TextBlock Text="{Binding DataUltimoEstudo, StringFormat='{}{0:dd/MM/yyyy}', TargetNullValue='Nunca estudado'}"
+                                                               Style="{DynamicResource Title4Style}"
+                                                               Margin="0" />
+                                                </StackPanel>
+
+                                                <!-- Status do Assunto no Ciclo (Próximo/Nunca Estudado) -->
+                                                <Border CornerRadius="12"
+                                                        Padding="8,4"
+                                                        Margin="0,0,16,0"
+                                                        Visibility="{Binding StatusNoCiclo, Converter={StaticResource StringToVisibilityConverter}}">
+                                                    <Border.Style>
+                                                        <Style TargetType="Border">
+                                                            <Setter Property="Background" Value="{DynamicResource WarningBrush}" />
+                                                            <Style.Triggers>
+                                                                <DataTrigger Binding="{Binding StatusNoCiclo}" Value="Próximo">
+                                                                    <Setter Property="Background" Value="{DynamicResource ErrorBrush}" />
+                                                                </DataTrigger>
+                                                                <DataTrigger Binding="{Binding StatusNoCiclo}" Value="Nunca Estudado">
+                                                                    <Setter Property="Background" Value="{DynamicResource WarningBrush}" />
+                                                                </DataTrigger>
+                                                            </Style.Triggers>
+                                                        </Style>
+                                                    </Border.Style>
+                                                    <TextBlock Foreground="White"
+                                                               FontSize="12"
+                                                               FontWeight="SemiBold"
+                                                               Text="{Binding StatusNoCiclo}" />
+                                                </Border>
+                                            </StackPanel>
+
+                                            <!-- Botões de Ação -->
+                                            <StackPanel Grid.Column="2"
+                                                        Grid.Row="1"
+                                                        Orientation="Horizontal"
+                                                        VerticalAlignment="Center"
+                                                        HorizontalAlignment="Right">
+
+                                                <!-- Botão Iniciar Estudo -->
+                                                <Button Style="{StaticResource IconButtonStyle}"
+                                                        Command="{Binding DataContext.IniciarEstudoFilaCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                        CommandParameter="{Binding}"
+                                                        ToolTip="Iniciar Estudo"
+                                                        Margin="0,0,8,0">
+                                                    <icon:PackIconMaterial Kind="Play"
+                                                                           Style="{DynamicResource EditarIconStyle}" />
+                                                </Button>
+
+                                                <!-- Botão Remover do Ciclo -->
+                                                <Button Style="{StaticResource IconButtonStyle}"
+                                                        Command="{Binding DataContext.RemoverAssuntoDoCicloCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                        CommandParameter="{Binding}"
+                                                        ToolTip="Remover do Ciclo">
+                                                    <icon:PackIconMaterial Style="{DynamicResource ExcluirIconStyle}" />
+                                                </Button>
+                                            </StackPanel>
+                                        </Grid>
+                                    </Border>
+                                </Grid>
+                            </Border>
+                        </DataTemplate>
+                    </ListView.ItemTemplate>
+                </ListView>
+
+                <!-- MODO EDIÇÃO: Lista de seleção com checkboxes -->
+                <ListView Grid.Row="0"
+                          Style="{DynamicResource ModernListViewStyle}"
+                          Visibility="{Binding IsEditingAssuntos, Converter={StaticResource BooleanToVisibilityConverter}}"
+                          ItemsSource="{Binding AssuntosDisponiveisSelecionaveis}"
+                          VirtualizingPanel.IsVirtualizing="True"
+                          VirtualizingPanel.VirtualizationMode="Recycling"
+                          ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                          ScrollViewer.VerticalScrollBarVisibility="Visible"
+                          Margin="0,0,-20,0">
+                    <ListView.ItemTemplate>
+                        <DataTemplate DataType="{x:Type viewmodels:AssuntoSelecionavel}">
+                            <Border Style="{DynamicResource SecondaryCardStyle}"
+                                    Margin="0,0,0,8">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="*" />
+                                    </Grid.ColumnDefinitions>
+
+                                    <!-- CheckBox de Seleção -->
+                                    <CheckBox Grid.Column="0"
+                                              IsChecked="{Binding IsSelected}"
+                                              VerticalAlignment="Center"
+                                              Margin="0,0,12,0"
+                                              Style="{DynamicResource RoundedCheckBoxStyle}" />
+
+                                    <!-- Informações do Assunto -->
+                                    <StackPanel Grid.Column="1"
+                                                Orientation="Vertical"
+                                                VerticalAlignment="Center">
+                                        <TextBlock FontWeight="SemiBold"
+                                                   FontSize="14"
+                                                   Foreground="{DynamicResource TextPrimaryBrush}">
+                                            <TextBlock.Text>
+                                                <MultiBinding StringFormat="{}{0} - {1}">
+                                                    <Binding Path="Assunto.Disciplina.Nome" />
+                                                    <Binding Path="Assunto.Nome" />
+                                                </MultiBinding>
+                                            </TextBlock.Text>
+                                        </TextBlock>
+                                    </StackPanel>
+                                </Grid>
+                            </Border>
+                        </DataTemplate>
+                    </ListView.ItemTemplate>
+                </ListView>
+
+                <!-- Controles de rodapé integrados ancorados na parte inferior -->
+                <Border Grid.Row="1"
+                        Style="{DynamicResource ViewFooterStyle}">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+
+                        <!-- Total de itens -->
+                        <TextBlock Grid.Column="0"
+                                   Style="{DynamicResource Text2Style}">
+                            <TextBlock.Text>
+                                <MultiBinding StringFormat="Total de {0} itens">
+                                    <Binding Path="TotalItens" />
+                                </MultiBinding>
+                            </TextBlock.Text>
+                        </TextBlock>
+
+                        <!-- Controles de paginação -->
+                        <StackPanel Grid.Column="1"
+                                    Orientation="Horizontal"
+                                    VerticalAlignment="Center">
+                            <Button Style="{StaticResource PaginationButtonStyle}"
+                                    Command="{Binding FirstPageCommand}"
+                                    ToolTip="Primeira página">
+                                <icon:PackIconMaterial Kind="PageFirst"
+                                                       Width="16"
+                                                       Height="16" />
+                            </Button>
+
+                            <Button Style="{StaticResource PaginationButtonStyle}"
+                                    Command="{Binding PreviousPageCommand}"
+                                    ToolTip="Página anterior">
+                                <icon:PackIconMaterial Kind="ChevronLeft"
+                                                       Width="16"
+                                                       Height="16" />
+                            </Button>
+
+                            <Border Background="{DynamicResource SurfaceBrush}"
+                                    BorderBrush="{DynamicResource BorderBrush}"
+                                    BorderThickness="1"
+                                    CornerRadius="4"
+                                    Padding="12,6"
+                                    Margin="4,0">
+                                <TextBlock Style="{DynamicResource Text3Style}">
+                                    <TextBlock.Text>
+                                        <MultiBinding StringFormat="Página {0} de {1}">
+                                            <Binding Path="PaginaAtual" />
+                                            <Binding Path="TotalPaginas" />
+                                        </MultiBinding>
+                                    </TextBlock.Text>
+                                </TextBlock>
+                            </Border>
+
+                            <Button Style="{StaticResource PaginationButtonStyle}"
+                                    Command="{Binding NextPageCommand}"
+                                    ToolTip="Próxima página">
+                                <icon:PackIconMaterial Kind="ChevronRight"
+                                                       Width="16"
+                                                       Height="16" />
+                            </Button>
+
+                            <Button Style="{StaticResource PaginationButtonStyle}"
+                                    Command="{Binding LastPageCommand}"
+                                    ToolTip="Última página">
+                                <icon:PackIconMaterial Kind="PageLast"
+                                                       Width="16"
+                                                       Height="16" />
+                            </Button>
+                        </StackPanel>
+                    </Grid>
+                </Border>
+            </Grid>
+        </Border>
+    </Grid>
+</UserControl>
