@@ -27,9 +27,10 @@ namespace StudyMinder.ViewModels
         private readonly DisciplinaService _disciplinaService;
         private readonly EstudoTransactionService _transactionService;
         private readonly RevisaoService _revisaoService;
+        private readonly RevisaoNotificacaoService _revisaoNotificacaoService;
         private readonly INotificationService _notificationService;
         private readonly IConfigurationService _configurationService;
-        
+
         [ObservableProperty]
         private int _questoesHoje;
         partial void OnQuestoesHojeChanged(int value) => System.Diagnostics.Debug.WriteLine($"[DEBUG] QuestoesHoje alterado para: {value}");
@@ -291,9 +292,9 @@ namespace StudyMinder.ViewModels
 
             IEnumerable<RevisaoProxima> revisoesFiltradasEnumeravel = filtro switch
             {
-                "Clássicas" => TodasRevisoes.Where(r => 
-                    r.TipoRevisao == TipoRevisaoEnum.Classico24h || 
-                    r.TipoRevisao == TipoRevisaoEnum.Classico7d || 
+                "Clássicas" => TodasRevisoes.Where(r =>
+                    r.TipoRevisao == TipoRevisaoEnum.Classico24h ||
+                    r.TipoRevisao == TipoRevisaoEnum.Classico7d ||
                     r.TipoRevisao == TipoRevisaoEnum.Classico30d),
                 "4.2" => TodasRevisoes.Where(r => r.TipoRevisao == TipoRevisaoEnum.Ciclo42),
                 _ => TodasRevisoes.Where(r => r.TipoRevisao == TipoRevisaoEnum.Ciclo42)
@@ -321,7 +322,7 @@ namespace StudyMinder.ViewModels
                 "Mês" => "Últimos 24 Meses",
                 _ => "Últimos 7 Dias"
             };
-            
+
             await CarregarDadosGraficoAsync();
         }
 
@@ -330,7 +331,7 @@ namespace StudyMinder.ViewModels
         {
             FiltroEditaisAtivo = filtro;
             System.Diagnostics.Debug.WriteLine($"[DEBUG] FiltrarGraficoEditais - Filtro selecionado: {filtro}");
-            
+
             await CarregarGraficoEditaisRendimentoAsync(filtro);
         }
 
@@ -412,7 +413,7 @@ namespace StudyMinder.ViewModels
                 System.Diagnostics.Debug.WriteLine($"[DEBUG] CarregarAssuntosPorDisciplinaAsync iniciado para disciplinaId: {disciplinaId}");
                 var assuntos = await _assuntoService.ObterPorDisciplinaAsync(disciplinaId);
                 System.Diagnostics.Debug.WriteLine($"[DEBUG] Obtidos {assuntos.Count} assuntos do serviço");
-                
+
                 Application.Current.Dispatcher.Invoke(() =>
                 {
                     Assuntos.Clear();
@@ -441,250 +442,269 @@ namespace StudyMinder.ViewModels
             await CarregarMetasSemanaAsync();
         }
 
-[RelayCommand]
-private async Task NavegarSemanaAtual()
-{
-    SemanaAtual = DateTime.Today;
-    await CarregarMetasSemanaAsync();
-}
-
-[RelayCommand]
-private async Task AlterarModoRevisao()
-{
-    ModoRevisoesHoje = !ModoRevisoesHoje;
-    TextoBotaoModoRevisao = ModoRevisoesHoje ? "Ver Atrasadas" : "Ver Hoje";
-    await CarregarProximasRevisoesAsync();
-}
-
-[RelayCommand]
-private async Task ExibirEventosAtrasados()
-{
-    try
-    {
-        System.Diagnostics.Debug.WriteLine($"[DEBUG] Exibindo eventos atrasados");
-        
-        var hoje = DateTime.Today;
-        var hojeTicks = hoje.Ticks;
-        
-        // Carregar eventos atrasados (data < hoje), não ignorados e não concluídos
-        var eventosAtrasados = await _context.EditalCronograma
-            .Include(ec => ec.Edital)
-            .Where(ec => 
-                ec.DataEventoTicks < hojeTicks &&   // Eventos anteriores a hoje
-                !ec.Ignorado &&                      // Não ignorados
-                !ec.Concluido)                       // Não concluídos
-            .OrderByDescending(ec => ec.DataEventoTicks)  // Mais recentes primeiro (menos atrasados)
-            .Take(5)                                 // Limitar aos 5 mais recentes atrasados
-            .ToListAsync();
-
-        System.Diagnostics.Debug.WriteLine($"[DEBUG] Eventos atrasados encontrados: {eventosAtrasados.Count}");
-
-        // Limpar e atualizar coleção
-        ProximosEventos.Clear();
-        foreach (var evento in eventosAtrasados)
+        [RelayCommand]
+        private async Task NavegarSemanaAtual()
         {
-            evento.IsEditing = false;
-            ProximosEventos.Add(evento);
-            System.Diagnostics.Debug.WriteLine($"[DEBUG] Evento atrasado adicionado: {evento.Evento} - {evento.DataEvento:dd/MM/yyyy}");
+            SemanaAtual = DateTime.Today;
+            await CarregarMetasSemanaAsync();
         }
 
-        // Atualizar propriedade booleana para controlar visibilidade
-        TemProximosEventos = ProximosEventos.Count > 0;
-
-        System.Diagnostics.Debug.WriteLine($"[DEBUG] Total de eventos atrasados exibidos: {ProximosEventos.Count}");
-    }
-    catch (Exception ex)
-    {
-        System.Diagnostics.Debug.WriteLine($"[DEBUG] Erro em ExibirEventosAtrasados: {ex.Message}\n{ex.StackTrace}");
-    }
-}
-
-[RelayCommand]
-private async Task ExibirEventosProximos()
-{
-    try
-    {
-        System.Diagnostics.Debug.WriteLine($"[DEBUG] Exibindo eventos próximos");
-        
-        var hoje = DateTime.Today;
-        var hojeTicks = hoje.Ticks;
-        
-        // Carregar próximos eventos (data >= hoje), não ignorados e não concluídos
-        var eventosProximos = await _context.EditalCronograma
-            .Include(ec => ec.Edital)
-            .Where(ec => 
-                ec.DataEventoTicks >= hojeTicks &&  // Eventos a partir de hoje
-                !ec.Ignorado &&                      // Não ignorados
-                !ec.Concluido)                       // Não concluídos
-            .OrderBy(ec => ec.DataEventoTicks)      // Próximos primeiro
-            .Take(5)                                 // Limitar aos próximos 5 eventos
-            .ToListAsync();
-
-        System.Diagnostics.Debug.WriteLine($"[DEBUG] Eventos próximos encontrados: {eventosProximos.Count}");
-
-        // Limpar e atualizar coleção
-        ProximosEventos.Clear();
-        foreach (var evento in eventosProximos)
+        [RelayCommand]
+        private async Task AlterarModoRevisao()
         {
-            evento.IsEditing = false;
-            ProximosEventos.Add(evento);
-            System.Diagnostics.Debug.WriteLine($"[DEBUG] Evento próximo adicionado: {evento.Evento} - {evento.DataEvento:dd/MM/yyyy}");
+            ModoRevisoesHoje = !ModoRevisoesHoje;
+            TextoBotaoModoRevisao = ModoRevisoesHoje ? "Ver Atrasadas" : "Ver Hoje";
+            await CarregarProximasRevisoesAsync();
         }
 
-        // Atualizar propriedade booleana para controlar visibilidade
-        TemProximosEventos = ProximosEventos.Count > 0;
+        [RelayCommand]
+        private async Task ExibirEventosAtrasados()
+        {
+            try
+            {
+                System.Diagnostics.Debug.WriteLine($"[DEBUG] Exibindo eventos atrasados");
 
-        System.Diagnostics.Debug.WriteLine($"[DEBUG] Total de eventos próximos exibidos: {ProximosEventos.Count}");
-    }
-    catch (Exception ex)
-    {
-        System.Diagnostics.Debug.WriteLine($"[DEBUG] Erro em ExibirEventosProximos: {ex.Message}\n{ex.StackTrace}");
-    }
-}
+                var hoje = DateTime.Today;
+                var hojeTicks = hoje.Ticks;
 
-[RelayCommand]
-private async Task AtualizarEventoAsync(EditalCronograma? evento)
-{
-    if (evento == null) return;
+                // Carregar eventos atrasados (data < hoje), não ignorados e não concluídos
+                var eventosAtrasados = await _context.EditalCronograma
+                    .Include(ec => ec.Edital)
+                    .Where(ec =>
+                        ec.DataEventoTicks < hojeTicks &&   // Eventos anteriores a hoje
+                        !ec.Ignorado &&                      // Não ignorados
+                        !ec.Concluido)                       // Não concluídos
+                    .OrderByDescending(ec => ec.DataEventoTicks)  // Mais recentes primeiro (menos atrasados)
+                    .Take(5)                                 // Limitar aos 5 mais recentes atrasados
+                    .ToListAsync();
 
-    try
-    {
-        System.Diagnostics.Debug.WriteLine($"[DEBUG] Atualizando evento: {evento.Evento} - Concluído: {evento.Concluido}, Ignorado: {evento.Ignorado}");
-        
-        // Atualizar no banco de dados
-        _context.EditalCronograma.Update(evento);
-        await _context.SaveChangesAsync();
+                System.Diagnostics.Debug.WriteLine($"[DEBUG] Eventos atrasados encontrados: {eventosAtrasados.Count}");
 
-        System.Diagnostics.Debug.WriteLine($"[DEBUG] Evento atualizado com sucesso no banco de dados");
+                // Limpar e atualizar coleção
+                ProximosEventos.Clear();
+                foreach (var evento in eventosAtrasados)
+                {
+                    evento.IsEditing = false;
+                    ProximosEventos.Add(evento);
+                    System.Diagnostics.Debug.WriteLine($"[DEBUG] Evento atrasado adicionado: {evento.Evento} - {evento.DataEvento:dd/MM/yyyy}");
+                }
 
-        // Recarregar a lista de eventos (mantendo o filtro atual)
-        // Se estava exibindo próximos, recarrega próximos
-        // Se estava exibindo atrasados, recarrega atrasados
-        await CarregarProximosEventosAsync();
-    }
-    catch (Exception ex)
-    {
-        System.Diagnostics.Debug.WriteLine($"[DEBUG] Erro em AtualizarEventoAsync: {ex.Message}\n{ex.StackTrace}");
-        _notificationService.ShowError("Erro ao Atualizar", $"Erro ao atualizar evento: {ex.Message}");
-    }
-}
+                // Atualizar propriedade booleana para controlar visibilidade
+                TemProximosEventos = ProximosEventos.Count > 0;
 
-[RelayCommand]
-private async Task IniciarRevisaoAsync(RevisaoProxima? revisaoProxima)
-{
-    if (revisaoProxima == null) return;
+                System.Diagnostics.Debug.WriteLine($"[DEBUG] Total de eventos atrasados exibidos: {ProximosEventos.Count}");
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"[DEBUG] Erro em ExibirEventosAtrasados: {ex.Message}\n{ex.StackTrace}");
+            }
+        }
 
-    try
-    {
-        // Obter dados completos do assunto
-        var assuntos = await _assuntoService.ObterTodosAsync();
-        var assuntoCompleto = assuntos.FirstOrDefault(a => a.Id == revisaoProxima.Assunto.Id);
-        if (assuntoCompleto == null) return;
+        [RelayCommand]
+        private async Task ExibirEventosProximos()
+        {
+            try
+            {
+                System.Diagnostics.Debug.WriteLine($"[DEBUG] Exibindo eventos próximos");
 
-        // Obter disciplina
-        var disciplinas = await _disciplinaService.ObterTodasAsync();
-        var disciplina = disciplinas.FirstOrDefault(d => d.Id == assuntoCompleto.DisciplinaId);
-        if (disciplina == null) return;
+                var hoje = DateTime.Today;
+                var hojeTicks = hoje.Ticks;
 
-        // Carregar tipo de estudo "Revisão"
-        var tipoRevisao = await _estudoService.ObterTipoEstudoPorNomeAsync("Revisão");
-        if (tipoRevisao == null) return;
+                // Carregar próximos eventos (data >= hoje), não ignorados e não concluídos
+                var eventosProximos = await _context.EditalCronograma
+                    .Include(ec => ec.Edital)
+                    .Where(ec =>
+                        ec.DataEventoTicks >= hojeTicks &&  // Eventos a partir de hoje
+                        !ec.Ignorado &&                      // Não ignorados
+                        !ec.Concluido)                       // Não concluídos
+                    .OrderBy(ec => ec.DataEventoTicks)      // Próximos primeiro
+                    .Take(5)                                 // Limitar aos próximos 5 eventos
+                    .ToListAsync();
 
-        // Criar ViewModel para edição
-        var viewModel = new EditarEstudoViewModel(
-            _estudoService,
-            _tipoEstudoService,
-            _assuntoService,
-            _disciplinaService,
-            _transactionService,
-            _navigationService,
-            _revisaoService,
-            _notificationService,
-            _configurationService);
+                System.Diagnostics.Debug.WriteLine($"[DEBUG] Eventos próximos encontrados: {eventosProximos.Count}");
 
-        // Inicializar modo revisão (sem ser uma revisão agendada específica)
-        await viewModel.InicializarModoRevisaoAsync(disciplina, assuntoCompleto, tipoRevisao, 0);
+                // Limpar e atualizar coleção
+                ProximosEventos.Clear();
+                foreach (var evento in eventosProximos)
+                {
+                    evento.IsEditing = false;
+                    ProximosEventos.Add(evento);
+                    System.Diagnostics.Debug.WriteLine($"[DEBUG] Evento próximo adicionado: {evento.Evento} - {evento.DataEvento:dd/MM/yyyy}");
+                }
 
-        // Navegar para a view de edição
-        var view = new Views.ViewEstudoEditar { DataContext = viewModel };
-        _navigationService.NavigateTo(view);
-    }
-    catch (Exception ex)
-    {
-        _notificationService.ShowError("Erro ao Iniciar", $"Erro ao iniciar revisão: {ex.Message}");
-    }
-}
+                // Atualizar propriedade booleana para controlar visibilidade
+                TemProximosEventos = ProximosEventos.Count > 0;
 
-[RelayCommand]
-private async Task IniciarEstudoAsync(AssuntoRendimento? assunto)
-{
-    if (assunto == null) return;
+                System.Diagnostics.Debug.WriteLine($"[DEBUG] Total de eventos próximos exibidos: {ProximosEventos.Count}");
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"[DEBUG] Erro em ExibirEventosProximos: {ex.Message}\n{ex.StackTrace}");
+            }
+        }
 
-    try
-    {
-        // Obter dados completos do assunto pelo nome
-        var assuntos = await _assuntoService.ObterTodosAsync();
-        var assuntoCompleto = assuntos.FirstOrDefault(a => a.Nome == assunto.Nome);
-        if (assuntoCompleto == null) return;
+        [RelayCommand]
+        private async Task AtualizarEventoAsync(EditalCronograma? evento)
+        {
+            if (evento == null) return;
 
-        // Obter disciplina usando ObterTodasAsync e filtrando
-        var disciplinas = await _disciplinaService.ObterTodasAsync();
-        var disciplina = disciplinas.FirstOrDefault(d => d.Id == assuntoCompleto.DisciplinaId);
-        if (disciplina == null) return;
+            try
+            {
+                System.Diagnostics.Debug.WriteLine($"[DEBUG] Atualizando evento: {evento.Evento} - Concluído: {evento.Concluido}, Ignorado: {evento.Ignorado}");
 
-        // Carregar tipo de estudo "Revisão"
-        var tipoRevisao = await _estudoService.ObterTipoEstudoPorNomeAsync("Revisão");
-        if (tipoRevisao == null) return;
+                // Atualizar no banco de dados
+                _context.EditalCronograma.Update(evento);
+                await _context.SaveChangesAsync();
 
-        // Criar ViewModel para edição
-        var viewModel = new EditarEstudoViewModel(
-            _estudoService,
-            _tipoEstudoService,
-            _assuntoService,
-            _disciplinaService,
-            _transactionService,
-            _navigationService,
-            _revisaoService,
-            _notificationService,
-            _configurationService);
+                System.Diagnostics.Debug.WriteLine($"[DEBUG] Evento atualizado com sucesso no banco de dados");
 
-        // Inicializar modo revisão (sem ser uma revisão agendada)
-        await viewModel.InicializarModoRevisaoAsync(disciplina, assuntoCompleto, tipoRevisao, 0);
+                // Recarregar a lista de eventos (mantendo o filtro atual)
+                // Se estava exibindo próximos, recarrega próximos
+                // Se estava exibindo atrasados, recarrega atrasados
+                await CarregarProximosEventosAsync();
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"[DEBUG] Erro em AtualizarEventoAsync: {ex.Message}\n{ex.StackTrace}");
+                _notificationService.ShowError("Erro ao Atualizar", $"Erro ao atualizar evento: {ex.Message}");
+            }
+        }
 
-        // Navegar para a view de edição
-        var view = new Views.ViewEstudoEditar { DataContext = viewModel };
-        _navigationService.NavigateTo(view);
-    }
-    catch (Exception ex)
-    {
-        _notificationService.ShowError("Erro ao Iniciar", $"Erro ao iniciar estudo: {ex.Message}");
-    }
-}
+        [RelayCommand]
+        private async Task IniciarRevisaoAsync(RevisaoProxima? revisaoProxima)
+        {
+            if (revisaoProxima == null) return;
 
-public HomeViewModel(
-    StudyMinderContext context,
-    EstudoService estudoService,
-    NavigationService navigationService,
-    TipoEstudoService tipoEstudoService,
-    AssuntoService assuntoService,
-    DisciplinaService disciplinaService,
-    EstudoTransactionService transactionService,
-    RevisaoService revisaoService,
-    INotificationService notificationService,
-    IConfigurationService configurationService)
-{
-    _context = context;
-    _estudoService = estudoService;
-    _navigationService = navigationService;
-    _tipoEstudoService = tipoEstudoService;
-    _assuntoService = assuntoService;
-    _disciplinaService = disciplinaService;
-    _transactionService = transactionService;
-    _revisaoService = revisaoService;
-    _notificationService = notificationService;
-    _configurationService = configurationService;
-    Title = "Dashboard";
-}
+            try
+            {
+                // Obter dados completos do assunto
+                var assuntos = await _assuntoService.ObterTodosAsync();
+                var assuntoCompleto = assuntos.FirstOrDefault(a => a.Id == revisaoProxima.Assunto.Id);
+                if (assuntoCompleto == null) return;
+
+                // Obter disciplina
+                var disciplinas = await _disciplinaService.ObterTodasAsync();
+                var disciplina = disciplinas.FirstOrDefault(d => d.Id == assuntoCompleto.DisciplinaId);
+                if (disciplina == null) return;
+
+                // Carregar tipo de estudo "Revisão"
+                var tipoRevisao = await _estudoService.ObterTipoEstudoPorNomeAsync("Revisão");
+                if (tipoRevisao == null) return;
+
+                // Criar ViewModel para edição
+                var viewModel = new EditarEstudoViewModel(
+                    _estudoService,
+                    _tipoEstudoService,
+                    _assuntoService,
+                    _disciplinaService,
+                    _transactionService,
+                    _navigationService,
+                    _revisaoService,
+                    _notificationService,
+                    _configurationService);
+
+                viewModel.EstudoSalvo += async (sender, args) =>
+                {
+                    // Quando o estudo for salvo, recarregar todo o dashboard
+                    System.Diagnostics.Debug.WriteLine("[DEBUG] Estudo salvo detectado na Home via evento. Recarregando...");
+                    await CarregarDadosAsync();
+                };
+
+                // Inicializar modo revisão (sem ser uma revisão agendada específica)
+                await viewModel.InicializarModoRevisaoAsync(disciplina, assuntoCompleto, tipoRevisao, revisaoProxima.Id);
+
+                // Navegar para a view de edição
+                var view = new Views.ViewEstudoEditar { DataContext = viewModel };
+                _navigationService.NavigateTo(view);
+            }
+            catch (Exception ex)
+            {
+                _notificationService.ShowError("Erro ao Iniciar", $"Erro ao iniciar revisão: {ex.Message}");
+            }
+        }
+
+        [RelayCommand]
+        private async Task IniciarEstudoAsync(AssuntoRendimento? assunto)
+        {
+            if (assunto == null) return;
+
+            try
+            {
+                // Obter dados completos do assunto pelo nome
+                var assuntos = await _assuntoService.ObterTodosAsync();
+                var assuntoCompleto = assuntos.FirstOrDefault(a => a.Nome == assunto.Nome);
+                if (assuntoCompleto == null) return;
+
+                // Obter disciplina usando ObterTodasAsync e filtrando
+                var disciplinas = await _disciplinaService.ObterTodasAsync();
+                var disciplina = disciplinas.FirstOrDefault(d => d.Id == assuntoCompleto.DisciplinaId);
+                if (disciplina == null) return;
+
+                // Carregar tipo de estudo "Revisão"
+                var tipoRevisao = await _estudoService.ObterTipoEstudoPorNomeAsync("Revisão");
+                if (tipoRevisao == null) return;
+
+                // Criar ViewModel para edição
+                var viewModel = new EditarEstudoViewModel(
+                    _estudoService,
+                    _tipoEstudoService,
+                    _assuntoService,
+                    _disciplinaService,
+                    _transactionService,
+                    _navigationService,
+                    _revisaoService,
+                    _notificationService,
+                    _configurationService);
+
+                viewModel.EstudoSalvo += async (sender, args) =>
+                {
+                    System.Diagnostics.Debug.WriteLine("[DEBUG] Estudo salvo (Rendimento) detectado na Home. Recarregando...");
+                    await CarregarDadosAsync();
+                };
+
+                // Inicializar modo revisão (sem ser uma revisão agendada)
+                await viewModel.InicializarModoRevisaoAsync(disciplina, assuntoCompleto, tipoRevisao, 0);
+
+                // Navegar para a view de edição
+                var view = new Views.ViewEstudoEditar { DataContext = viewModel };
+                _navigationService.NavigateTo(view);
+            }
+            catch (Exception ex)
+            {
+                _notificationService.ShowError("Erro ao Iniciar", $"Erro ao iniciar estudo: {ex.Message}");
+            }
+        }
+
+        public HomeViewModel(
+            StudyMinderContext context,
+            EstudoService estudoService,
+            NavigationService navigationService,
+            TipoEstudoService tipoEstudoService,
+            AssuntoService assuntoService,
+            DisciplinaService disciplinaService,
+            EstudoTransactionService transactionService,
+            RevisaoService revisaoService,
+            RevisaoNotificacaoService revisaoNotificacaoService,
+            INotificationService notificationService,
+            IConfigurationService configurationService)
+        {
+            _context = context;
+            _estudoService = estudoService;
+            _navigationService = navigationService;
+            _tipoEstudoService = tipoEstudoService;
+            _assuntoService = assuntoService;
+            _disciplinaService = disciplinaService;
+            _transactionService = transactionService;
+            _revisaoService = revisaoService;
+            _revisaoNotificacaoService = revisaoNotificacaoService;
+            _notificationService = notificationService;
+            _configurationService = configurationService;
+            Title = "Dashboard";
+
+            // Inscrever nos eventos de revisão para atualizar próximas revisões em tempo real
+            _revisaoNotificacaoService.RevisaoAtualizada += OnRevisaoAtualizada;
+            System.Diagnostics.Debug.WriteLine("[DEBUG] HomeViewModel inscrito em RevisaoAtualizada");
+        }
 
         public async Task CarregarDadosAsync()
         {
@@ -692,10 +712,10 @@ public HomeViewModel(
             {
                 System.Diagnostics.Debug.WriteLine("[DEBUG] Iniciando CarregarDadosAsync");
                 IsBusy = true;
-                
+
                 // Carregar dados para filtros
                 await CarregarDadosFiltrosAsync();
-                
+
                 await CarregarDadosHojeAsync();
                 await CarregarDadosGeraisAsync();
                 await CarregarDadosProgressoAsync();
@@ -814,9 +834,9 @@ public HomeViewModel(
             var amanha = hoje.AddDays(1);
             var hojeTicks = hoje.Ticks;
             var amanhaTicks = amanha.Ticks;
-            
+
             System.Diagnostics.Debug.WriteLine($"[DEBUG] CarregarDadosHojeAsync: Buscando estudos entre {hoje:dd/MM/yyyy HH:mm:ss} e {amanha:dd/MM/yyyy HH:mm:ss}");
-            
+
             // Aplicar filtros de tipo, disciplina e assunto (sempre usar data de hoje)
             var query = _context.Estudos
                 .Include(e => e.Assunto)
@@ -862,11 +882,11 @@ public HomeViewModel(
         {
             var query = ConstruirQueryComFiltros();
             var todosEstudos = await query.ToListAsync();
-            
+
             TotalAcertos = todosEstudos.Sum(e => e.Acertos);
             TotalErros = todosEstudos.Sum(e => e.Erros);
             HorasTotais = todosEstudos.Sum(e => TimeSpan.FromTicks(e.DuracaoTicks).TotalHours);
-            
+
             // Usar DataTicks para calcular dias distintos
             var diasDistintos = todosEstudos
                 .Select(e => new DateTime(e.DataTicks).Date.Ticks)
@@ -874,7 +894,7 @@ public HomeViewModel(
                 .Count();
             DiasEstudados = diasDistintos;
             MediaHorasPorDia = diasDistintos > 0 ? Math.Round(HorasTotais / diasDistintos, 2) : 0;
-            
+
             var totalQuestoes = TotalAcertos + TotalErros;
             RendimentoGeral = totalQuestoes > 0 ? Math.Round((double)TotalAcertos / totalQuestoes * 100, 2) : 0;
 
@@ -903,7 +923,7 @@ public HomeViewModel(
                 TotalAssuntos = assuntosParaCalculo.Count;
                 AssuntosConcluidos = assuntosParaCalculo.Count(a => a.Concluido);
                 PercentualConclusao = TotalAssuntos > 0 ? Math.Round((double)AssuntosConcluidos / TotalAssuntos * 100, 1) : 0;
-            
+
                 System.Diagnostics.Debug.WriteLine($"[DEBUG] CarregarDadosProgressoAsync (FILTRADO): TotalAssuntos={TotalAssuntos}, AssuntosConcluidos={AssuntosConcluidos}, Percentual={PercentualConclusao:F1}%");
             }
             catch (Exception ex)
@@ -917,11 +937,11 @@ public HomeViewModel(
             try
             {
                 System.Diagnostics.Debug.WriteLine($"[DEBUG] Iniciando CarregarHeatmapAsync com filtros aplicados");
-                
+
                 // Obter o mês e ano atual
                 var agora = DateTime.Today;
                 System.Diagnostics.Debug.WriteLine($"[DEBUG] Mês/Ano atual: {agora:yyyy-MM}");
-                
+
                 var primeiroDia = new DateTime(agora.Year, agora.Month, 1);
                 var ultimoDia = primeiroDia.AddMonths(1).AddDays(-1);
                 var proximoDia = ultimoDia.AddDays(1);
@@ -984,14 +1004,14 @@ public HomeViewModel(
             try
             {
                 System.Diagnostics.Debug.WriteLine($"[DEBUG] Carregando pizza chart para data: {DataSelecionada:dd/MM/yyyy}");
-                
+
                 var dataInicio = DataSelecionada.Date;
                 var dataFim = dataInicio.AddDays(1);
                 var dataInicioTicks = dataInicio.Ticks;
                 var dataFimTicks = dataFim.Ticks;
-                
+
                 System.Diagnostics.Debug.WriteLine($"[DEBUG] Intervalo: {dataInicio:dd/MM/yyyy HH:mm:ss} a {dataFim:dd/MM/yyyy HH:mm:ss}");
-                
+
                 // Obter estudos do dia selecionado
                 var estudosDia = await _context.Estudos
                     .Where(e => e.DataTicks >= dataInicioTicks && e.DataTicks < dataFimTicks)
@@ -1043,7 +1063,7 @@ public HomeViewModel(
                             item.Quantidade,
                             totalEstudos
                         );
-                        
+
                         PizzaChartData.Add(pizzaData);
                         totalHoras += item.Horas;
 
@@ -1072,7 +1092,7 @@ public HomeViewModel(
                     PizzaRendimento = 0;
                     System.Diagnostics.Debug.WriteLine($"[DEBUG] Nenhum estudo encontrado para a data selecionada");
                 }
-                
+
                 // Atualizar texto da data
                 AtualizarTextoDataSelecionada();
             }
@@ -1146,7 +1166,7 @@ public HomeViewModel(
                         TotalQuestoes = g.Sum(e => e.Acertos + e.Erros),
                         HorasEstudadas = g.Sum(e => TimeSpan.FromTicks(e.DuracaoTicks).TotalHours),
                         Concluido = g.Key.Concluido,
-                        RendimentoPercentual = g.Sum(e => e.Acertos + e.Erros) > 0 
+                        RendimentoPercentual = g.Sum(e => e.Acertos + e.Erros) > 0
                             ? Math.Round((double)g.Sum(e => e.Acertos) / g.Sum(e => e.Acertos + e.Erros) * 100, 2)
                             : 0
                     })
@@ -1208,6 +1228,7 @@ public HomeViewModel(
                 {
                     TodasRevisoes.Add(new RevisaoProxima
                     {
+                        Id = revisao.Id,
                         DataRevisao = revisao.DataProgramada,
                         Assunto = revisao.EstudoOrigem.Assunto,
                         TipoRevisao = revisao.TipoRevisao
@@ -1229,7 +1250,7 @@ public HomeViewModel(
             {
                 var hoje = DateTime.Today;
                 var hojeTicks = hoje.Ticks;
-                
+
                 // Buscar o edital não arquivado com a data de prova mais próxima
                 var proximaProva = await _context.Editais
                     .Where(e => !e.Arquivado && e.DataProvaTicks >= hojeTicks)
@@ -1239,7 +1260,7 @@ public HomeViewModel(
                 if (proximaProva != null)
                 {
                     var diasParaProva = (proximaProva.DataProva - hoje).Days;
-                    
+
                     ProximaProva = new ProximaProva
                     {
                         DataProva = proximaProva.DataProva,
@@ -1247,7 +1268,7 @@ public HomeViewModel(
                         Cargo = proximaProva.Cargo,
                         DiasParaProva = diasParaProva
                     };
-                    
+
                     TemProximaProva = true;
                 }
                 else
@@ -1260,7 +1281,7 @@ public HomeViewModel(
             {
                 System.Diagnostics.Debug.WriteLine($"[DEBUG] Erro em CarregarProximaProvaAsync: {ex.Message}");
                 ProximaProva = null;
-                    TemProximaProva = false;
+                TemProximaProva = false;
             }
         }
 
@@ -1269,15 +1290,15 @@ public HomeViewModel(
             try
             {
                 System.Diagnostics.Debug.WriteLine($"[DEBUG] Iniciando CarregarProximosEventosAsync");
-                
+
                 var hoje = DateTime.Today;
                 var hojeTicks = hoje.Ticks;
-                
+
                 // Carregar próximos eventos do cronograma de editais
                 // Buscar eventos não ignorados e não concluídos, ordenados por data
                 var proximosEventos = await _context.EditalCronograma
                     .Include(ec => ec.Edital)
-                    .Where(ec => 
+                    .Where(ec =>
                         ec.DataEventoTicks >= hojeTicks &&  // Eventos a partir de hoje
                         !ec.Ignorado &&                      // Não ignorados
                         !ec.Concluido)                       // Não concluídos
@@ -1323,8 +1344,8 @@ public HomeViewModel(
                     TotalAcertos = a.Estudos.Sum(e => e.Acertos),
                     TotalErros = a.Estudos.Sum(e => e.Erros),
                     HorasEstudadas = a.Estudos.Sum(e => TimeSpan.FromTicks(e.DuracaoTicks).TotalHours),
-                    PercentualConclusao = a.Concluido ? 100.0 : 
-                        (a.Estudos.Any() ? Math.Round((double)a.Estudos.Sum(e => e.Acertos) / 
+                    PercentualConclusao = a.Concluido ? 100.0 :
+                        (a.Estudos.Any() ? Math.Round((double)a.Estudos.Sum(e => e.Acertos) /
                             Math.Max(a.Estudos.Sum(e => e.Acertos + e.Erros), 1) * 100, 1) : 0.0)
                 })
                 .OrderBy(a => a.Nome)
@@ -1345,7 +1366,7 @@ public HomeViewModel(
                 var dataInicio = SemanaAtual.AddDays(-(int)SemanaAtual.DayOfWeek + 1); // Segunda-feira
                 if (dataInicio > SemanaAtual) dataInicio = dataInicio.AddDays(-7); // Ajuste se necessário
                 var dataFim = dataInicio.AddDays(6); // Domingo
-                
+
                 var dataInicioTicks = dataInicio.Ticks;
                 var dataFimTicks = dataFim.AddDays(1).Ticks; // Incluir até o final do domingo
 
@@ -1439,7 +1460,8 @@ public HomeViewModel(
                     case "Semana":
                         // Agrupar por semana
                         var dadosPorSemana = estudos
-                            .GroupBy(e => {
+                            .GroupBy(e =>
+                            {
                                 var data = new DateTime(e.DataTicks);
                                 // Encontrar o início da semana (domingo)
                                 var diasDesdeDomingo = (int)data.DayOfWeek;
@@ -1454,9 +1476,9 @@ public HomeViewModel(
                             var totalAcertos = grupo.Sum(e => e.Acertos);
                             var totalErros = grupo.Sum(e => e.Erros);
                             var totalQuestoes = totalAcertos + totalErros;
-                            
+
                             valoresAgrupados.Add(totalQuestoes);
-                            
+
                             // Calcular rendimento: TotalAcertos / (TotalAcertos + TotalErros)
                             var rendimento = totalQuestoes > 0 ? (double)totalAcertos / totalQuestoes * 100 : 0;
                             rendimentosAgrupados.Add(rendimento);
@@ -1466,7 +1488,8 @@ public HomeViewModel(
                     case "Mês":
                         // Agrupar por mês
                         var dadosPorMes = estudos
-                            .GroupBy(e => {
+                            .GroupBy(e =>
+                            {
                                 var data = new DateTime(e.DataTicks);
                                 return new DateTime(data.Year, data.Month, 1);
                             })
@@ -1479,9 +1502,9 @@ public HomeViewModel(
                             var totalAcertos = grupo.Sum(e => e.Acertos);
                             var totalErros = grupo.Sum(e => e.Erros);
                             var totalQuestoes = totalAcertos + totalErros;
-                            
+
                             valoresAgrupados.Add(totalQuestoes);
-                            
+
                             // Calcular rendimento: TotalAcertos / (TotalAcertos + TotalErros)
                             var rendimento = totalQuestoes > 0 ? (double)totalAcertos / totalQuestoes * 100 : 0;
                             rendimentosAgrupados.Add(rendimento);
@@ -1491,7 +1514,8 @@ public HomeViewModel(
                     default: // "Dia"
                         // Agrupar por dia
                         var dadosPorDia = estudos
-                            .GroupBy(e => {
+                            .GroupBy(e =>
+                            {
                                 var data = new DateTime(e.DataTicks);
                                 return data.Date;
                             })
@@ -1504,9 +1528,9 @@ public HomeViewModel(
                             var totalAcertos = grupo.Sum(e => e.Acertos);
                             var totalErros = grupo.Sum(e => e.Erros);
                             var totalQuestoes = totalAcertos + totalErros;
-                            
+
                             valoresAgrupados.Add(totalQuestoes);
-                            
+
                             // Calcular rendimento: TotalAcertos / (TotalAcertos + TotalErros)
                             var rendimento = totalQuestoes > 0 ? (double)totalAcertos / totalQuestoes * 100 : 0;
                             rendimentosAgrupados.Add(rendimento);
@@ -1784,18 +1808,18 @@ public HomeViewModel(
                     var total = acertos + erros;
                     var rendimento = edital.RendimentoProva ?? 0m;
                     var rendimentoDouble = (double)rendimento;
-                    
+
                     // Simular o cálculo manual para comparar
                     decimal calculoManual = total > 0 ? Math.Round((decimal)acertos / total * 100, 2) : 0m;
-                    
+
                     if (rendimento > maxRendimento)
                         maxRendimento = rendimento;
-                    
+
                     System.Diagnostics.Debug.WriteLine(
                         $"[DEBUG] {edital.Orgao} | A={acertos} E={erros} Total={total} | " +
                         $"RendimentoProva={rendimento:F2} | Cálculo Manual={calculoManual:F2} | " +
                         $"Double={rendimentoDouble:F2}");
-                    
+
                     rendimentos.Add(rendimentoDouble);
                     categorias.Add($"{edital.Orgao} - {new DateTime(edital.DataProvaTicks).Year}");
                     dadosEditais.Add(edital); // Armazenar edital completo
@@ -1825,7 +1849,7 @@ public HomeViewModel(
             {
                 System.Diagnostics.Debug.WriteLine($"[DEBUG ConfigurarGraficoEditaisRendimento] Entrando com {categorias.Count} categorias e {rendimentos.Count} rendimentos");
                 System.Diagnostics.Debug.WriteLine($"[DEBUG] Rendimentos recebidos: {string.Join(", ", rendimentos.Select(r => r.ToString("F2")))}");
-                
+
                 if (categorias?.Count == 0 || rendimentos?.Count == 0)
                     return;
 
@@ -1846,17 +1870,17 @@ public HomeViewModel(
                 {
                     Position = AxisPosition.Bottom,
                     IsTickCentered = true, // Centraliza os ticks nas categorias
-                    
+
                     AxislineStyle = LineStyle.Solid,
                     AxislineColor = OxyColor.FromRgb(150, 150, 150),
                     TickStyle = TickStyle.None,
-                    
+
                     MajorGridlineStyle = LineStyle.None,
                     MinorGridlineStyle = LineStyle.None,
-                    
+
                     TextColor = OxyColor.FromRgb(150, 150, 150),
                     FontSize = 10,
-                    
+
                     GapWidth = 0.1
                 };
 
@@ -1865,7 +1889,7 @@ public HomeViewModel(
                 {
                     xAxis.Labels.Add(categoria);
                 }
-                
+
                 plotModel.Axes.Add(xAxis);
 
                 // ---------------------------------------------------------
@@ -1877,7 +1901,7 @@ public HomeViewModel(
                     Position = AxisPosition.Left,
                     Minimum = 0,
                     Maximum = 100,
-                    
+
                     // Remover todas as visualizações
                     AxislineStyle = LineStyle.None,
                     TickStyle = TickStyle.None,
@@ -1900,17 +1924,17 @@ public HomeViewModel(
                     MarkerStroke = OxyColor.FromRgb(100, 181, 246),
                     MarkerFill = OxyColors.White,
                     MarkerStrokeThickness = 2,
-                    
+
                     // Configurar o tooltip/tracker com formato simples
                     // Será melhorado com evento customizado
                     TrackerFormatString = "{0}\n{1}\nRendimento: {4:F2}%",
-                    
+
                     CanTrackerInterpolatePoints = false,
-                    
+
                     // Labels de dados sobre os pontos
                     LabelFormatString = "{1:F1}%",      // Formato: "XX.X%"
                     LabelMargin = 10,                   // Margem do ponto para o texto
-                    
+
                     TextColor = OxyColor.FromRgb(100, 181, 246),
                     FontSize = 11
                 };
@@ -1920,7 +1944,7 @@ public HomeViewModel(
                 for (int i = 0; i < rendimentos.Count; i++)
                 {
                     lineSeries.Points.Add(new DataPoint(i, rendimentos[i]));
-                    
+
                     System.Diagnostics.Debug.WriteLine($"[DEBUG] Ponto {i}: Categoria={categorias[i]}, Rendimento={rendimentos[i]:F2}%");
                 }
 
@@ -1928,7 +1952,7 @@ public HomeViewModel(
 
                 // Atribuição Final
                 PlotModelEditais = plotModel;
-                
+
                 System.Diagnostics.Debug.WriteLine($"[DEBUG] PlotModelEditais atualizado com {lineSeries.Points.Count} pontos");
             }
             catch (Exception ex)
@@ -1944,10 +1968,10 @@ public HomeViewModel(
                 // Carregar estudos aplicando os filtros ativos
                 var query = ConstruirQueryComFiltros();
                 var todosEstudos = await query.ToListAsync();
-                
+
                 AcertosGrafico = todosEstudos.Sum(e => e.Acertos);
                 ErrosGrafico = todosEstudos.Sum(e => e.Erros);
-                
+
                 System.Diagnostics.Debug.WriteLine($"[DEBUG] Gráfico Acertos/Erros carregado (COM FILTROS): Acertos={AcertosGrafico}, Erros={ErrosGrafico}, Total={todosEstudos.Count} estudos");
             }
             catch (Exception ex)
@@ -1956,6 +1980,24 @@ public HomeViewModel(
             }
         }
 
+        /// <summary>
+        /// Manipulador para quando uma revisão é atualizada
+        /// Recarrega a lista de próximas revisões para refletir mudanças em tempo real
+        /// </summary>
+        private void OnRevisaoAtualizada(object? sender, RevisaoEventArgs e)
+        {
+            if (e.Revisao == null) return;
+
+            System.Diagnostics.Debug.WriteLine($"[DEBUG] HomeViewModel.OnRevisaoAtualizada - Revisão {e.Revisao.Id} foi atualizada");
+            System.Diagnostics.Debug.WriteLine($"[DEBUG] EstudoRealizadoId: {e.Revisao.EstudoRealizadoId}");
+
+            // Recarregar a lista de próximas revisões na thread da UI
+            System.Windows.Application.Current?.Dispatcher?.Invoke(async () =>
+            {
+                System.Diagnostics.Debug.WriteLine($"[DEBUG] Recarregando próximas revisões...");
+                await CarregarProximasRevisoesAsync();
+            });
+        }
         protected override void OnRefresh()
         {
             _ = CarregarDadosAsync();

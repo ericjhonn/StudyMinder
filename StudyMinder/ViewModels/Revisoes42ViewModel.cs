@@ -200,6 +200,10 @@ namespace StudyMinder.ViewModels
                 // Marcar que estamos entrando em modo revisão
                 _emModoRevisao = true;
 
+                // ✅ FLUXO: revisao.Id (ex: 42) será passado para EditarEstudoViewModel
+                // Lá será armazenado em RevisaoId e usado para marcar a revisão como concluída
+                // quando o novo estudo for salvo. Veja: EditarEstudoViewModel.InicializarModoRevisaoAsync()
+                
                 // Obter dados da revisão
                 var estudoOrigem = await _estudoService.ObterPorIdAsync(revisao.EstudoOrigemId);
                 if (estudoOrigem == null) return;

@@ -16,11 +16,13 @@ namespace StudyMinder.Services
     {
         private readonly StudyMinderContext _context;
         private readonly AuditoriaService _auditoriaService;
+        private readonly RevisaoNotificacaoService _revisaoNotificacaoService;
 
-        public EstudoTransactionService(StudyMinderContext context, AuditoriaService auditoriaService)
+        public EstudoTransactionService(StudyMinderContext context, AuditoriaService auditoriaService, RevisaoNotificacaoService revisaoNotificacaoService)
         {
             _context = context;
             _auditoriaService = auditoriaService;
+            _revisaoNotificacaoService = revisaoNotificacaoService;
         }
 
         /// <summary>
@@ -130,6 +132,18 @@ namespace StudyMinder.Services
                         revisaoExistente.EstudoRealizadoId = estudo.Id;
                         _auditoriaService.AtualizarAuditoria(revisaoExistente, false);
                         System.Diagnostics.Debug.WriteLine($"[DEBUG] ✅ Revisão {revisaoIdParaMarcarConcluida.Value} marcada como concluída");
+                    }
+                }
+
+                // 4.5. Disparar notificação de revisão atualizada
+                // Isso permite que HomeViewModel e outras views sejam notificadas da mudança em tempo real
+                if (revisaoIdParaMarcarConcluida.HasValue)
+                {
+                    var revisaoAtualizada = await _context.Revisoes.FindAsync(revisaoIdParaMarcarConcluida.Value);
+                    if (revisaoAtualizada != null)
+                    {
+                        _revisaoNotificacaoService.NotificarRevisaoAtualizada(revisaoAtualizada);
+                        System.Diagnostics.Debug.WriteLine($"[DEBUG] 📢 Notificação disparada para revisão {revisaoIdParaMarcarConcluida.Value}");
                     }
                 }
 

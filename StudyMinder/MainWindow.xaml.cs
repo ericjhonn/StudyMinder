@@ -174,7 +174,7 @@ public partial class MainWindow : Window
         _navigationService.NavigateToHome(_homeView);
         
         var notificationService = NotificationService.Instance;
-        var estudoTransactionService = new EstudoTransactionService(_context, _auditoriaService);
+        var estudoTransactionService = new EstudoTransactionService(_context, _auditoriaService, _revisaoNotificacaoService);
         
         var homeViewModel = new HomeViewModel(
             _context,
@@ -185,6 +185,7 @@ public partial class MainWindow : Window
             _disciplinaService,
             estudoTransactionService,
             _revisaoService,
+            _revisaoNotificacaoService,
             notificationService,
             _configurationService);
         
@@ -319,7 +320,7 @@ public partial class MainWindow : Window
     {
         SetActiveButton(BtnEstudos);
         _navigationService.NavigateTo(_estudosView);
-        var transactionService = new EstudoTransactionService(_context, _auditoriaService);
+        var transactionService = new EstudoTransactionService(_context, _auditoriaService, _revisaoNotificacaoService);
         var estudosViewModel = new EstudosViewModel(
             _estudoService,
             _tipoEstudoService,
@@ -345,7 +346,7 @@ public partial class MainWindow : Window
             _tipoEstudoService,
             _assuntoService,
             _disciplinaService,
-            new EstudoTransactionService(_context, _auditoriaService),
+            new EstudoTransactionService(_context, _auditoriaService, _revisaoNotificacaoService),
             NotificationService.Instance,
             _configurationService,
             _revisaoService);
@@ -423,7 +424,7 @@ public partial class MainWindow : Window
         
         SetActiveSubmenuButton(BtnRevisoesClassicas);
         _navigationService.NavigateTo(_revisoesClassicasView);
-        var estudoTransactionService = new EstudoTransactionService(_context, _auditoriaService);
+        var estudoTransactionService = new EstudoTransactionService(_context, _auditoriaService, _revisaoNotificacaoService);
         var revisoesClassicasViewModel = new RevisoesClassicasViewModel(
             _revisaoService,
             _estudoService,
@@ -450,7 +451,7 @@ public partial class MainWindow : Window
         
         SetActiveSubmenuButton(BtnRevisoes42);
         _navigationService.NavigateTo(_revisoes42View);
-        var estudoTransactionService = new EstudoTransactionService(_context, _auditoriaService);
+        var estudoTransactionService = new EstudoTransactionService(_context, _auditoriaService, _revisaoNotificacaoService);
         var revisoes42ViewModel = new Revisoes42ViewModel(
             _revisaoService,
             _estudoService,
@@ -478,7 +479,7 @@ public partial class MainWindow : Window
         SetActiveSubmenuButton(BtnRevisoesCiclicas);
         _navigationService.NavigateTo(_revisoesCiclicasView);
         
-        var estudoTransactionService = new EstudoTransactionService(_context, _auditoriaService);
+        var estudoTransactionService = new EstudoTransactionService(_context, _auditoriaService, _revisaoNotificacaoService);
         var revisoesCiclicasViewModel = new RevisoesCiclicasViewModel(
             _revisaoService,
             _revisaoCicloAtivoService,

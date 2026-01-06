@@ -24,7 +24,7 @@ namespace StudyMinder.ViewModels
         private readonly EstudoTransactionService _transactionService;
         private readonly NavigationService _navigationService;
         private readonly RevisaoService _revisaoService;
-        private readonly IConfigurationService _configurationService;
+        private readonly IConfigurationService? _configurationService;
         private readonly INotificationService _notificationService;
         private readonly Estudo? _estudoOriginal;
 
@@ -195,6 +195,7 @@ namespace StudyMinder.ViewModels
             _tipoEstudoService = null!;
             _assuntoService = null!;
             _disciplinaService = null!;
+            _transactionService = null!;
             _navigationService = null!;
             _revisaoService = null!;
             _configurationService = null!;
@@ -236,7 +237,7 @@ namespace StudyMinder.ViewModels
             NavigationService navigationService,
             RevisaoService revisaoService,
             INotificationService notificationService,
-            IConfigurationService configurationService = null!,
+            IConfigurationService? configurationService = null,
             Estudo? estudo = null)
         {
             _estudoService = estudoService;
@@ -387,7 +388,25 @@ namespace StudyMinder.ViewModels
         }
 
         /// <summary>
+        /// <summary>
         /// Inicializa o ViewModel para modo revisão com disciplina, assunto e tipo de estudo pré-selecionados.
+        /// 
+        /// FLUXO DE REVISÃO COMPLETO:
+        /// ────────────────────────────
+        /// 1. Usuário clica em revisão pendente (RevisaoId) na lista
+        /// 2. InicializarModoRevisaoAsync() é chamado com revisaoId (ex: 42)
+        /// 3. RevisaoId = 42 é armazenado nesta propriedade (abaixo)
+        /// 4. Usuário edita o estudo e clica em "Salvar"
+        /// 5. SalvarAsync() cria novo Estudo (ex: Id 999)
+        /// 6. EstudoTransactionService marca revisão 42:
+        ///    └─ Revisao.EstudoRealizadoId = 999
+        /// 7. Revisão fica concluída e sai da lista de pendentes
+        /// 
+        /// IMPORTANTE: O EstudoRealizadoId é preenchido durante a transação de salva
+        /// (EstudoTransactionService.SalvarEstudoComRevisoeseAssuntoAsync),
+        /// não aqui. Este método apenas armazena o ID da revisão para referência futura.
+        /// 
+        /// Veja também: SalvarAsync() - linha ~636
         /// </summary>
         public async Task InicializarModoRevisaoAsync(Disciplina disciplina, Assunto assunto, TipoEstudo tipoEstudo, int revisaoId)
         {
@@ -413,6 +432,10 @@ namespace StudyMinder.ViewModels
                     DisciplinaRevisao = disciplina;
                     AssuntoRevisao = assunto;
                     TipoEstudoRevisao = tipoEstudo;
+                    
+                    // ✅ CRÍTICO: RevisaoId é armazenado aqui!
+                    // Será usado em SalvarAsync() para marcar a revisão original como concluída
+                    // com o novo EstudoRealizadoId (do estudo que está sendo criado)
                     RevisaoId = revisaoId;
 
                     // Pré-selecionar os valores nos comboboxes
@@ -633,10 +656,26 @@ namespace StudyMinder.ViewModels
                     }
 
                     // Preparar marcação de revisão como concluída
+                    // ────────────────────────────────────────
+                    // Quando em modo revisão, marca a revisão ORIGINAL como concluída
+                    // com EstudoRealizadoId = novo estudo que foi criado nesta transação
+                    // 
+                    // Fluxo:
+                    // RevisaoId (ex: 42) armazenado em InicializarModoRevisaoAsync
+                    //   ↓
+                    // SalvarAsync() cria novo Estudo (ex: Id 999)
+                    //   ↓
+                    // EstudoTransactionService recebe revisaoIdParaMarcarConcluida = 42
+                    //   ↓
+                    // Service marca revisão 42: EstudoRealizadoId = 999
+                    //   ↓
+                    // Revisão sai da lista de pendentes (possui EstudoRealizadoId)
                     if (IsRevisao && RevisaoId.HasValue)
                     {
                         revisaoIdParaMarcarConcluida = RevisaoId.Value;
-                        System.Diagnostics.Debug.WriteLine($"[DEBUG] Marcando revisão {RevisaoId.Value} como concluída com estudo {estudo.Id}");
+                        System.Diagnostics.Debug.WriteLine($"[DEBUG] ✅ Fluxo Revisão:");
+                        System.Diagnostics.Debug.WriteLine($"[DEBUG]   └─ Revisão ID {RevisaoId.Value} será concluída");
+                        System.Diagnostics.Debug.WriteLine($"[DEBUG]   └─ EstudoRealizadoId será definido como: {estudo.Id}");
                     }
 
                     // Preparar atualização de assunto

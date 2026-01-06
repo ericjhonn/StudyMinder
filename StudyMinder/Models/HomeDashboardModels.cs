@@ -21,6 +21,7 @@ namespace StudyMinder.Models
     // Modelo para exibir próximas revisões
     public class RevisaoProxima
     {
+        public int Id { get; set; }
         public DateTime DataRevisao { get; set; }
         public Assunto Assunto { get; set; } = null!;
         public TipoRevisaoEnum TipoRevisao { get; set; }

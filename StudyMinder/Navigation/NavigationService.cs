@@ -146,7 +146,8 @@ namespace StudyMinder.Navigation
                 var tipoEstudoService = new Services.TipoEstudoService(context, auditoriaService);
                 var disciplinaService = new Services.DisciplinaService(context, auditoriaService);
                 var assuntoService = new Services.AssuntoService(context, auditoriaService, disciplinaService);
-                var transactionService = new Services.EstudoTransactionService(context, auditoriaService);
+                var revisaoNotificacaoService = navigationService._revisaoNotificacaoService ?? new Services.RevisaoNotificacaoService();
+                var transactionService = new Services.EstudoTransactionService(context, auditoriaService, revisaoNotificacaoService);
                 var revisaoService = new Services.RevisaoService(context, auditoriaService);
                 var configurationService = App.ConfigurationService;
 
@@ -226,7 +227,8 @@ namespace StudyMinder.Navigation
                     var tipoEstudoService = new Services.TipoEstudoService(context, auditoriaService);
                     var disciplinaService = new Services.DisciplinaService(context, auditoriaService);
                     var assuntoService = new Services.AssuntoService(context, auditoriaService, disciplinaService);
-                    var transactionService = new Services.EstudoTransactionService(context, auditoriaService);
+                    var revisaoNotificacaoService = navigationService._revisaoNotificacaoService ?? new Services.RevisaoNotificacaoService();
+                    var transactionService = new Services.EstudoTransactionService(context, auditoriaService, revisaoNotificacaoService);
                     var pomodoroTimerService = new Services.PomodoroTimerService();
                     var revisaoService = new Services.RevisaoService(context, auditoriaService);
                     var configurationService = App.ConfigurationService;
