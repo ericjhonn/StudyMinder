@@ -1,0 +1,26 @@
+{
+  "Theme": "System",
+  "WindowSettings": {
+    "Width": 1200,
+    "Height": 700,
+    "Left": 100,
+    "Top": 100,
+    "Maximized": false
+  },
+  "DatabaseSettings": {
+    "BackupInterval": 7,
+    "MaxBackups": 10,
+    "AutoBackup": true
+  },
+  "StudySettings": {
+    "DefaultStudyDuration": 60,
+    "BreakReminder": true,
+    "BreakInterval": 120
+  },
+  "NotificationSettings": {
+    "Enabled": true,
+    "SoundEnabled": false,
+    "ReviewReminder": true,
+    "ReviewReminderDays": 7
+  }
+}

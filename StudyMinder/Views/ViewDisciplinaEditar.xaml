@@ -1,0 +1,1153 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<UserControl x:Class="StudyMinder.Views.ViewDisciplinaEditar"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:icon="http://metro.mahapps.com/winfx/xaml/iconpacks"
+             xmlns:viewmodels="clr-namespace:StudyMinder.ViewModels"
+             xmlns:models="clr-namespace:StudyMinder.Models"
+             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+             xmlns:converters="clr-namespace:StudyMinder.Converters"
+             mc:Ignorable="d"
+             d:DesignHeight="600"
+             d:DesignWidth="800"
+             d:DataContext="{d:DesignInstance Type=viewmodels:EditarDisciplinaViewModel}">
+
+    <Grid Background="{DynamicResource BackgroundBrush}">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <!-- Cabeçalho -->
+        <Border Grid.Row="0"
+                Style="{DynamicResource ViewHeaderStyle}">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+
+                <TextBlock Grid.Column="0"
+                           Text="{Binding Title}"
+                           Style="{DynamicResource Title1Style}" />
+                <StackPanel Grid.Column="1"
+                            Orientation="Horizontal"
+                            VerticalAlignment="Center"
+                            HorizontalAlignment="Right">
+                    <Button Style="{StaticResource SecondaryButtonStyle}"
+                            Command="{Binding CancelarCommand}"
+                            VerticalAlignment="Center"
+                            Margin="0,0,12,0"
+                            IsEnabled="{Binding IsSaving, Converter={StaticResource InverseBooleanConverter}}">
+                        <TextBlock Text="Cancelar" />
+                    </Button>
+                    <Button Style="{StaticResource ModernButtonStyle}"
+                            Command="{Binding SalvarAsyncCommand}"
+                            IsEnabled="{Binding IsSaving, Converter={StaticResource InverseBooleanConverter}}"
+                            VerticalAlignment="Center"
+                            MinWidth="120">
+                        <StackPanel Orientation="Horizontal">
+                            <icon:PackIconMaterial Kind="ContentSave"
+                                                   Width="16"
+                                                   Height="16"
+                                                   Margin="0,0,8,0"
+                                                   Visibility="{Binding IsSaving, Converter={StaticResource InverseBooleanToVisibilityConverter}}" />
+                            <icon:PackIconMaterial Style="{DynamicResource LoadingIconStyle}"
+                                                   Width="16"
+                                                   Height="16"
+                                                   Margin="0,0,8,0"
+                                                   Visibility="{Binding IsSaving, Converter={StaticResource BoolToVisibilityConverter}}" />
+                            <TextBlock>
+                                <TextBlock.Style>
+                                    <Style TargetType="TextBlock">
+                                        <Setter Property="Text"
+                                                Value="Salvar" />
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding IsSaving}"
+                                                         Value="True">
+                                                <Setter Property="Text"
+                                                        Value="Salvando..." />
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </TextBlock.Style>
+                            </TextBlock>
+                        </StackPanel>
+                    </Button>
+                </StackPanel>
+            </Grid>
+        </Border>
+
+        <!-- Conteúdo principal -->
+        <Grid Grid.Row="1">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+
+
+            <!-- Campos da disciplina -->
+            <Border Grid.Row="0"
+                    Style="{DynamicResource PrimaryCardStyle}">
+
+                <StackPanel>
+
+                    <TextBlock Text="Disciplina"
+                               Style="{DynamicResource Title2Style}" />
+
+                    <!-- Cor Atual e TextBox -->
+                    <Grid Grid.Row="0"
+                          Margin="0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="3*" />
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+
+                        <TextBox Grid.Column="0"
+                                 Text="{Binding Nome, UpdateSourceTrigger=PropertyChanged, ValidatesOnNotifyDataErrors=True}"
+                                 Margin="0,0,6,0"
+                                 Style="{DynamicResource ModernTextBoxWithPlaceholderStyle}"
+                                 Tag="Nome da disciplina" />
+
+                        <!-- TextBox para edição manual -->
+                        <TextBox Grid.Column="1"
+                                 Text="{Binding Cor, UpdateSourceTrigger=PropertyChanged, ValidatesOnNotifyDataErrors=True}"
+                                 Style="{DynamicResource ModernTextBoxWithPlaceholderStyle}"
+                                 Margin="0"
+                                 HorizontalAlignment="Stretch"
+                                 Tag="#RRGGBB"
+                                 ToolTip="Hexadecimal da cor" />
+
+                        <!-- Preview da cor atual -->
+                        <Border Grid.Column="2"
+                                Background="{Binding Cor}"
+                                Width="40"
+                                CornerRadius="4"
+                                VerticalAlignment="Stretch"
+                                Margin="6,0"
+                                BorderBrush="{DynamicResource BorderBrush}"
+                                BorderThickness="1"
+                                ToolTip="Cor atual" />
+
+                        <!-- Botão para exibir/ocultar paleta de cores -->
+                        <Button Grid.Column="3"
+                                Style="{StaticResource SecondaryButtonStyle}"
+                                HorizontalAlignment="Stretch"
+                                Name="ToggleColorsButton"
+                                Click="ToggleColorsButton_Click"
+                                ToolTip="Mostrar/Ocultar Paleta de Cores">
+                            <StackPanel Orientation="Horizontal">
+                                <icon:PackIconMaterial Kind="ChevronDown"
+                                                       Width="16"
+                                                       Height="16"
+                                                       Margin="0,0,0,0" />
+                            </StackPanel>
+                        </Button>
+
+                        <CheckBox Grid.Column="4"
+                                  Content="Arquivar Disciplina"
+                                  Margin="6,0,0,0"
+                                  IsChecked="{Binding IsArquivada, UpdateSourceTrigger=PropertyChanged}"
+                                  Style="{DynamicResource RoundedCheckBoxStyle}" />
+
+                    </Grid>
+
+                    <!-- ColorPicker Customizado -->
+                    <Grid Margin="0,0,0,8">
+
+                        <!-- Paleta de Cores (inicialmente oculta) -->
+                        <StackPanel Grid.Row="0"
+                                    Name="ColorPalette"
+                                    Visibility="Collapsed">
+                            <TextBlock Text="Cores Predefinidas:"
+                                       Style="{DynamicResource Title4Style}"
+                                       Margin="0,8" />
+                            <UniformGrid Columns="32"
+                                         Rows="2"
+                                         Margin="0,0,0,0">
+                                <Button Style="{StaticResource IconButtonStyle}"
+                                        Background="#E74C3C"
+                                        Width="30"
+                                        Height="30"
+                                        Margin="2"
+                                        Command="{Binding SelecionarCorCommand}"
+                                        CommandParameter="#E74C3C"
+                                        ToolTip="Vermelho" />
+                                <Button Style="{StaticResource IconButtonStyle}"
+                                        Background="#E67E22"
+                                        Width="30"
+                                        Height="30"
+                                        Margin="2"
+                                        Command="{Binding SelecionarCorCommand}"
+                                        CommandParameter="#E67E22"
+                                        ToolTip="Laranja" />
+                                <Button Style="{StaticResource IconButtonStyle}"
+                                        Background="#F1C40F"
+                                        Width="30"
+                                        Height="30"
+                                        Margin="2"
+                                        Command="{Binding SelecionarCorCommand}"
+                                        CommandParameter="#F1C40F"
+                                        ToolTip="Amarelo" />
+                                <Button Style="{StaticResource IconButtonStyle}"
+                                        Background="#2ECC71"
+                                        Width="30"
+                                        Height="30"
+                                        Margin="2"
+                                        Command="{Binding SelecionarCorCommand}"
+                                        CommandParameter="#2ECC71"
+                                        ToolTip="Verde" />
+                                <Button Style="{StaticResource IconButtonStyle}"
+                                        Background="#3498DB"
+                                        Width="30"
+                                        Height="30"
+                                        Margin="2"
+                                        Command="{Binding SelecionarCorCommand}"
+                                        CommandParameter="#3498DB"
+                                        ToolTip="Azul" />
+                                <Button Style="{StaticResource IconButtonStyle}"
+                                        Background="#9B59B6"
+                                        Width="30"
+                                        Height="30"
+                                        Margin="2"
+                                        Command="{Binding SelecionarCorCommand}"
+                                        CommandParameter="#9B59B6"
+                                        ToolTip="Roxo" />
+                                <Button Style="{StaticResource IconButtonStyle}"
+                                        Background="#E91E63"
+                                        Width="30"
+                                        Height="30"
+                                        Margin="2"
+                                        Command="{Binding SelecionarCorCommand}"
+                                        CommandParameter="#E91E63"
+                                        ToolTip="Rosa" />
+                                <Button Style="{StaticResource IconButtonStyle}"
+                                        Background="#34495E"
+                                        Width="30"
+                                        Height="30"
+                                        Margin="2"
+                                        Command="{Binding SelecionarCorCommand}"
+                                        CommandParameter="#34495E"
+                                        ToolTip="Cinza Escuro" />
+                                <Button Style="{StaticResource IconButtonStyle}"
+                                        Background="#C0392B"
+                                        Width="30"
+                                        Height="30"
+                                        Margin="2"
+                                        Command="{Binding SelecionarCorCommand}"
+                                        CommandParameter="#C0392B"
+                                        ToolTip="Vermelho Escuro" />
+                                <Button Style="{StaticResource IconButtonStyle}"
+                                        Background="#D35400"
+                                        Width="30"
+                                        Height="30"
+                                        Margin="2"
+                                        Command="{Binding SelecionarCorCommand}"
+                                        CommandParameter="#D35400"
+                                        ToolTip="Laranja Escuro" />
+                                <Button Style="{StaticResource IconButtonStyle}"
+                                        Background="#F39C12"
+                                        Width="30"
+                                        Height="30"
+                                        Margin="2"
+                                        Command="{Binding SelecionarCorCommand}"
+                                        CommandParameter="#F39C12"
+                                        ToolTip="Amarelo Escuro" />
+                                <Button Style="{StaticResource IconButtonStyle}"
+                                        Background="#27AE60"
+                                        Width="30"
+                                        Height="30"
+                                        Margin="2"
+                                        Command="{Binding SelecionarCorCommand}"
+                                        CommandParameter="#27AE60"
+                                        ToolTip="Verde Escuro" />
+                                <Button Style="{StaticResource IconButtonStyle}"
+                                        Background="#2980B9"
+                                        Width="30"
+                                        Height="30"
+                                        Margin="2"
+                                        Command="{Binding SelecionarCorCommand}"
+                                        CommandParameter="#2980B9"
+                                        ToolTip="Azul Escuro" />
+                                <Button Style="{StaticResource IconButtonStyle}"
+                                        Background="#8E44AD"
+                                        Width="30"
+                                        Height="30"
+                                        Margin="2"
+                                        Command="{Binding SelecionarCorCommand}"
+                                        CommandParameter="#8E44AD"
+                                        ToolTip="Roxo Escuro" />
+                                <Button Style="{StaticResource IconButtonStyle}"
+                                        Background="#AD1457"
+                                        Width="30"
+                                        Height="30"
+                                        Margin="2"
+                                        Command="{Binding SelecionarCorCommand}"
+                                        CommandParameter="#AD1457"
+                                        ToolTip="Rosa Escuro" />
+                                <Button Style="{StaticResource IconButtonStyle}"
+                                        Background="#2C3E50"
+                                        Width="30"
+                                        Height="30"
+                                        Margin="2"
+                                        Command="{Binding SelecionarCorCommand}"
+                                        CommandParameter="#2C3E50"
+                                        ToolTip="Azul Acinzentado" />
+                                <Button Style="{StaticResource IconButtonStyle}"
+                                        Background="#FFCDD2"
+                                        Width="30"
+                                        Height="30"
+                                        Margin="2"
+                                        Command="{Binding SelecionarCorCommand}"
+                                        CommandParameter="#FFCDD2"
+                                        ToolTip="Vermelho Claro" />
+                                <Button Style="{StaticResource IconButtonStyle}"
+                                        Background="#FFE0B2"
+                                        Width="30"
+                                        Height="30"
+                                        Margin="2"
+                                        Command="{Binding SelecionarCorCommand}"
+                                        CommandParameter="#FFE0B2"
+                                        ToolTip="Laranja Claro" />
+                                <Button Style="{StaticResource IconButtonStyle}"
+                                        Background="#FFF9C4"
+                                        Width="30"
+                                        Height="30"
+                                        Margin="2"
+                                        Command="{Binding SelecionarCorCommand}"
+                                        CommandParameter="#FFF9C4"
+                                        ToolTip="Amarelo Claro" />
+                                <Button Style="{StaticResource IconButtonStyle}"
+                                        Background="#C8E6C9"
+                                        Width="30"
+                                        Height="30"
+                                        Margin="2"
+                                        Command="{Binding SelecionarCorCommand}"
+                                        CommandParameter="#C8E6C9"
+                                        ToolTip="Verde Claro" />
+                                <Button Style="{StaticResource IconButtonStyle}"
+                                        Background="#BBDEFB"
+                                        Width="30"
+                                        Height="30"
+                                        Margin="2"
+                                        Command="{Binding SelecionarCorCommand}"
+                                        CommandParameter="#BBDEFB"
+                                        ToolTip="Azul Claro" />
+                                <Button Style="{StaticResource IconButtonStyle}"
+                                        Background="#E1BEE7"
+                                        Width="30"
+                                        Height="30"
+                                        Margin="2"
+                                        Command="{Binding SelecionarCorCommand}"
+                                        CommandParameter="#E1BEE7"
+                                        ToolTip="Roxo Claro" />
+                                <Button Style="{StaticResource IconButtonStyle}"
+                                        Background="#F8BBD9"
+                                        Width="30"
+                                        Height="30"
+                                        Margin="2"
+                                        Command="{Binding SelecionarCorCommand}"
+                                        CommandParameter="#F8BBD9"
+                                        ToolTip="Rosa Claro" />
+                                <Button Style="{StaticResource IconButtonStyle}"
+                                        Background="#ECEFF1"
+                                        Width="30"
+                                        Height="30"
+                                        Margin="2"
+                                        Command="{Binding SelecionarCorCommand}"
+                                        CommandParameter="#ECEFF1"
+                                        ToolTip="Cinza Claro" />
+                                <Button Style="{StaticResource IconButtonStyle}"
+                                        Background="#FF5722"
+                                        Width="30"
+                                        Height="30"
+                                        Margin="2"
+                                        Command="{Binding SelecionarCorCommand}"
+                                        CommandParameter="#FF5722"
+                                        ToolTip="Laranja Avermelhado" />
+                                <Button Style="{StaticResource IconButtonStyle}"
+                                        Background="#795548"
+                                        Width="30"
+                                        Height="30"
+                                        Margin="2"
+                                        Command="{Binding SelecionarCorCommand}"
+                                        CommandParameter="#795548"
+                                        ToolTip="Marrom" />
+                                <Button Style="{StaticResource IconButtonStyle}"
+                                        Background="#607D8B"
+                                        Width="30"
+                                        Height="30"
+                                        Margin="2"
+                                        Command="{Binding SelecionarCorCommand}"
+                                        CommandParameter="#607D8B"
+                                        ToolTip="Azul Acinzentado" />
+                                <Button Style="{StaticResource IconButtonStyle}"
+                                        Background="#4CAF50"
+                                        Width="30"
+                                        Height="30"
+                                        Margin="2"
+                                        Command="{Binding SelecionarCorCommand}"
+                                        CommandParameter="#4CAF50"
+                                        ToolTip="Verde Material" />
+                                <Button Style="{StaticResource IconButtonStyle}"
+                                        Background="#FF9800"
+                                        Width="30"
+                                        Height="30"
+                                        Margin="2"
+                                        Command="{Binding SelecionarCorCommand}"
+                                        CommandParameter="#FF9800"
+                                        ToolTip="Laranja Material" />
+                                <Button Style="{StaticResource IconButtonStyle}"
+                                        Background="#673AB7"
+                                        Width="30"
+                                        Height="30"
+                                        Margin="2"
+                                        Command="{Binding SelecionarCorCommand}"
+                                        CommandParameter="#673AB7"
+                                        ToolTip="Roxo Profundo" />
+                                <Button Style="{StaticResource IconButtonStyle}"
+                                        Background="#009688"
+                                        Width="30"
+                                        Height="30"
+                                        Margin="2"
+                                        Command="{Binding SelecionarCorCommand}"
+                                        CommandParameter="#009688"
+                                        ToolTip="Verde Azulado" />
+                                <Button Style="{StaticResource IconButtonStyle}"
+                                        Background="#FFC107"
+                                        Width="30"
+                                        Height="30"
+                                        Margin="2"
+                                        Command="{Binding SelecionarCorCommand}"
+                                        CommandParameter="#FFC107"
+                                        ToolTip="Âmbar" />
+                                <Button Style="{StaticResource IconButtonStyle}"
+                                        Background="#1976D2"
+                                        Width="30"
+                                        Height="30"
+                                        Margin="2"
+                                        Command="{Binding SelecionarCorCommand}"
+                                        CommandParameter="#1976D2"
+                                        ToolTip="Azul Profundo" />
+                                <Button Style="{StaticResource IconButtonStyle}"
+                                        Background="#00BCD4"
+                                        Width="30"
+                                        Height="30"
+                                        Margin="2"
+                                        Command="{Binding SelecionarCorCommand}"
+                                        CommandParameter="#00BCD4"
+                                        ToolTip="Ciano" />
+                                <Button Style="{StaticResource IconButtonStyle}"
+                                        Background="#4DB6AC"
+                                        Width="30"
+                                        Height="30"
+                                        Margin="2"
+                                        Command="{Binding SelecionarCorCommand}"
+                                        CommandParameter="#4DB6AC"
+                                        ToolTip="Verde Azulado Médio" />
+                                <Button Style="{StaticResource IconButtonStyle}"
+                                        Background="#81C784"
+                                        Width="30"
+                                        Height="30"
+                                        Margin="2"
+                                        Command="{Binding SelecionarCorCommand}"
+                                        CommandParameter="#81C784"
+                                        ToolTip="Verde Médio" />
+                                <Button Style="{StaticResource IconButtonStyle}"
+                                        Background="#FFB74D"
+                                        Width="30"
+                                        Height="30"
+                                        Margin="2"
+                                        Command="{Binding SelecionarCorCommand}"
+                                        CommandParameter="#FFB74D"
+                                        ToolTip="Laranja Médio" />
+                                <Button Style="{StaticResource IconButtonStyle}"
+                                        Background="#EF5350"
+                                        Width="30"
+                                        Height="30"
+                                        Margin="2"
+                                        Command="{Binding SelecionarCorCommand}"
+                                        CommandParameter="#EF5350"
+                                        ToolTip="Vermelho Médio" />
+                                <Button Style="{StaticResource IconButtonStyle}"
+                                        Background="#AB47BC"
+                                        Width="30"
+                                        Height="30"
+                                        Margin="2"
+                                        Command="{Binding SelecionarCorCommand}"
+                                        CommandParameter="#AB47BC"
+                                        ToolTip="Roxo Médio" />
+                                <Button Style="{StaticResource IconButtonStyle}"
+                                        Background="#5C6BC0"
+                                        Width="30"
+                                        Height="30"
+                                        Margin="2"
+                                        Command="{Binding SelecionarCorCommand}"
+                                        CommandParameter="#5C6BC0"
+                                        ToolTip="Índigo" />
+                                <Button Style="{StaticResource IconButtonStyle}"
+                                        Background="#FF6F00"
+                                        Width="30"
+                                        Height="30"
+                                        Margin="2"
+                                        Command="{Binding SelecionarCorCommand}"
+                                        CommandParameter="#FF6F00"
+                                        ToolTip="Laranja Profundo" />
+                                <Button Style="{StaticResource IconButtonStyle}"
+                                        Background="#D32F2F"
+                                        Width="30"
+                                        Height="30"
+                                        Margin="2"
+                                        Command="{Binding SelecionarCorCommand}"
+                                        CommandParameter="#D32F2F"
+                                        ToolTip="Vermelho Profundo" />
+                                <Button Style="{StaticResource IconButtonStyle}"
+                                        Background="#7B1FA2"
+                                        Width="30"
+                                        Height="30"
+                                        Margin="2"
+                                        Command="{Binding SelecionarCorCommand}"
+                                        CommandParameter="#7B1FA2"
+                                        ToolTip="Roxo Escuro" />
+                                <Button Style="{StaticResource IconButtonStyle}"
+                                        Background="#0097A7"
+                                        Width="30"
+                                        Height="30"
+                                        Margin="2"
+                                        Command="{Binding SelecionarCorCommand}"
+                                        CommandParameter="#0097A7"
+                                        ToolTip="Ciano Escuro" />
+                                <Button Style="{StaticResource IconButtonStyle}"
+                                        Background="#00796B"
+                                        Width="30"
+                                        Height="30"
+                                        Margin="2"
+                                        Command="{Binding SelecionarCorCommand}"
+                                        CommandParameter="#00796B"
+                                        ToolTip="Verde Azulado Escuro" />
+                                <Button Style="{StaticResource IconButtonStyle}"
+                                        Background="#1565C0"
+                                        Width="30"
+                                        Height="30"
+                                        Margin="2"
+                                        Command="{Binding SelecionarCorCommand}"
+                                        CommandParameter="#1565C0"
+                                        ToolTip="Azul Escuro" />
+                                <Button Style="{StaticResource IconButtonStyle}"
+                                        Background="#F57F17"
+                                        Width="30"
+                                        Height="30"
+                                        Margin="2"
+                                        Command="{Binding SelecionarCorCommand}"
+                                        CommandParameter="#F57F17"
+                                        ToolTip="Amarelo Escuro" />
+                                <Button Style="{StaticResource IconButtonStyle}"
+                                        Background="#C62828"
+                                        Width="30"
+                                        Height="30"
+                                        Margin="2"
+                                        Command="{Binding SelecionarCorCommand}"
+                                        CommandParameter="#C62828"
+                                        ToolTip="Vermelho Muito Escuro" />
+                                <Button Style="{StaticResource IconButtonStyle}"
+                                        Background="#6A1B9A"
+                                        Width="30"
+                                        Height="30"
+                                        Margin="2"
+                                        Command="{Binding SelecionarCorCommand}"
+                                        CommandParameter="#6A1B9A"
+                                        ToolTip="Roxo Muito Escuro" />
+                                <Button Style="{StaticResource IconButtonStyle}"
+                                        Background="#00695C"
+                                        Width="30"
+                                        Height="30"
+                                        Margin="2"
+                                        Command="{Binding SelecionarCorCommand}"
+                                        CommandParameter="#00695C"
+                                        ToolTip="Verde Escuro" />
+                                <Button Style="{StaticResource IconButtonStyle}"
+                                        Background="#0D47A1"
+                                        Width="30"
+                                        Height="30"
+                                        Margin="2"
+                                        Command="{Binding SelecionarCorCommand}"
+                                        CommandParameter="#0D47A1"
+                                        ToolTip="Azul Muito Escuro" />
+                                <Button Style="{StaticResource IconButtonStyle}"
+                                        Background="#F57C00"
+                                        Width="30"
+                                        Height="30"
+                                        Margin="2"
+                                        Command="{Binding SelecionarCorCommand}"
+                                        CommandParameter="#F57C00"
+                                        ToolTip="Laranja Escuro" />
+                                <Button Style="{StaticResource IconButtonStyle}"
+                                        Background="#E53935"
+                                        Width="30"
+                                        Height="30"
+                                        Margin="2"
+                                        Command="{Binding SelecionarCorCommand}"
+                                        CommandParameter="#E53935"
+                                        ToolTip="Vermelho Médio Escuro" />
+                                <Button Style="{StaticResource IconButtonStyle}"
+                                        Background="#8E24AA"
+                                        Width="30"
+                                        Height="30"
+                                        Margin="2"
+                                        Command="{Binding SelecionarCorCommand}"
+                                        CommandParameter="#8E24AA"
+                                        ToolTip="Roxo Médio Escuro" />
+                                <Button Style="{StaticResource IconButtonStyle}"
+                                        Background="#00838F"
+                                        Width="30"
+                                        Height="30"
+                                        Margin="2"
+                                        Command="{Binding SelecionarCorCommand}"
+                                        CommandParameter="#00838F"
+                                        ToolTip="Ciano Médio Escuro" />
+                                <Button Style="{StaticResource IconButtonStyle}"
+                                        Background="#00897B"
+                                        Width="30"
+                                        Height="30"
+                                        Margin="2"
+                                        Command="{Binding SelecionarCorCommand}"
+                                        CommandParameter="#00897B"
+                                        ToolTip="Verde Azulado Médio Escuro" />
+                                <Button Style="{StaticResource IconButtonStyle}"
+                                        Background="#1976D2"
+                                        Width="30"
+                                        Height="30"
+                                        Margin="2"
+                                        Command="{Binding SelecionarCorCommand}"
+                                        CommandParameter="#1976D2"
+                                        ToolTip="Azul Médio Escuro" />
+                                <Button Style="{StaticResource IconButtonStyle}"
+                                        Background="#FBC02D"
+                                        Width="30"
+                                        Height="30"
+                                        Margin="2"
+                                        Command="{Binding SelecionarCorCommand}"
+                                        CommandParameter="#FBC02D"
+                                        ToolTip="Amarelo Médio" />
+                                <Button Style="{StaticResource IconButtonStyle}"
+                                        Background="#F44336"
+                                        Width="30"
+                                        Height="30"
+                                        Margin="2"
+                                        Command="{Binding SelecionarCorCommand}"
+                                        CommandParameter="#F44336"
+                                        ToolTip="Vermelho Claro Médio" />
+                                <Button Style="{StaticResource IconButtonStyle}"
+                                        Background="#9C27B0"
+                                        Width="30"
+                                        Height="30"
+                                        Margin="2"
+                                        Command="{Binding SelecionarCorCommand}"
+                                        CommandParameter="#9C27B0"
+                                        ToolTip="Roxo Claro Médio" />
+                                <Button Style="{StaticResource IconButtonStyle}"
+                                        Background="#0288D1"
+                                        Width="30"
+                                        Height="30"
+                                        Margin="2"
+                                        Command="{Binding SelecionarCorCommand}"
+                                        CommandParameter="#0288D1"
+                                        ToolTip="Azul Claro Médio" />
+                                <Button Style="{StaticResource IconButtonStyle}"
+                                        Background="#26A69A"
+                                        Width="30"
+                                        Height="30"
+                                        Margin="2"
+                                        Command="{Binding SelecionarCorCommand}"
+                                        CommandParameter="#26A69A"
+                                        ToolTip="Verde Azulado Claro Médio" />
+                                <Button Style="{StaticResource IconButtonStyle}"
+                                        Background="#7E57C2"
+                                        Width="30"
+                                        Height="30"
+                                        Margin="2"
+                                        Command="{Binding SelecionarCorCommand}"
+                                        CommandParameter="#7E57C2"
+                                        ToolTip="Roxo Claro" />
+                                <Button Style="{StaticResource IconButtonStyle}"
+                                        Background="#29B6F6"
+                                        Width="30"
+                                        Height="30"
+                                        Margin="2"
+                                        Command="{Binding SelecionarCorCommand}"
+                                        CommandParameter="#29B6F6"
+                                        ToolTip="Azul Claro" />
+                            </UniformGrid>
+                        </StackPanel>
+
+                    </Grid>
+
+                    <!-- Painel de Estatísticas Dinâmicas -->
+                    <Border Style="{DynamicResource SecondaryCardStyle}">
+                        <StackPanel Orientation="Horizontal"
+                                    VerticalAlignment="Center">
+
+                            <!-- Progresso -->
+                            <StackPanel Orientation="Horizontal"
+                                        VerticalAlignment="Center"
+                                        Margin="0,0,24,0">
+                                <icon:PackIconMaterial Style="{DynamicResource RendimentoIconStyle}"
+                                                       Margin="0,0,6,0" />
+                                <TextBlock Text="{Binding CurrentDisciplina.Progresso, StringFormat='{}{0:F0}%'}"
+                                           Style="{DynamicResource RendimentoTextStyle}" />
+                            </StackPanel>
+
+                            <!-- Total de Assuntos -->
+                            <StackPanel Orientation="Horizontal"
+                                        VerticalAlignment="Center"
+                                        Margin="0,0,24,0">
+                                <icon:PackIconMaterial Style="{DynamicResource AssuntosTotalIconStyle}"
+                                                       Margin="0,0,6,0" />
+                                <TextBlock Text="{Binding CurrentDisciplina.TotalAssuntos}"
+                                           Style="{DynamicResource AssuntosTotalTextStyle}" />
+                            </StackPanel>
+
+                            <!-- Total de Questões -->
+                            <StackPanel Orientation="Horizontal"
+                                        VerticalAlignment="Center"
+                                        Margin="0,0,24,0">
+                                <icon:PackIconMaterial Style="{DynamicResource QuestoesIconStyle}"
+                                                       Margin="0,0,6,0" />
+                                <TextBlock Text="{Binding CurrentDisciplina.TotalQuestoes}"
+                                           Style="{DynamicResource QuestoesTextStyle}" />
+                            </StackPanel>
+
+                            <!-- Horas Estudadas -->
+                            <StackPanel Orientation="Horizontal"
+                                        VerticalAlignment="Center"
+                                        Margin="0,0,24,0">
+                                <icon:PackIconMaterial Style="{DynamicResource HorasEstudadasIconStyle}"
+                                                       Margin="0,0,6,0" />
+                                <TextBlock Text="{Binding CurrentDisciplina.HorasEstudadas}"
+                                           Style="{DynamicResource HorasEstudadasTextStyle}" />
+                            </StackPanel>
+
+                            <!-- Total de Páginas Lidas -->
+                            <StackPanel Orientation="Horizontal"
+                                        VerticalAlignment="Center">
+                                <icon:PackIconMaterial Style="{DynamicResource PaginasLidasIconStyle}"
+                                                       Margin="0,0,6,0" />
+                                <TextBlock Text="{Binding CurrentDisciplina.TotalPaginasLidas}"
+                                           Style="{DynamicResource PaginasLidasTextStyle}" />
+                            </StackPanel>
+                        </StackPanel>
+                    </Border>
+                </StackPanel>
+            </Border>
+
+            <!-- Assuntos vinculados -->
+            <Border Grid.Row="1"
+                    Margin="20"
+                    Style="{DynamicResource PrimaryCardStyle}">
+
+                <Grid xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+                      xmlns:views="clr-namespace:StudyMinder.Views"
+                      d:DataContext="{d:DesignInstance Type=viewmodels:EditarEditalViewModel}">
+
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="*" />
+                    </Grid.RowDefinitions>
+
+                    <Grid Grid.Row="0"
+                          Margin="0,0,0,16">
+
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="*" />
+                            <RowDefinition Height="Auto" />
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+
+                        <TextBlock Grid.Column="0"
+                                   Text="Assuntos Vinculados"
+                                   Style="{DynamicResource Title2Style}" />
+
+                        <TextBox Grid.Column="0"
+                                 Grid.Row="1"
+                                 Style="{StaticResource TextBoxPesquisarStyle}"
+                                 Margin="0,0,10,0"
+                                 Height="32"
+                                 VerticalAlignment="Center"
+                                 Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}"
+                                 Tag="Pesquisar assuntos" />
+
+                        <Button Grid.Column="1"
+                                Grid.Row="1"
+                                Margin="0,0,10,0"
+                                Style="{StaticResource ModernButtonStyle}"
+                                Command="{Binding AdicionarAssuntosEmLoteCommand}">
+                            <StackPanel Orientation="Horizontal">
+                                <icon:PackIconMaterial Kind="Plus"
+                                                       Width="16"
+                                                       Height="16"
+                                                       VerticalAlignment="Center"
+                                                       Margin="0,0,8,0" />
+                                <TextBlock Text="Adicionar em Lote"
+                                           VerticalAlignment="Center" />
+                            </StackPanel>
+                        </Button>
+
+                        <Button Grid.Column="2"
+                                Grid.Row="1"
+                                Style="{StaticResource ModernButtonStyle}"
+                                Command="{Binding AdicionarAssuntoCommand}">
+                            <StackPanel Orientation="Horizontal">
+                                <icon:PackIconMaterial Kind="Plus"
+                                                       Width="16"
+                                                       Height="16"
+                                                       VerticalAlignment="Center"
+                                                       Margin="0,0,8,0" />
+                                <TextBlock Text="Adicionar Assunto"
+                                           VerticalAlignment="Center" />
+                            </StackPanel>
+                        </Button>
+
+                    </Grid>
+
+                    <!-- Loading Indicator e Estado Vazio -->
+                    <views:LoadingAndEmptyStatePanel Grid.Row="1" />
+
+                    <!-- Área de conteúdo com ListView e rodapé -->
+                    <Grid Grid.Row="1"
+                          Visibility="{Binding IsCarregando, Converter={StaticResource InverseBooleanToVisibilityConverter}}">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="*" />
+                            <RowDefinition Height="Auto" />
+                        </Grid.RowDefinitions>
+                        <!-- ListView moderno de assuntos -->
+                        <ListView Grid.Row="0"
+                                  ItemsSource="{Binding AssuntosSelecionados}"
+                                  Style="{DynamicResource ModernListViewStyle}"
+                                  Margin="0,0,-16,20"
+                                  VerticalAlignment="Stretch"
+                                  VirtualizingPanel.IsVirtualizing="True"
+                                  VirtualizingPanel.VirtualizationMode="Recycling"
+                                  ScrollViewer.VerticalScrollBarVisibility="Visible"
+                                  ScrollViewer.IsDeferredScrollingEnabled="True"
+                                  VirtualizingPanel.ScrollUnit="Item"
+                                  VirtualizingPanel.CacheLength="10,10"
+                                  VirtualizingPanel.CacheLengthUnit="Page">
+                            <ListView.ItemTemplate>
+                                <DataTemplate>
+                                    <Border Style="{DynamicResource SecondaryCardStyle}"
+                                            Padding="12,8"
+                                            Margin="0,0,0,8">
+
+                                        <Grid>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="*" />
+                                                <ColumnDefinition Width="Auto" />
+                                                <ColumnDefinition Width="Auto" />
+                                                <ColumnDefinition Width="Auto" />
+                                                <ColumnDefinition Width="Auto" />
+                                            </Grid.ColumnDefinitions>
+                                            <Grid.RowDefinitions>
+                                                <RowDefinition Height="Auto" />
+                                                <RowDefinition Height="Auto" />
+                                                <RowDefinition Height="Auto" />
+                                                <RowDefinition Height="Auto" />
+                                            </Grid.RowDefinitions>
+
+                                            <!-- Modo de Visualização: Nome do Assunto -->
+                                            <TextBlock Grid.Column="0"
+                                                       Grid.Row="0"
+                                                       Text="{Binding Nome}"
+                                                       Style="{DynamicResource Title3Style}"
+                                                       Visibility="{Binding IsEditing, Converter={StaticResource InverseBooleanToVisibilityConverter}}" />
+
+                                            <!-- Modo de Edição: Rótulo e TextBox para editar o Nome -->
+                                            <TextBox Grid.Column="0"
+                                                     Grid.Row="1"
+                                                     Text="{Binding Nome, UpdateSourceTrigger=PropertyChanged}"
+                                                     FontSize="14"
+                                                     Margin="0,0,0,12"
+                                                     Visibility="{Binding IsEditing, Converter={StaticResource BoolToVisibilityConverter}}"
+                                                     Style="{DynamicResource ModernTextBoxWithPlaceholderStyle}"
+                                                     Tag="Nome do assunto" />
+
+                                            <!-- Modo de Edição: Rótulo e TextBox do Caderno de Questões -->
+                                            <TextBox Grid.Column="0"
+                                                     Grid.Row="2"
+                                                     Text="{Binding CadernoQuestoes, UpdateSourceTrigger=PropertyChanged}"
+                                                     FontSize="12"
+                                                     Margin="0,0,0,12"
+                                                     Visibility="{Binding IsEditing, Converter={StaticResource BoolToVisibilityConverter}}"
+                                                     Style="{DynamicResource ModernTextBoxWithPlaceholderStyle}"
+                                                     Tag="Caderno de questões" />
+
+                                            <!-- Modo de Edição: CheckBox de Conclusão com Botão Salvar -->
+                                            <Grid Grid.Column="0"
+                                                  Grid.Row="3"
+                                                  Margin="0,0,0,8"
+                                                  Visibility="{Binding IsEditing, Converter={StaticResource BoolToVisibilityConverter}}">
+
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="*" />
+                                                    <ColumnDefinition Width="Auto" />
+                                                    <ColumnDefinition Width="Auto" />
+                                                </Grid.ColumnDefinitions>
+
+                                                <CheckBox Grid.Column="0"
+                                                          IsChecked="{Binding Concluido}"
+                                                          Content="Concluído"
+                                                          VerticalAlignment="Center"
+                                                          HorizontalAlignment="Left"
+                                                          Style="{DynamicResource RoundedCheckBoxStyle}" />
+
+                                                <!-- Botão Salvar Alterações -->
+                                                <Button Grid.Column="1"
+                                                        Style="{DynamicResource ModernButtonStyle}"
+                                                        Command="{Binding DataContext.ToggleEditarAssuntoCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                        CommandParameter="{Binding}"
+                                                        Padding="12,6"
+                                                        FontSize="12"
+                                                        Margin="0,0,8,0">
+                                                    <StackPanel Orientation="Horizontal">
+                                                        <icon:PackIconMaterial Style="{DynamicResource SalvarIconStyle}"
+                                                                               Margin="0,0,6,0" />
+                                                        <TextBlock Text="Salvar" />
+                                                    </StackPanel>
+                                                </Button>
+
+                                                <!-- Botão Cancelar Edição -->
+                                                <Button Grid.Column="2"
+                                                        Style="{DynamicResource SecondaryButtonStyle}"
+                                                        Command="{Binding DataContext.CancelarEdicaoAssuntoCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                        CommandParameter="{Binding}"
+                                                        Padding="12,6"
+                                                        FontSize="12">
+                                                    <StackPanel Orientation="Horizontal">
+                                                        <icon:PackIconMaterial Kind="Close"
+                                                                               Width="14"
+                                                                               Height="14"
+                                                                               Margin="0,0,6,0" />
+                                                        <TextBlock Text="Cancelar" />
+                                                    </StackPanel>
+                                                </Button>
+
+                                            </Grid>
+
+                                            <!-- Estatísticas com Ícones -->
+                                            <StackPanel Grid.Column="0"
+                                                        Grid.Row="1"
+                                                        Orientation="Horizontal"
+                                                        Margin="0,0,12,0"
+                                                        VerticalAlignment="Center"
+                                                        Visibility="{Binding IsEditing, Converter={StaticResource InverseBooleanToVisibilityConverter}}">
+
+                                                <!-- Acertos -->
+                                                <StackPanel Orientation="Horizontal"
+                                                            VerticalAlignment="Center"
+                                                            Width="40"
+                                                            Margin="0,0,16,0">
+                                                    <icon:PackIconMaterial Style="{DynamicResource AcertosIconStyle}" />
+                                                    <TextBlock Text="{Binding TotalAcertos}"
+                                                               Style="{DynamicResource AcertosTextStyle}" />
+                                                </StackPanel>
+
+                                                <!-- Erros -->
+                                                <StackPanel Orientation="Horizontal"
+                                                            VerticalAlignment="Center"
+                                                            Width="40"
+                                                            Margin="0,0,16,0">
+                                                    <icon:PackIconMaterial Style="{DynamicResource ErrosIconStyle}" />
+                                                    <TextBlock Text="{Binding TotalErros}"
+                                                               Style="{DynamicResource ErrosTextStyle}" />
+                                                </StackPanel>
+
+                                                <!-- Rendimento -->
+                                                <StackPanel Orientation="Horizontal"
+                                                            VerticalAlignment="Center"
+                                                            Width="70"
+                                                            Margin="0,0,16,0">
+                                                    <icon:PackIconMaterial Style="{DynamicResource RendimentoIconStyle}"
+                                                                           Margin="0,0,4,0" />
+                                                    <TextBlock Text="{Binding Rendimento, StringFormat='{}{0:F1}%'}"
+                                                               Style="{DynamicResource RendimentoTextStyle}" />
+                                                </StackPanel>
+
+                                                <!-- Horas Estudadas -->
+                                                <StackPanel Orientation="Horizontal"
+                                                            VerticalAlignment="Center"
+                                                            Width="70"
+                                                            Margin="0,0,16,0">
+                                                    <icon:PackIconMaterial Style="{DynamicResource HorasEstudadasIconStyle}" />
+                                                    <TextBlock Text="{Binding HorasEstudadas}"
+                                                               Style="{DynamicResource HorasEstudadasTextStyle}" />
+                                                </StackPanel>
+
+                                                <!-- Status do Assunto (seguindo o padrão do MoverAssuntoDialog.xaml) -->
+                                                <Border x:Name="StatusBorder"
+                                                        CornerRadius="12"
+                                                        Padding="8,4">
+                                                    <Border.Style>
+                                                        <Style TargetType="Border">
+                                                            <Setter Property="Background"
+                                                                    Value="{DynamicResource SuccessBrush}" />
+                                                            <Style.Triggers>
+                                                                <DataTrigger Binding="{Binding Concluido}"
+                                                                             Value="False">
+                                                                    <Setter Property="Background"
+                                                                            Value="{DynamicResource WarningBrush}" />
+                                                                </DataTrigger>
+                                                            </Style.Triggers>
+                                                        </Style>
+                                                    </Border.Style>
+                                                    <TextBlock Foreground="White"
+                                                               FontSize="12"
+                                                               FontWeight="SemiBold">
+                                                        <TextBlock.Style>
+                                                            <Style TargetType="TextBlock">
+                                                                <Setter Property="Text"
+                                                                        Value="Concluído" />
+                                                                <Style.Triggers>
+                                                                    <DataTrigger Binding="{Binding Concluido}"
+                                                                                 Value="False">
+                                                                        <Setter Property="Text"
+                                                                                Value="Em Andamento" />
+                                                                    </DataTrigger>
+                                                                </Style.Triggers>
+                                                            </Style>
+                                                        </TextBlock.Style>
+                                                    </TextBlock>
+                                                </Border>
+
+                                            </StackPanel>
+
+                                            <!-- Botões de Ação -->
+                                            <StackPanel Grid.Column="4"
+                                                        Grid.Row="1"
+                                                        Orientation="Horizontal"
+                                                        VerticalAlignment="Center"
+                                                        HorizontalAlignment="Right"
+                                                        Visibility="{Binding IsEditing, Converter={StaticResource InverseBooleanToVisibilityConverter}}">
+
+                                                <!-- Botão Editar -->
+                                                <Button Style="{StaticResource IconButtonStyle}"
+                                                        Command="{Binding DataContext.IniciarEdicaoAssuntoCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                        CommandParameter="{Binding}"
+                                                        ToolTip="Editar Assunto"
+                                                        Margin="0,0,8,0">
+                                                    <icon:PackIconMaterial Style="{DynamicResource EditarIconStyle}" />
+                                                </Button>
+
+                                                <!-- Botão Mover -->
+                                                <Button Style="{StaticResource IconButtonStyle}"
+                                                        Command="{Binding DataContext.MoverAssuntoCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                        CommandParameter="{Binding}"
+                                                        ToolTip="Mover para Outra Disciplina"
+                                                        Margin="0,0,8,0"
+                                                        Visibility="{Binding IsEditing, Converter={StaticResource InverseBooleanToVisibilityConverter}}">
+                                                    <icon:PackIconMaterial Style="{DynamicResource MoverIconStyle}" />
+                                                </Button>
+
+                                                <!-- Botão Remover -->
+                                                <Button Style="{StaticResource IconButtonStyle}"
+                                                        Command="{Binding DataContext.RemoverAssuntoCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                        CommandParameter="{Binding}"
+                                                        ToolTip="Remover Assunto"
+                                                        Visibility="{Binding IsEditing, Converter={StaticResource InverseBooleanToVisibilityConverter}}">
+                                                    <icon:PackIconMaterial Style="{DynamicResource ExcluirIconStyle}" />
+                                                </Button>
+
+                                            </StackPanel>
+                                        </Grid>
+                                    </Border>
+                                </DataTemplate>
+                            </ListView.ItemTemplate>
+                        </ListView>
+
+                        <!-- Controles de rodapé com paginação -->
+                        <Border Grid.Row="1"
+                                BorderBrush="{DynamicResource BorderBrush}"
+                                BorderThickness="0,1,0,0"
+                                Padding="0,16,0,0">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+                                <!-- Total de itens -->
+                                <TextBlock Grid.Column="0"
+                                           Style="{DynamicResource Text2Style}">
+                                    <TextBlock.Text>
+                                        <MultiBinding StringFormat="Total de {0} assuntos">
+                                            <Binding Path="FilteredCount" />
+                                        </MultiBinding>
+                                    </TextBlock.Text>
+                                </TextBlock>
+                                <!-- Controles de paginação -->
+                                <StackPanel Grid.Column="1"
+                                            Orientation="Horizontal"
+                                            VerticalAlignment="Center">
+                                    <Button Style="{StaticResource PaginationButtonStyle}"
+                                            Command="{Binding FirstPageCommand}"
+                                            ToolTip="Primeira página">
+                                        <icon:PackIconMaterial Kind="PageFirst"
+                                                               Width="16"
+                                                               Height="16" />
+                                    </Button>
+                                    <Button Style="{StaticResource PaginationButtonStyle}"
+                                            Command="{Binding PreviousPageCommand}"
+                                            ToolTip="Página anterior">
+                                        <icon:PackIconMaterial Kind="ChevronLeft"
+                                                               Width="16"
+                                                               Height="16" />
+                                    </Button>
+                                    <Border Background="{DynamicResource SurfaceBrush}"
+                                            BorderBrush="{DynamicResource BorderBrush}"
+                                            BorderThickness="1"
+                                            CornerRadius="4"
+                                            Padding="12,6"
+                                            Margin="4,0">
+                                        <TextBlock Style="{DynamicResource Text3Style}">
+                                            <TextBlock.Text>
+                                                <MultiBinding StringFormat="Página {0} de {1}">
+                                                    <Binding Path="CurrentPage" />
+                                                    <Binding Path="TotalPages" />
+                                                </MultiBinding>
+                                            </TextBlock.Text>
+                                        </TextBlock>
+                                    </Border>
+                                    <Button Style="{StaticResource PaginationButtonStyle}"
+                                            Command="{Binding NextPageCommand}"
+                                            ToolTip="Próxima página">
+                                        <icon:PackIconMaterial Kind="ChevronRight"
+                                                               Width="16"
+                                                               Height="16" />
+                                    </Button>
+                                    <Button Style="{StaticResource PaginationButtonStyle}"
+                                            Command="{Binding LastPageCommand}"
+                                            ToolTip="Última página">
+                                        <icon:PackIconMaterial Kind="PageLast"
+                                                               Width="16"
+                                                               Height="16" />
+                                    </Button>
+                                </StackPanel>
+                            </Grid>
+                        </Border>
+                    </Grid>
+                </Grid>
+            </Border>
+        </Grid>
+        <!--<ScrollViewer Grid.Row="1"
+                     VerticalScrollBarVisibility="Auto"
+                     HorizontalScrollBarVisibility="Disabled"><StackPanel Margin="20"
+                       HorizontalAlignment="Stretch"></StackPanel></ScrollViewer>-->
+    </Grid>
+</UserControl>

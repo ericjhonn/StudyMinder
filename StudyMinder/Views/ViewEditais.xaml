@@ -1,0 +1,602 @@
+<UserControl x:Class="StudyMinder.Views.ViewEditais"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:icon="http://metro.mahapps.com/winfx/xaml/iconpacks"
+             xmlns:viewmodels="clr-namespace:StudyMinder.ViewModels"
+             xmlns:models="clr-namespace:StudyMinder.Models"
+             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+             xmlns:converters="clr-namespace:StudyMinder.Converters"
+             xmlns:views="clr-namespace:StudyMinder.Views"
+             mc:Ignorable="d"
+             d:DesignHeight="600"
+             d:DesignWidth="800"
+             d:DataContext="{d:DesignInstance Type=viewmodels:EditaisViewModel}">
+
+    <UserControl.Resources>
+        <converters:EditalAcertosConverter x:Key="EditalAcertosConverter" />
+        <converters:EditalErrosConverter x:Key="EditalErrosConverter" />
+        <converters:EditalTotalQuestoesConverter x:Key="EditalTotalQuestoesConverter" />
+        <converters:EditalRendimentoConverter x:Key="EditalRendimentoConverter" />
+        <converters:EditalHorasEstudadasConverter x:Key="EditalHorasEstudadasConverter" />
+        <converters:EditalTotalPaginasLidasConverter x:Key="EditalTotalPaginasLidasConverter" />
+        <converters:EditalStatusConverter x:Key="EditalStatusConverter" />
+        <converters:EditalStatusColorConverter x:Key="EditalStatusColorConverter" />
+    </UserControl.Resources>
+
+    <Grid Background="{DynamicResource BackgroundBrush}">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="Auto" />
+        </Grid.ColumnDefinitions>
+
+        <!-- Cabeçalho -->
+        <Border Grid.Column="0"
+                Grid.Row="0"
+                Style="{DynamicResource ViewHeaderStyle}">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+
+                <TextBlock Grid.Column="0"
+                           Text="Editais"
+                           Style="{StaticResource Title1Style}" />
+
+                <TextBox Grid.Column="1"
+                         Style="{StaticResource TextBoxPesquisarStyle}"
+                         Width="300"
+                         Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}"
+                         Tag="Pesquisar edital"
+                         Margin="0,0,12,0" />
+
+                <Button Grid.Column="2"
+                        Style="{StaticResource ModernButtonStyle}"
+                        Command="{Binding AdicionarEditalCommand}"
+                        VerticalAlignment="Center">
+                    <StackPanel Orientation="Horizontal">
+                        <icon:PackIconMaterial Style="{DynamicResource AdicionarIconStyle}"
+                                               Margin="0,0,4,0" />
+                        <TextBlock Text="Novo Edital" />
+                    </StackPanel>
+                </Button>
+
+                <!-- Botão de Filtros -->
+                <Button Grid.Column="3"
+                        Style="{StaticResource ModernButtonStyle}"
+                        Command="{Binding ToggleFiltrosPanelCommand}"
+                        VerticalAlignment="Center"
+                        Margin="12,0,0,0">
+                    <StackPanel Orientation="Horizontal">
+                        <icon:PackIconMaterial Kind="Filter"
+                                               Width="16"
+                                               Height="16"
+                                               VerticalAlignment="Center"
+                                               Margin="0,0,8,0" />
+                        <TextBlock Text="Filtros"
+                                   VerticalAlignment="Center" />
+                    </StackPanel>
+                </Button>
+            </Grid>
+        </Border>
+
+        <!-- Conteúdo principal com painel de fundo ancorado -->
+        <Grid Grid.Column="0"
+              Grid.Row="1">
+            <!-- Painel principal preenchendo todo o espaço -->
+            <Border  Style="{DynamicResource PrimaryCardStyle}"
+                     Margin="20">
+
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+
+                    <!-- Loading Indicator e Estado Vazio -->
+                    <views:LoadingAndEmptyStatePanel Grid.Row="0" />
+
+                    <!-- ListView moderno de editais -->
+                    <ListView Grid.Row="0"
+                              ItemsSource="{Binding EditaisView}"
+                              Style="{DynamicResource ModernListViewStyle}"
+                              Margin="0,0,-16,20"
+                              ScrollViewer.VerticalScrollBarVisibility="Visible"
+                              VirtualizingPanel.IsVirtualizing="True"
+                              VirtualizingPanel.VirtualizationMode="Recycling"
+                              ScrollViewer.IsDeferredScrollingEnabled="True"
+                              VirtualizingPanel.ScrollUnit="Item"
+                              VirtualizingPanel.CacheLength="10,10"
+                              VirtualizingPanel.CacheLengthUnit="Page"
+                              Visibility="{Binding IsCarregando, Converter={StaticResource InverseBooleanToVisibilityConverter}}">
+                        <ListView.ItemTemplate>
+                            <DataTemplate>
+                                <Border Style="{DynamicResource SecondaryCardStyle}"
+                                        Margin="0,0,0,8"
+                                        Padding="16,8">
+                                    <Grid>
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="Auto" />
+                                            <RowDefinition Height="Auto" />
+                                            <RowDefinition Height="Auto" />
+                                            <RowDefinition Height="Auto" />
+                                        </Grid.RowDefinitions>
+
+                                        <!-- Cargo e Órgão -->
+                                        <StackPanel Grid.Row="0">
+                                            <TextBlock Text="{Binding Cargo}"
+                                                       Style="{DynamicResource Title3Style}"
+                                                       Margin="0" />
+
+                                            <TextBlock Text="{Binding Orgao}"
+                                                       Style="{DynamicResource Title4Style}"
+                                                       Margin="0" />
+                                        </StackPanel>
+
+                                        <StackPanel Grid.Row="1"
+                                                    Orientation="Horizontal"
+                                                    Margin="0,12,0,0">
+
+                                            <!-- Informações do Edital -->
+                                            <!-- Data da Prova -->
+                                            <StackPanel Orientation="Horizontal"
+                                                        VerticalAlignment="Center"
+                                                        Margin="0,0,20,0">
+                                                <icon:PackIconMaterial Style="{DynamicResource CalendarioIconStyle}" />
+                                                <TextBlock Text="{Binding DataProva, StringFormat='dd/MM/yyyy'}"
+                                                           Style="{DynamicResource Text2Style}" />
+                                            </StackPanel>
+
+                                            <!-- Banca -->
+                                            <StackPanel Orientation="Horizontal"
+                                                        VerticalAlignment="Center"
+                                                        Margin="0,0,20,0">
+                                                <icon:PackIconMaterial Kind="School"
+                                                                       Style="{DynamicResource CalendarioIconStyle}" />
+                                                <TextBlock Text="{Binding Banca}"
+                                                           Style="{DynamicResource Text2Style}" />
+                                            </StackPanel>
+
+                                            <!-- Vagas -->
+                                            <StackPanel Orientation="Horizontal"
+                                                        VerticalAlignment="Center"
+                                                        Margin="0,0,20,0">
+                                                <icon:PackIconMaterial Kind="AccountGroup"
+                                                                       Style="{DynamicResource CalendarioIconStyle}" />
+                                                <TextBlock Text="{Binding VagasImediatas, StringFormat='{}{0} vagas'}"
+                                                           Style="{DynamicResource Text2Style}" />
+                                            </StackPanel>
+
+                                            <!-- Salário -->
+                                            <StackPanel Orientation="Horizontal"
+                                                        VerticalAlignment="Center"
+                                                        Margin="0,0,20,0">
+                                                <icon:PackIconMaterial Kind="CurrencyUsd"
+                                                                       Style="{DynamicResource CalendarioIconStyle}" />
+                                                <TextBlock Text="{Binding Salario}"
+                                                           Style="{DynamicResource Text2Style}" />
+                                            </StackPanel>
+
+                                            <!-- Estatísticas Consolidadas do Edital -->
+                                            <!-- Acertos -->
+                                            <StackPanel Orientation="Horizontal"
+                                                        VerticalAlignment="Center"
+                                                        Margin="0,0,20,0">
+                                                <icon:PackIconMaterial Style="{DynamicResource AcertosIconStyle}" />
+                                                <TextBlock Style="{DynamicResource AcertosTextStyle}"
+                                                           Margin="4,0,0,0">
+                                                    <TextBlock.Text>
+                                                        <MultiBinding Converter="{StaticResource EditalAcertosConverter}">
+                                                            <Binding />
+                                                        </MultiBinding>
+                                                    </TextBlock.Text>
+                                                </TextBlock>
+                                            </StackPanel>
+
+                                            <!-- Erros -->
+                                            <StackPanel Orientation="Horizontal"
+                                                        VerticalAlignment="Center"
+                                                        Margin="0,0,20,0">
+                                                <icon:PackIconMaterial Style="{DynamicResource ErrosIconStyle}" />
+                                                <TextBlock Style="{DynamicResource ErrosTextStyle}"
+                                                           Margin="4,0,0,0">
+                                                    <TextBlock.Text>
+                                                        <MultiBinding Converter="{StaticResource EditalErrosConverter}">
+                                                            <Binding />
+                                                        </MultiBinding>
+                                                    </TextBlock.Text>
+                                                </TextBlock>
+                                            </StackPanel>
+
+                                            <!-- Total de Questões -->
+                                            <StackPanel Orientation="Horizontal"
+                                                        VerticalAlignment="Center"
+                                                        Margin="0,0,20,0">
+                                                <icon:PackIconMaterial Style="{DynamicResource QuestoesIconStyle}" />
+                                                <TextBlock Style="{DynamicResource QuestoesTextStyle}">
+                                                    <TextBlock.Text>
+                                                        <MultiBinding Converter="{StaticResource EditalTotalQuestoesConverter}">
+                                                            <Binding />
+                                                        </MultiBinding>
+                                                    </TextBlock.Text>
+                                                </TextBlock>
+                                            </StackPanel>
+
+                                            <!-- Rendimento -->
+                                            <StackPanel Orientation="Horizontal"
+                                                        VerticalAlignment="Center"
+                                                        Margin="0,0,20,0">
+                                                <icon:PackIconMaterial Style="{DynamicResource RendimentoIconStyle}" />
+                                                <TextBlock Style="{DynamicResource RendimentoTextStyle}">
+                                                    <TextBlock.Text>
+                                                        <MultiBinding Converter="{StaticResource EditalRendimentoConverter}">
+                                                            <Binding />
+                                                        </MultiBinding>
+                                                    </TextBlock.Text>
+                                                </TextBlock>
+                                            </StackPanel>
+
+                                            <!-- Horas Estudadas -->
+                                            <StackPanel Orientation="Horizontal"
+                                                        VerticalAlignment="Center"
+                                                        Margin="0,0,20,0">
+                                                <icon:PackIconMaterial Style="{DynamicResource HorasEstudadasIconStyle}" />
+                                                <TextBlock Style="{DynamicResource HorasEstudadasTextStyle}"
+                                                           Margin="4,0,0,0">
+                                                    <TextBlock.Text>
+                                                        <MultiBinding Converter="{StaticResource EditalHorasEstudadasConverter}">
+                                                            <Binding />
+                                                        </MultiBinding>
+                                                    </TextBlock.Text>
+                                                </TextBlock>
+                                            </StackPanel>
+
+                                            <!-- Total de Páginas Lidas -->
+                                            <StackPanel Orientation="Horizontal"
+                                                        VerticalAlignment="Center">
+                                                <icon:PackIconMaterial Style="{DynamicResource PaginasLidasIconStyle}" />
+                                                <TextBlock Style="{DynamicResource PaginasLidasTextStyle}">
+                                                    <TextBlock.Text>
+                                                        <MultiBinding Converter="{StaticResource EditalTotalPaginasLidasConverter}">
+                                                            <Binding />
+                                                        </MultiBinding>
+                                                    </TextBlock.Text>
+                                                </TextBlock>
+                                            </StackPanel>
+
+                                        </StackPanel>
+
+                                        <!-- Progresso e Ações -->
+                                        <Grid Grid.Row="2"
+                                              Margin="0,12,0,0">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="*" />
+                                                <ColumnDefinition Width="Auto" />
+                                                <ColumnDefinition Width="Auto" />
+                                            </Grid.ColumnDefinitions>
+
+                                            <!-- Barra de progresso -->
+                                            <StackPanel Grid.Column="0"
+                                                        VerticalAlignment="Center"
+                                                        Margin="0,0,16,0">
+                                                <Grid Height="24"
+                                                      HorizontalAlignment="Stretch">
+                                                    <ProgressBar Height="24"
+                                                                 Minimum="0"
+                                                                 Maximum="100"
+                                                                 Value="{Binding ProgressoGeral, Mode=OneWay}"
+                                                                 Background="{DynamicResource BorderBrush}"
+                                                                 Foreground="{DynamicResource PrimaryBrush}"
+                                                                 BorderThickness="0">
+                                                        <ProgressBar.Style>
+                                                            <Style TargetType="ProgressBar">
+                                                                <Setter Property="Template">
+                                                                    <Setter.Value>
+                                                                        <ControlTemplate TargetType="ProgressBar">
+                                                                            <Border Background="{TemplateBinding Background}"
+                                                                                    CornerRadius="6"
+                                                                                    Height="{TemplateBinding Height}">
+                                                                                <Grid>
+                                                                                    <Border Name="PART_Track"
+                                                                                            Background="{TemplateBinding Background}"
+                                                                                            CornerRadius="6" />
+                                                                                    <Border Name="PART_Indicator"
+                                                                                            Background="{TemplateBinding Foreground}"
+                                                                                            CornerRadius="6"
+                                                                                            HorizontalAlignment="Left" />
+                                                                                </Grid>
+                                                                            </Border>
+                                                                        </ControlTemplate>
+                                                                    </Setter.Value>
+                                                                </Setter>
+                                                            </Style>
+                                                        </ProgressBar.Style>
+                                                    </ProgressBar>
+
+                                                    <!-- Texto do progresso dentro da barra -->
+                                                    <TextBlock Text="{Binding ProgressoGeral, StringFormat={}{0:F0}%}"
+                                                               HorizontalAlignment="Center"
+                                                               VerticalAlignment="Center"
+                                                               FontSize="11"
+                                                               FontWeight="SemiBold"
+                                                               Foreground="White" />
+                                                </Grid>
+
+                                            </StackPanel>
+
+                                            <!-- Status -->
+                                            <Border Grid.Column="1"
+                                                    Background="{Binding ., Converter={StaticResource EditalStatusColorConverter}}"
+                                                    CornerRadius="12"
+                                                    Padding="12,6"
+                                                    Margin="0,0,16,0"
+                                                    VerticalAlignment="Center">
+                                                <TextBlock Text="{Binding ., Converter={StaticResource EditalStatusConverter}}"
+                                                           Foreground="White"
+                                                           FontSize="12"
+                                                           FontWeight="SemiBold" />
+                                            </Border>
+
+                                            <!-- Ações -->
+                                            <StackPanel Grid.Column="2"
+                                                        Orientation="Horizontal"
+                                                        VerticalAlignment="Center">
+                                                <Button Style="{StaticResource IconButtonStyle}"
+                                                        Command="{Binding DataContext.EditarEditalCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                        CommandParameter="{Binding}"
+                                                        ToolTip="Abrir"
+                                                        Margin="0,0,8,0">
+                                                    <icon:PackIconMaterial Style="{DynamicResource AbrirIconStyle}" />
+                                                </Button>                                                
+                                                <Button Style="{StaticResource IconButtonStyle}"
+                                                        Command="{Binding DataContext.DuplicarEditalCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                        CommandParameter="{Binding}"
+                                                        ToolTip="Duplicar">
+                                                    <icon:PackIconMaterial Style="{DynamicResource DuplicarIconStyle}" />
+                                                </Button>
+                                                <Button Style="{StaticResource IconButtonStyle}"
+                                                        Command="{Binding DataContext.ExcluirEditalCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                        CommandParameter="{Binding}"
+                                                        ToolTip="Excluir">
+                                                    <icon:PackIconMaterial Style="{DynamicResource ExcluirIconStyle}" />
+                                                </Button>
+                                            </StackPanel>
+                                        </Grid>
+                                    </Grid>
+                                </Border>
+                            </DataTemplate>
+                        </ListView.ItemTemplate>
+                    </ListView>
+
+                    <!-- Controles de rodapé integrados ancorados na parte inferior -->
+                    <Border Grid.Row="1"
+                            Style="{DynamicResource ViewFooterStyle}">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+
+                            <!-- Total de itens -->
+                            <TextBlock Grid.Column="0"
+                                       Style="{DynamicResource Text2Style}">
+                                <TextBlock.Text>
+                                    <MultiBinding StringFormat="Total de {0} editais">
+                                        <Binding Path="FilteredCount" />
+                                    </MultiBinding>
+                                </TextBlock.Text>
+                            </TextBlock>
+
+                            <!-- Controles de paginação -->
+                            <StackPanel Grid.Column="1"
+                                        Orientation="Horizontal"
+                                        VerticalAlignment="Center">
+                                <Button Style="{StaticResource PaginationButtonStyle}"
+                                        Command="{Binding FirstPageCommand}"
+                                        ToolTip="Primeira página">
+                                    <icon:PackIconMaterial Kind="PageFirst"
+                                                           Width="16"
+                                                           Height="16" />
+                                </Button>
+
+                                <Button Style="{StaticResource PaginationButtonStyle}"
+                                        Command="{Binding PreviousPageCommand}"
+                                        ToolTip="Página anterior">
+                                    <icon:PackIconMaterial Kind="ChevronLeft"
+                                                           Width="16"
+                                                           Height="16" />
+                                </Button>
+
+                                <Border Background="{DynamicResource SurfaceBrush}"
+                                        BorderBrush="{DynamicResource BorderBrush}"
+                                        BorderThickness="1"
+                                        CornerRadius="4"
+                                        Padding="12,6"
+                                        Margin="4,0">
+                                    <TextBlock Style="{DynamicResource Text3Style}">
+                                        <TextBlock.Text>
+                                            <MultiBinding StringFormat="Página {0} de {1}">
+                                                <Binding Path="CurrentPage" />
+                                                <Binding Path="TotalPages" />
+                                            </MultiBinding>
+                                        </TextBlock.Text>
+                                    </TextBlock>
+                                </Border>
+
+                                <Button Style="{StaticResource PaginationButtonStyle}"
+                                        Command="{Binding NextPageCommand}"
+                                        ToolTip="Próxima página">
+                                    <icon:PackIconMaterial Kind="ChevronRight"
+                                                           Width="16"
+                                                           Height="16" />
+                                </Button>
+
+                                <Button Style="{StaticResource PaginationButtonStyle}"
+                                        Command="{Binding LastPageCommand}"
+                                        ToolTip="Última página">
+                                    <icon:PackIconMaterial Kind="PageLast"
+                                                           Width="16"
+                                                           Height="16" />
+                                </Button>
+                            </StackPanel>
+                        </Grid>
+                    </Border>
+                </Grid>
+            </Border>
+        </Grid>
+
+        <!-- Painel Lateral de Filtros -->
+        <Border Grid.Column="1"
+                Grid.Row="0"
+                Grid.RowSpan="2"
+                Margin="0,10,0,0"
+                Width="300"
+                Background="{DynamicResource CardBrush}"
+                BorderBrush="{DynamicResource BorderBrush}"
+                BorderThickness="1,1,0,0"
+                CornerRadius="8,0,0,0"
+                Visibility="{Binding IsFiltrosPanelVisible, Converter={StaticResource BoolToVisibilityConverter}}">
+            <ScrollViewer VerticalScrollBarVisibility="Auto">
+                <StackPanel Margin="20">
+                    <!-- Cabeçalho do Painel -->
+                    <Grid Margin="0,0,0,20">
+                        <TextBlock Text="Filtros"
+                                   FontSize="18"
+                                   FontWeight="SemiBold"
+                                   Foreground="{DynamicResource TextPrimaryBrush}"
+                                   VerticalAlignment="Center" />
+                        <Button HorizontalAlignment="Right"
+                                Style="{StaticResource IconButtonStyle}"
+                                Command="{Binding ToggleFiltrosPanelCommand}"
+                                ToolTip="Fechar">
+                            <icon:PackIconMaterial Kind="Close"
+                                                   Width="16"
+                                                   Height="16" />
+                        </Button>
+                    </Grid>
+
+                    <!-- Data Abertura Início -->
+                    <StackPanel Margin="0,0,0,15">
+                        <TextBlock Text="Data Abertura (Início)"
+                                   Margin="0,0,0,8"
+                                   FontSize="14"
+                                   FontWeight="Medium"
+                                   Foreground="{DynamicResource TextPrimaryBrush}" />
+                        <DatePicker SelectedDate="{Binding DataAberturaInicio}"
+                                    Height="32"
+                                    Background="{DynamicResource InputBackgroundBrush}"
+                                    BorderBrush="{DynamicResource InputBorderBrush}"
+                                    Padding="10,8"
+                                    BorderThickness="1"
+                                    VerticalContentAlignment="Center"
+                                    Style="{StaticResource ModernDatePickerStyle}"
+                                    Tag="Inicio" />
+                    </StackPanel>
+
+                    <!-- Data Abertura Fim -->
+                    <StackPanel Margin="0,0,0,15">
+                        <TextBlock Text="Data Abertura (Fim)"
+                                   Margin="0,0,0,8"
+                                   FontSize="14"
+                                   FontWeight="Medium"
+                                   Foreground="{DynamicResource TextPrimaryBrush}" />
+                        <DatePicker SelectedDate="{Binding DataAberturaFim}"
+                                    Height="32"
+                                    Background="{DynamicResource InputBackgroundBrush}"
+                                    BorderBrush="{DynamicResource InputBorderBrush}"
+                                    Style="{StaticResource ModernDatePickerStyle}" />
+                    </StackPanel>
+
+                    <!-- Data Prova Início -->
+                    <StackPanel Margin="0,0,0,15">
+                        <TextBlock Text="Data Prova (Início)"
+                                   Margin="0,0,0,8"
+                                   FontSize="14"
+                                   FontWeight="Medium"
+                                   Foreground="{DynamicResource TextPrimaryBrush}" />
+                        <DatePicker SelectedDate="{Binding DataProvaInicio}"
+                                    Height="32"
+                                    Background="{DynamicResource InputBackgroundBrush}"
+                                    BorderBrush="{DynamicResource InputBorderBrush}"
+                                    Style="{StaticResource ModernDatePickerStyle}" />
+                    </StackPanel>
+
+                    <!-- Data Prova Fim -->
+                    <StackPanel Margin="0,0,0,15">
+                        <TextBlock Text="Data Prova (Fim)"
+                                   Margin="0,0,0,8"
+                                   FontSize="14"
+                                   FontWeight="Medium"
+                                   Foreground="{DynamicResource TextPrimaryBrush}" />
+                        <DatePicker SelectedDate="{Binding DataProvaFim}"
+                                    Height="32"
+                                    Background="{DynamicResource InputBackgroundBrush}"
+                                    BorderBrush="{DynamicResource InputBorderBrush}"
+                                    Style="{StaticResource ModernDatePickerStyle}" />
+                    </StackPanel>
+
+                    <!-- Fase do Edital -->
+                    <StackPanel Margin="0,0,0,15">
+                        <ComboBox ItemsSource="{Binding FasesEdital}"
+                                  SelectedItem="{Binding FaseEditalFiltro}"
+                                  DisplayMemberPath="Fase"
+                                  Style="{StaticResource ModernComboBoxStyle}"
+                                  Tag="Fase do Edital" />
+                    </StackPanel>
+
+                    <!-- Apenas Ativos -->
+                    <StackPanel Margin="0,0,0,20">
+                        <CheckBox Content="Apenas editais ativos"
+                                  IsChecked="{Binding FiltrarApenasAtivos}"
+                                  FontSize="14"
+                                  FontWeight="Medium"
+                                  Foreground="{DynamicResource TextPrimaryBrush}"
+                                  Margin="0,8,0,0"
+                                  Style="{DynamicResource RoundedCheckBoxStyle}" />
+                    </StackPanel>
+
+                    <!-- Botões de Ação -->
+                    <StackPanel Orientation="Horizontal"
+                                HorizontalAlignment="Stretch">
+                        <Button Command="{Binding AplicarFiltrosCommand}"
+                                Margin="0,0,10,0"
+                                Height="36"
+                                HorizontalAlignment="Stretch"
+                                Width="125"
+                                Style="{StaticResource ModernButtonStyle}">
+                            <StackPanel Orientation="Horizontal">
+                                <icon:PackIconMaterial Kind="Filter"
+                                                       Width="16"
+                                                       Height="16"
+                                                       Margin="0,0,8,0" />
+                                <TextBlock Text="Aplicar" />
+                            </StackPanel>
+                        </Button>
+
+                        <Button Command="{Binding LimparFiltrosCommand}"
+                                Height="36"
+                                HorizontalAlignment="Stretch"
+                                Width="125"
+                                Style="{StaticResource ModernButtonStyle}">
+                            <StackPanel Orientation="Horizontal">
+                                <icon:PackIconMaterial Kind="FilterRemove"
+                                                       Width="16"
+                                                       Height="16"
+                                                       Margin="0,0,8,0" />
+                                <TextBlock Text="Limpar" />
+                            </StackPanel>
+                        </Button>
+                    </StackPanel>
+                </StackPanel>
+            </ScrollViewer>
+        </Border>
+    </Grid>
+</UserControl>

@@ -1,0 +1,444 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<UserControl x:Class="StudyMinder.Views.ViewEditalEditarInformacoes"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:icon="http://metro.mahapps.com/winfx/xaml/iconpacks"
+             xmlns:converters="clr-namespace:StudyMinder.Converters"
+             mc:Ignorable="d"
+             d:DesignHeight="600"
+             d:DesignWidth="800">
+
+    <UserControl.Resources>
+        <converters:EditalTotalQuestoesConverter x:Key="EditalTotalQuestoesConverter" />
+        <converters:EditalHorasEstudadasConverter x:Key="EditalHorasEstudadasConverter" />
+        <converters:EditalTotalPaginasLidasConverter x:Key="EditalTotalPaginasLidasConverter" />
+        <converters:EditalStatusConverter x:Key="EditalStatusConverter" />
+        <converters:EditalStatusColorConverter x:Key="EditalStatusColorConverter" />
+        <converters:EditalRendimentoConverter x:Key="EditalRendimentoConverter" />
+        <converters:EditalAcertosConverter x:Key="EditalAcertosConverter" />
+        <converters:EditalErrosConverter x:Key="EditalErrosConverter" />
+        <converters:NullableIntConverter x:Key="NullableIntConverter" />
+    </UserControl.Resources>
+
+    <ScrollViewer VerticalScrollBarVisibility="Visible"
+                  HorizontalScrollBarVisibility="Disabled"
+                  Margin="0,0,-16,0"
+                  Style="{DynamicResource ModernScrollViewerStyle}">
+        <StackPanel Margin="0,0,0,0">
+            <!-- Informações do Cargo -->
+            <TextBlock Text="Dados do Cargo"
+                       Style="{DynamicResource Title2Style}" />
+
+            <StackPanel Margin="0,0,0,16">
+
+                <Grid Margin="0,0,0,8">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="2*" />
+                        <ColumnDefinition Width="2*" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+
+                    <TextBox Grid.Column="0"
+                             Text="{Binding Cargo, UpdateSourceTrigger=PropertyChanged}"
+                             Style="{DynamicResource ModernTextBoxWithPlaceholderStyle}"
+                             Margin="0,0,8,0"
+                             Tag="Cargo" />
+
+                    <TextBox Grid.Column="1"
+                             Text="{Binding Orgao, UpdateSourceTrigger=PropertyChanged}"
+                             Style="{DynamicResource ModernTextBoxWithPlaceholderStyle}"
+                             Margin="0,0,8,0"
+                             Tag="Órgão" />
+
+                    <ComboBox Grid.Column="5"
+                              ItemsSource="{Binding Escolaridades}"
+                              SelectedValue="{Binding EscolaridadeId, UpdateSourceTrigger=PropertyChanged}"
+                              DisplayMemberPath="Nome"
+                              SelectedValuePath="Id"
+                              Style="{DynamicResource ModernComboBoxStyle}"
+                              Margin="0,0,0,0"
+                              Tag="Escolaridade" />
+                </Grid>
+
+                <Grid Margin="0,0,0,8">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+
+                    <TextBox Grid.Column="0"
+                             Text="{Binding Salario, UpdateSourceTrigger=PropertyChanged}"
+                             Style="{DynamicResource ModernTextBoxWithPlaceholderStyle}"
+                             Margin="0,0,8,0"
+                             Tag="Salário" />
+
+                    <TextBox Grid.Column="1"
+                             Text="{Binding VagasImediatas, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource NullableIntConverter}}"
+                             Style="{DynamicResource ModernTextBoxWithPlaceholderStyle}"
+                             Margin="0,0,8,0"
+                             Tag="Vagas Imediatas" />
+
+                    <TextBox Grid.Column="2"
+                             Text="{Binding VagasCadastroReserva, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource NullableIntConverter}}"
+                             Style="{DynamicResource ModernTextBoxWithPlaceholderStyle}"
+                             Margin="0,0,0,0"
+                             Tag="Cadastro de Reserva" />
+                </Grid>
+            </StackPanel>
+
+            <!-- Informações do Concurso -->
+            <TextBlock Text="Dados do Concurso"
+                       Margin="0,0,0,8"
+                       Style="{DynamicResource Title2Style}" />
+
+            <StackPanel Margin="0,0,0,16">
+
+                <Grid Margin="0,0,0,8">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+
+                    <ComboBox Grid.Column="0"
+                              Grid.Row="0"
+                              ItemsSource="{Binding FasesEdital}"
+                              SelectedValue="{Binding FaseEditalId, UpdateSourceTrigger=PropertyChanged}"
+                              DisplayMemberPath="Fase"
+                              SelectedValuePath="Id"
+                              Style="{DynamicResource ModernComboBoxStyle}"
+                              Margin="0,0,8,0"
+                              Tag="Fase" />
+
+                    <TextBox Grid.Column="1"
+                             Grid.Row="0"
+                             Text="{Binding Banca, UpdateSourceTrigger=PropertyChanged}"
+                             Style="{DynamicResource ModernTextBoxWithPlaceholderStyle}"
+                             Margin="0,0,8,0"
+                             Tag="Banca" />
+
+                    <TextBox Grid.Column="2"
+                             Grid.Row="0"
+                             Text="{Binding Area, UpdateSourceTrigger=PropertyChanged}"
+                             Style="{DynamicResource ModernTextBoxWithPlaceholderStyle}"
+                             Margin="0,0,8,0"
+                             Tag="Área" />
+
+                    <TextBox Grid.Column="3"
+                             Grid.Row="0"
+                             Text="{Binding Link, UpdateSourceTrigger=PropertyChanged}"
+                             Style="{DynamicResource ModernTextBoxWithPlaceholderStyle}"
+                             Margin="0,0,0,0"
+                             Tag="Link do Edital" />
+
+                    <Button Grid.Column="4"
+                            Style="{StaticResource SecondaryButtonStyle}"
+                            Command="{Binding AbrirLinkEditalCommand}"
+                            Margin="8,0,0,0"
+                            Padding="0"
+                            ToolTip="Abrir Página do Concurso"
+                            Width="36"
+                            Height="36">
+                        <!--<Button.IsEnabled>
+                    <MultiBinding Converter="{StaticResource StringToBooleanConverter}">
+                        <Binding Path="AssuntoSelecionado.CadernoQuestoes" />
+                        <Binding Path="AssuntoSelecionado.CadernoQuestoes" />
+                    </MultiBinding>
+                </Button.IsEnabled>-->
+                        <icon:PackIconMaterial Kind="Earth"
+                                               Width="16"
+                                               Height="16" />
+                    </Button>
+                </Grid>
+
+                <Grid Margin="0,0,0,8">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+
+                    <TextBox Grid.Column="0"
+                             Text="{Binding ValorInscricao, UpdateSourceTrigger=PropertyChanged}"
+                             Style="{DynamicResource ModernTextBoxWithPlaceholderStyle}"
+                             Margin="0,0,8,0"
+                             Tag="Valor da Inscrição" />
+
+                    <DatePicker Grid.Column="1"
+                                Grid.Row="0"
+                                SelectedDate="{Binding DataAbertura}"
+                                Style="{DynamicResource ModernDatePickerStyle}"
+                                Margin="0,0,8,0"
+                                Tag="Data de Abertura" />
+
+                    <DatePicker Grid.Column="2"
+                                Grid.Row="0"
+                                SelectedDate="{Binding DataProva}"
+                                Style="{DynamicResource ModernDatePickerStyle}"
+                                Margin="0,0,8,0"
+                                Tag="Data da Prova" />
+
+                    <CheckBox Grid.Column="3"
+                              IsChecked="{Binding BoletoPago}"
+                              Content="Boleto Pago"
+                              Style="{DynamicResource RoundedCheckBoxStyle}"
+                              Margin="0,0,0,0" />
+                </Grid>
+
+                <StackPanel Orientation="Horizontal">
+
+                    <CheckBox IsChecked="{Binding ProvaDiscursiva}"
+                              Content="Prova Discursiva"
+                              Style="{DynamicResource RoundedCheckBoxStyle}"
+                              Margin="0,0,16,0" />
+                    <CheckBox IsChecked="{Binding ProvaTitulos}"
+                              Content="Prova de Títulos"
+                              Style="{DynamicResource RoundedCheckBoxStyle}"
+                              Margin="0,0,16,0" />
+                    <CheckBox IsChecked="{Binding ProvaTaf}"
+                              Content="Prova TAF"
+                              Style="{DynamicResource RoundedCheckBoxStyle}"
+                              Margin="0,0,16,0" />
+                    <CheckBox IsChecked="{Binding ProvaPratica}"
+                              Content="Prova Prática"
+                              Style="{DynamicResource RoundedCheckBoxStyle}" />
+                </StackPanel>
+            </StackPanel>
+
+            <!-- Informações da Prova -->
+            <TextBlock Text="Dados da Prova"
+                       Margin="0,8,0,8"
+                       Style="{DynamicResource Title2Style}" />
+
+            <StackPanel Margin="0,0,0,8">
+
+                <Grid Margin="0,0,0,8">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="1.5*" />
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+
+                    <TextBox Grid.Column="0"
+                             Text="{Binding NumeroInscricao, UpdateSourceTrigger=PropertyChanged}"
+                             Style="{DynamicResource ModernTextBoxWithPlaceholderStyle}"
+                             Margin="0,0,8,0"
+                             Tag="Número de Inscrição" />
+
+                    <TextBox Grid.Column="1"
+                             Text="{Binding Concorrencia, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource NullableIntConverter}}"
+                             Style="{DynamicResource ModernTextBoxWithPlaceholderStyle}"
+                             Margin="0,0,8,0"
+                             Tag="Concorrência" />
+
+                    <TextBox Grid.Column="2"
+                             Text="{Binding Colocacao, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource NullableIntConverter}}"
+                             Style="{DynamicResource ModernTextBoxWithPlaceholderStyle}"
+                             Margin="0,0,8,0"
+                             Tag="Colocação" />
+
+                    <TextBox Grid.Column="3"
+                             Text="{Binding ColocacaoPercentil, Mode=OneWay, StringFormat='{}{0:F2}%'}"
+                             Style="{DynamicResource ModernTextBoxWithPlaceholderStyle}"
+                             Margin="0,0,8,0"
+                             Tag="Percentil"
+                             IsReadOnly="True" />
+
+                    <!-- Status Badge -->
+                    <Border Grid.Column="4"
+                            Background="{Binding CurrentEdital, Converter={StaticResource EditalStatusColorConverter}}"
+                            CornerRadius="12"
+                            Padding="12,6"
+                            VerticalAlignment="Center">
+                        <TextBlock Text="{Binding CurrentEdital, Converter={StaticResource EditalStatusConverter}}"
+                                   Foreground="White"
+                                   FontSize="12"
+                                   FontWeight="SemiBold"
+                                   HorizontalAlignment="Center" />
+                    </Border>
+                </Grid>
+
+                <Grid Margin="0,0,0,8">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+
+                    <ComboBox Grid.Column="0"
+                              ItemsSource="{Binding TiposProva}"
+                              SelectedValue="{Binding TipoProvaId, UpdateSourceTrigger=PropertyChanged}"
+                              DisplayMemberPath="Nome"
+                              SelectedValuePath="Id"
+                              Style="{DynamicResource ModernComboBoxStyle}"
+                              Margin="0,0,8,0"
+                              Tag="Tipo de Prova" />
+
+                    <TextBox Grid.Column="1"
+                             Text="{Binding AcertosProva, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource NullableIntConverter}}"
+                             Style="{DynamicResource ModernTextBoxWithPlaceholderStyle}"
+                             Margin="0,0,8,0"
+                             Tag="Acertos na Prova" />
+
+                    <TextBox Grid.Column="2"
+                             Text="{Binding ErrosProva, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource NullableIntConverter}}"
+                             Style="{DynamicResource ModernTextBoxWithPlaceholderStyle}"
+                             Margin="0,0,8,0"
+                             Tag="Erros na Prova" />
+
+                    <TextBox Grid.Column="3"
+                             Text="{Binding BrancosProva, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource NullableIntConverter}}"
+                             Style="{DynamicResource ModernTextBoxWithPlaceholderStyle}"
+                             Margin="0,0,8,0"
+                             Tag="Em Branco na Prova" />
+
+                    <TextBox Grid.Column="4"
+                             Text="{Binding AnuladasProva, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource NullableIntConverter}}"
+                             Style="{DynamicResource ModernTextBoxWithPlaceholderStyle}"
+                             Margin="0,0,8,0"
+                             Tag="Anuladas" />
+
+                    <TextBox Grid.Column="5"
+                             Text="{Binding CurrentEdital.RendimentoProva, StringFormat='{}{0:F2}%', Mode=OneWay}"
+                             Style="{DynamicResource ModernTextBoxWithPlaceholderStyle}"
+                             Margin="0,0,0,0"
+                             Tag="Rendimento na Prova"
+                             IsReadOnly="True" />
+
+                </Grid>
+            </StackPanel>
+
+            <!-- Informações de Homologação e Encerramento -->
+            <TextBlock Text="Homologação e Encerramento"
+                       Margin="0,0,0,8"
+                       Style="{DynamicResource Title2Style}" />
+
+            <Grid Margin="0,0,0,16">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+
+                <TextBox Grid.Column="0"
+                         Text="{Binding Validade}"
+                         Style="{DynamicResource ModernTextBoxWithPlaceholderStyle}"
+                         Margin="0,0,8,0"
+                         Tag="Validade (meses)" />
+
+                <DatePicker Grid.Column="1"
+                            Grid.Row="0"
+                            SelectedDate="{Binding DataHomologacao}"
+                            Style="{DynamicResource ModernDatePickerStyle}"
+                            Margin="0,0,8,0"
+                            Tag="Data da Homologação" />
+
+                <!-- Fim da Validade é um campo calculado adicionando os meses de Validade à Data de homologação -->
+                <TextBox Grid.Column="2"
+                         Text="{Binding ValidadeFim, Mode=OneWay, StringFormat='{}{0:dd/MM/yyyy}', TargetNullValue=''}"
+                         Style="{DynamicResource ModernTextBoxWithPlaceholderStyle}"
+                         IsReadOnly="True"
+                         Margin="0,0,8,0"
+                         Tag="Fim da Validade" />
+
+                <!-- Encerrado será um campo calculado a partir de 'data de homologação != null'-->
+                <CheckBox Grid.Column="3"
+                          IsChecked="{Binding Encerrado, Mode=OneWay}"
+                          Content="Edital Encerrado"
+                          Style="{DynamicResource RoundedCheckBoxStyle}"
+                          IsEnabled="False"
+                          HorizontalAlignment="Left"
+                          Margin="0,0,8,0" />
+
+                <CheckBox Grid.Column="4"
+                          IsChecked="{Binding IsArquivado, UpdateSourceTrigger=PropertyChanged}"
+                          Content="Arquivar Edital"
+                          Style="{DynamicResource RoundedCheckBoxStyle}"
+                          HorizontalAlignment="Left"
+                          Margin="0,0,8,0" />
+            </Grid>
+
+            <TextBlock Text="Estatísticas"
+                       Style="{DynamicResource Title2Style}" />
+
+            <!-- Painel de Estatísticas Dinâmicas -->
+            <Border Style="{DynamicResource SecondaryCardStyle}">
+                <StackPanel Orientation="Horizontal"
+                            VerticalAlignment="Center">
+
+                    <!-- Progresso -->
+                    <StackPanel Orientation="Horizontal"
+                                VerticalAlignment="Center"
+                                Margin="0,0,24,0">
+                        <icon:PackIconMaterial Style="{DynamicResource ProgressoIconStyle}" />
+                        <TextBlock Text="{Binding CurrentEdital.ProgressoGeral, StringFormat='{}{0:F0}%'}"
+                                   Style="{DynamicResource ProgressoTextStyle}" />
+                    </StackPanel>
+
+                    <!-- Total de Assuntos -->
+                    <StackPanel Orientation="Horizontal"
+                                VerticalAlignment="Center"
+                                Margin="0,0,24,0">
+                        <icon:PackIconMaterial Style="{DynamicResource AssuntosTotalIconStyle}" />
+                        <TextBlock Text="{Binding CurrentEdital.EditalAssuntos.Count}"
+                                   Style="{DynamicResource AssuntosTotalTextStyle}" />
+                    </StackPanel>
+
+                    <!-- Total de Questões -->
+                    <StackPanel Orientation="Horizontal"
+                                VerticalAlignment="Center"
+                                Margin="0,0,24,0">
+                        <icon:PackIconMaterial Style="{DynamicResource QuestoesIconStyle}" />
+                        <TextBlock Style="{DynamicResource QuestoesTextStyle}">
+                            <TextBlock.Text>
+                                <MultiBinding Converter="{StaticResource EditalTotalQuestoesConverter}">
+                                    <Binding Path="CurrentEdital" />
+                                </MultiBinding>
+                            </TextBlock.Text>
+                        </TextBlock>
+                    </StackPanel>
+
+                    <!-- Horas Estudadas -->
+                    <StackPanel Orientation="Horizontal"
+                                VerticalAlignment="Center"
+                                Margin="0,0,24,0">
+                        <icon:PackIconMaterial Style="{DynamicResource HorasEstudadasIconStyle}" />
+                        <TextBlock Style="{DynamicResource HorasEstudadasTextStyle}">
+                            <TextBlock.Text>
+                                <MultiBinding Converter="{StaticResource EditalHorasEstudadasConverter}">
+                                    <Binding Path="CurrentEdital" />
+                                </MultiBinding>
+                            </TextBlock.Text>
+                        </TextBlock>
+                    </StackPanel>
+
+                    <!-- Total de Páginas Lidas -->
+                    <StackPanel Orientation="Horizontal"
+                                VerticalAlignment="Center">
+                        <icon:PackIconMaterial Style="{StaticResource PaginasLidasIconStyle}" />
+                        <TextBlock Style="{DynamicResource PaginasLidasTextStyle}">
+                            <TextBlock.Text>
+                                <MultiBinding Converter="{StaticResource EditalTotalPaginasLidasConverter}">
+                                    <Binding Path="CurrentEdital" />
+                                </MultiBinding>
+                            </TextBlock.Text>
+                        </TextBlock>
+                    </StackPanel>
+                </StackPanel>
+            </Border>
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>

@@ -1,0 +1,553 @@
+<UserControl x:Class="StudyMinder.Views.ViewConfiguracoes"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:icon="http://metro.mahapps.com/winfx/xaml/iconpacks"
+             mc:Ignorable="d"
+             d:DesignHeight="600"
+             d:DesignWidth="800"
+             d:DataContext="{d:DesignInstance Type=viewmodels:ConfiguracoesViewModel}"
+             Background="{DynamicResource BackgroundBrush}">
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <!-- Header -->
+        <Border Grid.Row="0"
+                Style="{DynamicResource ViewHeaderStyle}">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+
+                <StackPanel Grid.Column="0"
+                            Orientation="Horizontal">
+                    <TextBlock Text="Configurações"
+                               FontSize="24"
+                               FontWeight="SemiBold"
+                               VerticalAlignment="Center"
+                               Foreground="{DynamicResource TextPrimaryBrush}" />
+                </StackPanel>
+
+                <StackPanel Grid.Column="1"
+                            Orientation="Horizontal"
+                            HorizontalAlignment="Right">
+                    <Button Style="{StaticResource ModernButtonStyle}"
+                            Command="{Binding SalvarAsyncCommand}"
+                            IsEnabled="{Binding IsSaving, Converter={StaticResource InverseBooleanConverter}}"
+                            VerticalAlignment="Center"
+                            MinWidth="120">
+                        <StackPanel Orientation="Horizontal">
+                            <icon:PackIconMaterial Kind="ContentSave"
+                                                   Width="16"
+                                                   Height="16"
+                                                   Margin="0,0,8,0"
+                                                   Visibility="{Binding IsSaving, Converter={StaticResource InverseBooleanToVisibilityConverter}}" />
+                            <icon:PackIconMaterial Kind="Loading"
+                                                   Width="16"
+                                                   Height="16"
+                                                   Margin="0,0,8,0"
+                                                   Visibility="{Binding IsSaving, Converter={StaticResource BoolToVisibilityConverter}}">
+                                <icon:PackIconMaterial.RenderTransform>
+                                    <RotateTransform />
+                                </icon:PackIconMaterial.RenderTransform>
+                                <icon:PackIconMaterial.Triggers>
+                                    <EventTrigger RoutedEvent="Loaded">
+                                        <BeginStoryboard>
+                                            <Storyboard RepeatBehavior="Forever">
+                                                <DoubleAnimation Storyboard.TargetProperty="RenderTransform.(RotateTransform.Angle)"
+                                                                 From="0"
+                                                                 To="360"
+                                                                 Duration="0:0:1" />
+                                            </Storyboard>
+                                        </BeginStoryboard>
+                                    </EventTrigger>
+                                </icon:PackIconMaterial.Triggers>
+                            </icon:PackIconMaterial>
+                            <TextBlock>
+                                <TextBlock.Style>
+                                    <Style TargetType="TextBlock">
+                                        <Setter Property="Text"
+                                                Value="Salvar" />
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding IsSaving}"
+                                                         Value="True">
+                                                <Setter Property="Text"
+                                                        Value="Salvando..." />
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </TextBlock.Style>
+                            </TextBlock>
+                        </StackPanel>
+                    </Button>
+                </StackPanel>
+            </Grid>
+        </Border>
+
+        <!-- Content -->
+        <ScrollViewer Grid.Row="1"
+                      VerticalScrollBarVisibility="Auto"
+                      Style="{StaticResource ModernScrollViewerStyle}"
+                      Margin="0,0,0,20">
+            <StackPanel Margin="0,0,-16,0">
+
+                <!-- Aparência -->
+                <Border Style="{DynamicResource PrimaryCardStyle}">
+                    <StackPanel>
+                        <TextBlock Text="Aparência"
+                                   Style="{DynamicResource Title2Style}" />
+
+                        <!-- Tema -->
+                        <Grid Margin="0,16,0,0">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="200" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+
+                            <TextBlock Grid.Column="0"
+                                       Text="Tema:"
+                                       Style="{DynamicResource Title4Style}"
+                                       Margin="0" />
+
+                            <ComboBox Grid.Column="1"
+                                      ItemsSource="{Binding AvailableThemes}"
+                                      SelectedItem="{Binding Settings.Appearance.Theme, Mode=TwoWay}"
+                                      Width="200"
+                                      HorizontalAlignment="Left"
+                                      Style="{StaticResource ModernComboBoxStyle}"
+                                      Margin="0" />
+                            
+                        </Grid>
+
+                        <!-- Layout -->
+                        <Grid Margin="0,16,0,0">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="200" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+
+                            <TextBlock Grid.Column="0"
+                                       Text="Layout das Disciplinas:"
+                                       Style="{DynamicResource Title4Style}"
+                                       Margin="0" />
+
+                            <ComboBox Grid.Column="1"
+                                      ItemsSource="{Binding AvailableLayouts}"
+                                      SelectedItem="{Binding Settings.Appearance.LayoutMode, Mode=TwoWay}"
+                                      Width="200"
+                                      HorizontalAlignment="Left"
+                                      Style="{StaticResource ModernComboBoxStyle}"
+                                      Margin="0" />
+                        </Grid>
+                    </StackPanel>
+                </Border>
+
+                <!-- Notificações -->
+                <Border Style="{DynamicResource PrimaryCardStyle}">
+                    <StackPanel>
+                        <TextBlock Text="Notificações"
+                                   Style="{DynamicResource Title2Style}" />
+
+                        <!-- Lembretes de Edital -->
+                        <CheckBox Content="Lembretes de cronograma de editais"
+                                  IsChecked="{Binding Settings.Notifications.EditalRemindersEnabled, Mode=TwoWay}"
+                                  Style="{DynamicResource RoundedCheckBoxStyle}"
+                                  HorizontalAlignment="Left"
+                                  Margin="0,0,0,8" />
+
+                        <!-- Notificações de Meta -->
+                        <CheckBox Content="Notificações de progresso das metas"
+                                  IsChecked="{Binding Settings.Notifications.GoalNotificationsEnabled, Mode=TwoWay}"
+                                  Style="{DynamicResource RoundedCheckBoxStyle}"
+                                  HorizontalAlignment="Left"
+                                  Margin="0,0,0,8" />
+
+                        <!-- Teste de Notificação -->
+                        <Button Content="Testar Notificação"
+                                Command="{Binding TestarNotificacaoCommand}"
+                                Style="{StaticResource SecondaryButtonStyle}"
+                                Width="150"
+                                HorizontalAlignment="Left"
+                                Margin="0,8,0,0" />
+                    </StackPanel>
+                </Border>
+
+                <!-- Arquivamento -->
+                <Border Style="{DynamicResource PrimaryCardStyle}">
+                    <StackPanel>
+                        <TextBlock Text="Arquivamento"
+                                   Style="{DynamicResource Title2Style}" />
+
+                        <!-- Ocultar Disciplinas Arquivadas -->
+                        <CheckBox Content="Ocultar disciplinas arquivadas"
+                                  IsChecked="{Binding Settings.Archiving.HideArchivedDisciplines, Mode=TwoWay}"
+                                  Style="{DynamicResource RoundedCheckBoxStyle}"
+                                  HorizontalAlignment="Left"
+                                  Margin="0,0,0,8" />
+
+                        <!-- Ocultar Editais Inativos -->
+                        <CheckBox Content="Ocultar editais inativos"
+                                  IsChecked="{Binding Settings.Archiving.HideInactiveEditals, Mode=TwoWay}"
+                                  Style="{DynamicResource RoundedCheckBoxStyle}"
+                                  HorizontalAlignment="Left"
+                                  Margin="0,0,0,0" />
+                    </StackPanel>
+                </Border>
+
+                <!-- Metas -->
+                <Border Style="{DynamicResource PrimaryCardStyle}">
+                    <StackPanel>
+                        <TextBlock Text="Metas Semanais"
+                                   Style="{DynamicResource Title2Style}" />
+
+                        <!-- Meta de Horas -->
+                        <Grid Margin="0,16,0,0">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="200" />
+                                <ColumnDefinition Width="100" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+                            
+                            <TextBlock Grid.Column="0"
+                                       Text="Horas de estudo:"
+                                       Style="{DynamicResource Title4Style}" />
+                            
+                            <TextBox Grid.Column="1"
+                                     Text="{Binding Settings.Goals.WeeklyStudyHoursGoal, Mode=TwoWay}"
+                                     Style="{DynamicResource ModernTextBoxWithPlaceholderStyle}" />
+                            
+                            <TextBlock Grid.Column="2"
+                                       Text="horas por semana"
+                                       Style="{DynamicResource Text2Style}"
+                                       Margin="8,0,0,0" />
+                        </Grid>
+
+                        <!-- Meta de Questões -->
+                        <Grid Margin="0,16,0,0">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="200" />
+                                <ColumnDefinition Width="100" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+
+                            <TextBlock Grid.Column="0"
+                                       Text="Questões resolvidas:"
+                                       Style="{DynamicResource Title4Style}" />
+
+                            <TextBox Grid.Column="1"
+                                     Text="{Binding Settings.Goals.WeeklyQuestionsGoal, Mode=TwoWay}"
+                                     Style="{DynamicResource ModernTextBoxWithPlaceholderStyle}" />
+
+                            <TextBlock Grid.Column="2"
+                                       Text="questões por semana"
+                                       Style="{DynamicResource Text2Style}"
+                                       Margin="8,0,0,0" />
+                        </Grid>
+                    </StackPanel>
+                </Border>
+
+                <!-- Estudo -->
+                <Border  Style="{DynamicResource PrimaryCardStyle}">
+                    <StackPanel>
+                        <TextBlock Text="Configurações de Estudo"
+                                   Style="{DynamicResource Title2Style}" />
+
+                        <!-- Técnica Pomodoro -->
+                        <CheckBox Content="Ativar técnica Pomodoro"
+                                  IsChecked="{Binding Settings.Study.PomodoroEnabled, Mode=TwoWay}"
+                                  Style="{DynamicResource RoundedCheckBoxStyle}"
+                                  HorizontalAlignment="Left"
+                                  Margin="0,0,0,8" />
+
+                        <StackPanel Margin="24,12,0,0"
+                                    IsEnabled="{Binding Settings.Study.PomodoroEnabled}">
+                            <!-- Tempo de Foco -->
+                            <Grid Margin="0,0,0,12">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="200" />
+                                    <ColumnDefinition Width="100" />
+                                    <ColumnDefinition Width="*" />
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Grid.Column="0"
+                                           Text="Tempo de foco:"
+                                           Style="{DynamicResource Title4Style}" />
+
+                                <TextBox Grid.Column="1"
+                                         Text="{Binding Settings.Study.PomodoroFocusMinutes, Mode=TwoWay}"
+                                         HorizontalAlignment="Left"
+                                         Width="80"
+                                         Style="{DynamicResource ModernTextBoxWithPlaceholderStyle}" />
+
+                                <TextBlock Grid.Column="2"
+                                           Text="minutos"
+                                           Style="{DynamicResource Text2Style}" />
+                            </Grid>
+
+                            <!-- Tempo de Descanso -->
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="200" />
+                                    <ColumnDefinition Width="100" />
+                                    <ColumnDefinition Width="*" />
+                                </Grid.ColumnDefinitions>
+
+                                <TextBlock Grid.Column="0"
+                                           Text="Tempo de descanso:"
+                                           Style="{DynamicResource Title4Style}" />
+
+                                <TextBox Grid.Column="1"
+                                         Text="{Binding Settings.Study.PomodoroBreakMinutes, Mode=TwoWay}"
+                                         HorizontalAlignment="Left"
+                                         Width="80"
+                                         Style="{DynamicResource ModernTextBoxWithPlaceholderStyle}" />
+
+                                <TextBlock Grid.Column="2"
+                                           Text="minutos"
+                                           Style="{DynamicResource Text2Style}"
+                                           Margin="8,0,0,0"/>
+                            </Grid>
+                        </StackPanel>
+
+                        <!-- Minimizar para Bandeja -->
+                        <CheckBox Content="Minimizar para a bandeja ao iniciar estudo"
+                                  IsChecked="{Binding Settings.Study.MinimizeToTrayOnStart, Mode=TwoWay}"
+                                  Style="{DynamicResource RoundedCheckBoxStyle}"
+                                  HorizontalAlignment="Left"
+                                  Margin="0,0,0,8" />
+
+                        <!-- Maximizar Cronômetro -->
+                        <CheckBox Content="Maximizar cronômetro ao iniciar estudo"
+                                  IsChecked="{Binding Settings.Study.MaximizeTimerOnStudy, Mode=TwoWay}"
+                                  Style="{DynamicResource RoundedCheckBoxStyle}"
+                                  HorizontalAlignment="Left"
+                                  Margin="0,0,0,8" />
+
+                        <!-- Dias de Revisão Método 4.2 -->
+                        <Separator Margin="0,16" />
+                        <TextBlock Text="Revisão 4.2"
+                                   Style="{DynamicResource Title2Style}" />
+                        
+                        <TextBlock Text="Selecione dois dias da semana para agendar as revisões do método 4.2:"
+                                   Style="{DynamicResource Text2Style}"
+                                   Margin="0,0,0,12"
+                                   TextWrapping="Wrap" />
+
+                        <Grid Margin="0,0,0,0">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+
+                            <!-- Primeira linha -->
+                            <CheckBox Grid.Column="0"
+                                      Content="Segunda-feira"
+                                      IsChecked="{Binding Settings.Study.Method42MondayEnabled, Mode=TwoWay}"
+                                      Style="{DynamicResource RoundedCheckBoxStyle}"
+                                      HorizontalAlignment="Left"
+                                      Margin="0,0,8,8" />
+
+                            <CheckBox Grid.Column="1"
+                                      Content="Terça-feira"
+                                      IsChecked="{Binding Settings.Study.Method42TuesdayEnabled, Mode=TwoWay}"
+                                      Style="{DynamicResource RoundedCheckBoxStyle}"
+                                      HorizontalAlignment="Left"
+                                      Margin="0,0,8,8" />
+
+                            <CheckBox Grid.Column="2"
+                                      Content="Quarta-feira"
+                                      IsChecked="{Binding Settings.Study.Method42WednesdayEnabled, Mode=TwoWay}"
+                                      Style="{DynamicResource RoundedCheckBoxStyle}"
+                                      HorizontalAlignment="Left"
+                                      Margin="0,0,8,8" />
+
+                            <CheckBox Grid.Column="3"
+                                      Content="Quinta-feira"
+                                      IsChecked="{Binding Settings.Study.Method42ThursdayEnabled, Mode=TwoWay}"
+                                      Style="{DynamicResource RoundedCheckBoxStyle}"
+                                      HorizontalAlignment="Left"
+                                      Margin="0,0,0,8" />
+
+                            <!-- Segunda linha -->
+                            <CheckBox Grid.Column="4"
+                                      Content="Sexta-feira"
+                                      IsChecked="{Binding Settings.Study.Method42FridayEnabled, Mode=TwoWay}"
+                                      Style="{DynamicResource RoundedCheckBoxStyle}"
+                                      HorizontalAlignment="Left"
+                                      Margin="0,0,8,0" />
+
+                            <CheckBox Grid.Column="5"
+                                      Content="Sábado"
+                                      IsChecked="{Binding Settings.Study.Method42SaturdayEnabled, Mode=TwoWay}"
+                                      Style="{DynamicResource RoundedCheckBoxStyle}"
+                                      HorizontalAlignment="Left"
+                                      Margin="0,0,8,0" />
+
+                            <CheckBox Grid.Column="6"
+                                      Content="Domingo"
+                                      IsChecked="{Binding Settings.Study.Method42SundayEnabled, Mode=TwoWay}"
+                                      Style="{DynamicResource RoundedCheckBoxStyle}"
+                                      HorizontalAlignment="Left"
+                                      Margin="0,0,8,0" />
+                        </Grid>
+                    </StackPanel>
+                </Border>
+
+                <!-- Banco de Dados -->
+                <Border Style="{DynamicResource PrimaryCardStyle}">
+                    <StackPanel>
+                        <TextBlock Text="Banco de Dados"
+                                   Style="{DynamicResource Title2Style}" />
+
+                        <!-- Backup Automático -->
+                        <CheckBox Content="Backup automático"
+                                  IsChecked="{Binding Settings.Database.AutoBackupEnabled, Mode=TwoWay}"
+                                  Style="{DynamicResource RoundedCheckBoxStyle}"
+                                  HorizontalAlignment="Left"
+                                  Margin="0,0,0,8" />
+
+                        <StackPanel Margin="24,12,0,0"
+                                    IsEnabled="{Binding Settings.Database.AutoBackupEnabled}">
+                            <!-- Frequência de Backup -->
+                            <Grid Margin="0,0,0,12">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="200" />
+                                    <ColumnDefinition Width="100" />
+                                    <ColumnDefinition Width="*" />
+                                </Grid.ColumnDefinitions>
+                                
+                                <TextBlock Grid.Column="0"
+                                           Text="Frequência:"
+                                           Style="{DynamicResource Title4Style}"/>
+                                
+                                <TextBox Grid.Column="1"
+                                         Text="{Binding Settings.Database.BackupFrequencyDays, Mode=TwoWay}"
+                                         Style="{DynamicResource ModernTextBoxWithPlaceholderStyle}" />
+                                
+                                <TextBlock Grid.Column="2"
+                                           Text="dias"
+                                           Style="{DynamicResource Title4Style}"
+                                           Margin="8,0,0,0" />
+                            </Grid>
+
+                            <!-- Quantidade de Backups -->
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="200" />
+                                    <ColumnDefinition Width="100" />
+                                    <ColumnDefinition Width="*" />
+                                </Grid.ColumnDefinitions>
+                                
+                                <TextBlock Grid.Column="0"
+                                           Text="Backups armazenados:"
+                                           Style="{DynamicResource Title4Style}" />
+                                
+                                <TextBox Grid.Column="1"
+                                         Text="{Binding Settings.Database.MaxBackupsToKeep, Mode=TwoWay}"
+                                         Style="{DynamicResource ModernTextBoxWithPlaceholderStyle}" />
+                                
+                                <TextBlock Grid.Column="2"
+                                           Text="arquivos"
+                                           Style="{DynamicResource Title4Style}"
+                                           Margin="8,0,0,0" />
+                            </Grid>
+                        </StackPanel>
+
+                        <!-- Ações de Backup -->
+                        <StackPanel Orientation="Horizontal"
+                                    Margin="0,16,0,0">
+                            <Button Content="Criar Backup"
+                                    Command="{Binding CriarBackupCommand}"
+                                    Style="{StaticResource ModernButtonStyle}"
+                                    Width="120"
+                                    Margin="0,0,12,0" />
+                            <Button Content="Restaurar Backup"
+                                    Command="{Binding RestaurarBackupCommand}"
+                                    Style="{StaticResource SecondaryButtonStyle}"
+                                    Width="120" />
+                        </StackPanel>
+
+                        <!-- Lista de Backups -->
+                        <Grid Margin="0,12,0,0">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="200" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+                            
+                            <TextBlock Grid.Column="0"
+                                       Text="Backups disponíveis:"
+                                       Style="{DynamicResource Title4Style}"
+                                       Margin="0,8,0,0" />
+                            
+                            <ComboBox Grid.Column="1"
+                                      ItemsSource="{Binding AvailableBackups}"
+                                      SelectedItem="{Binding SelectedBackup, Mode=TwoWay}"
+                                      Width="300"
+                                      HorizontalAlignment="Left"
+                                      Style="{StaticResource ModernComboBoxStyle}" />
+                        </Grid>
+
+                        <!-- Exportação/Importação -->
+                        <Separator Margin="0,16" />
+                        <TextBlock Text="Exportação/Importação"
+                                   FontWeight="SemiBold"
+                                   FontSize="16" />
+
+                        <StackPanel Orientation="Horizontal"
+                                    Margin="0,8,0,0">
+                            <Button Content="Exportar Dados"
+                                    Command="{Binding ExportarDadosCommand}"
+                                    Style="{StaticResource SecondaryButtonStyle}"
+                                    Width="120"
+                                    Margin="0,0,12,0" />
+                            <Button Content="Importar Dados"
+                                    Command="{Binding ImportarDadosCommand}"
+                                    Style="{StaticResource SecondaryButtonStyle}"
+                                    Width="120" />
+                        </StackPanel>
+
+                        <!-- Exclusão de Dados -->
+                        <Separator Margin="0,16" />
+                        <TextBlock Text="Exclusão de Dados"
+                                   FontWeight="SemiBold"
+                                   FontSize="16"
+                                   Foreground="#D32F2F" />
+                        <TextBlock Text="⚠️ ATENÇÃO: Esta ação é irreversível e excluirá permanentemente todos os dados do banco de dados!"
+                                   FontSize="12"
+                                   Foreground="#D32F2F"
+                                   Margin="0,8,0,0"
+                                   TextWrapping="Wrap" />
+
+                        <Button Content="Excluir Todos os Dados"
+                                Command="{Binding ExcluirTodosDadosCommand}"
+                                Style="{StaticResource SecondaryButtonStyle}"
+                                Width="220"
+                                HorizontalAlignment="Left"
+                                Foreground="#D32F2F"
+                                Margin="0,8,0,0" />
+
+                        <!-- Reset de Configurações -->
+                        <Separator Margin="0,16" />
+                        <Button Content="Restaurar Configurações Padrão"
+                                Command="{Binding ResetarConfiguracoesCommand}"
+                                Style="{StaticResource SecondaryButtonStyle}"
+                                Width="220"
+                                HorizontalAlignment="Left"
+                                Foreground="#D32F2F" />
+                    </StackPanel>
+                </Border>
+
+            </StackPanel>
+        </ScrollViewer>
+    </Grid>
+</UserControl>

@@ -1,0 +1,164 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:icon="http://metro.mahapps.com/winfx/xaml/iconpacks">
+
+    <!-- Card moderno -->
+    <Style x:Key="ModernCardBaseStyle"
+           TargetType="Border">
+        <Setter Property="BorderBrush"
+                Value="{DynamicResource BorderBrush}" />
+        <Setter Property="BorderThickness"
+                Value="1" />
+        <Setter Property="Effect">
+            <Setter.Value>
+                <DropShadowEffect Color="Black"
+                                  Opacity="0.1"
+                                  ShadowDepth="2"
+                                  BlurRadius="8" />
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <!-- Card Primário -->
+    <Style x:Key="PrimaryCardStyle"
+           TargetType="Border"
+           BasedOn="{StaticResource ModernCardBaseStyle}">
+        <Setter Property="Background"
+                Value="{DynamicResource CardBrush}" />
+        <Setter Property="CornerRadius"
+                Value="8" />
+        <Setter Property="Padding"
+                Value="20" />
+        <Setter Property="Margin"
+                Value="20,20,20,0" />
+    </Style>
+
+    <!-- Card Secundário -->
+    <Style x:Key="SecondaryCardStyle"
+           TargetType="Border"
+           BasedOn="{StaticResource ModernCardBaseStyle}">
+        <Setter Property="Background"
+                Value="{DynamicResource SurfaceBrush}" />
+        <Setter Property="CornerRadius"
+                Value="8" />
+        <Setter Property="Margin"
+                Value="0" />
+        <Setter Property="Padding"
+                Value="10" />
+    </Style>
+
+    <!-- Card Terciário -->
+    <Style x:Key="TertiaryCardStyle"
+           TargetType="Border"
+           BasedOn="{StaticResource ModernCardBaseStyle}">
+        <Setter Property="Background"
+                Value="{DynamicResource SurfaceBrush}" />
+        <Setter Property="CornerRadius"
+                Value="8" />
+        <Setter Property="Margin"
+                Value="0" />
+    </Style>
+
+    <!-- Card de dashboard -->
+    <Style x:Key="DashboardCardStyle"
+           TargetType="Border"
+           BasedOn="{StaticResource ModernCardBaseStyle}">
+        <Setter Property="Background"
+                Value="{DynamicResource CardBrush}" />
+        <Setter Property="CornerRadius"
+                Value="8" />
+        <Setter Property="Padding"
+                Value="16" />
+        <Setter Property="Margin"
+                Value="20,10,10,10" />
+    </Style>
+
+    <!-- Card de Loading Vertical -->
+    <Style x:Key="LoadingCard1Style"
+           TargetType="ContentControl">
+        <Setter Property="Content">
+            <Setter.Value>
+                <StackPanel HorizontalAlignment="Center"
+                            VerticalAlignment="Center">
+                    <icon:PackIconMaterial Style="{DynamicResource LoadingIconStyle}" />
+                    <TextBlock Text="Carregando..."
+                               FontSize="16"
+                               Foreground="{DynamicResource TextPrimaryBrush}"
+                               VerticalAlignment="Center" />
+                </StackPanel>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <!-- Card de Loading Horizontal -->
+    <Style x:Key="LoadingCard2Style"
+           TargetType="ContentControl">
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="ContentControl">
+                    <Border Background="{DynamicResource HeaderBackgroundBrush}"
+                            CornerRadius="8"
+                            Padding="20"
+                            Margin="0">
+                        <ContentPresenter HorizontalAlignment="Center"
+                                          VerticalAlignment="Center" />
+                    </Border>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+        <Setter Property="Content">
+            <Setter.Value>
+                <StackPanel Orientation="Horizontal">
+                    <icon:PackIconMaterial Style="{DynamicResource LoadingIconStyle}"
+                                           Width="24"
+                                           Height="24"
+                                           Margin="0,0,12,0" />
+                    <TextBlock Text="Carregando..."
+                               FontSize="14"
+                               Foreground="{DynamicResource TextPrimaryBrush}"
+                               VerticalAlignment="Center" />
+                </StackPanel>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <!-- Card Estado Vazio -->
+    <Style x:Key="EmptyStateStyle"
+           TargetType="ContentControl">
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="ContentControl">
+                    <Border HorizontalAlignment="Stretch"
+                            VerticalAlignment="Stretch">
+                        <ContentPresenter HorizontalAlignment="Center"
+                                          VerticalAlignment="Center" />
+                    </Border>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+        <Setter Property="Content">
+            <Setter.Value>
+                <StackPanel HorizontalAlignment="Center"
+                            VerticalAlignment="Center">
+                    <icon:PackIconMaterial Kind="FileDocumentMultiple"
+                                           Width="48"
+                                           Height="48"
+                                           Foreground="{DynamicResource TextSecondaryBrush}"
+                                           Margin="0,0,0,12"
+                                           HorizontalAlignment="Center" />
+                    <TextBlock Text="Nenhum registro Encontrado"
+                               FontSize="16"
+                               FontWeight="SemiBold"
+                               Foreground="{DynamicResource TextSecondaryBrush}"
+                               HorizontalAlignment="Center" />
+                    <TextBlock Text="Adicione um registro novo para começar"
+                               FontSize="14"
+                               Foreground="{DynamicResource TextSecondaryBrush}"
+                               HorizontalAlignment="Center"
+                               Margin="0,4,0,0" />
+                </StackPanel>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+</ResourceDictionary>

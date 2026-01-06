@@ -1,0 +1,595 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:icon="http://metro.mahapps.com/winfx/xaml/iconpacks"
+                    xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
+                    xmlns:behaviors="clr-namespace:StudyMinder.Behaviors">
+    
+    <!-- Textbox {DynamicResource ModernTextBoxWithPlaceholderStyle} -->
+    <Style x:Key="ModernTextBoxWithPlaceholderStyle"
+           TargetType="TextBox">
+        <Setter Property="Background"
+                Value="{DynamicResource InputBackgroundBrush}" />
+        <Setter Property="BorderBrush"
+                Value="{DynamicResource InputBorderBrush}" />
+        <Setter Property="BorderThickness"
+                Value="1" />
+        <Setter Property="Padding"
+                Value="4.5,4" />
+        <Setter Property="Margin"
+                Value="0,0,0,5" />
+        <Setter Property="FontSize"
+                Value="14" />
+        <Setter Property="Foreground"
+                Value="{DynamicResource TextPrimaryBrush}" />
+        <Setter Property="SnapsToDevicePixels"
+                Value="True" />
+        <Setter Property="VerticalContentAlignment"
+                Value="Center" />
+        <Setter Property="FocusVisualStyle"
+                Value="{x:Null}" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="TextBox">
+                    <Grid>
+                        <Border x:Name="PART_Border"
+                                Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                CornerRadius="4">
+                            <ScrollViewer x:Name="PART_ContentHost" Style="{DynamicResource ModernScrollViewerStyle}"
+                                          Margin="8,8,4,8"
+                                          VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+                                          Focusable="false"
+                                          HorizontalScrollBarVisibility="Hidden"
+                                          VerticalScrollBarVisibility="Hidden"
+                                          Padding="0"/>
+                        </Border>
+
+                        <!-- Placeholder TextBlock -->
+                        <TextBlock Text="{TemplateBinding Tag}"
+                                   Margin="8,8"
+                                   Padding="4,0"
+                                   VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+                                   Foreground="{DynamicResource TextSecondaryBrush}"
+                                   IsHitTestVisible="False">
+                            <TextBlock.Style>
+                                <Style TargetType="TextBlock">
+                                    <Setter Property="Visibility"
+                                            Value="Collapsed" />
+                                    <Style.Triggers>
+                                        <!-- Mostra o placeholder apenas se o Text for vazio -->
+                                        <DataTrigger Binding="{Binding Text, RelativeSource={RelativeSource TemplatedParent}}"
+                                                     Value="">
+                                            <Setter Property="Visibility"
+                                                    Value="Visible" />
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </TextBlock.Style>
+                        </TextBlock>
+                    </Grid>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style x:Key="TextBoxPesquisarStyle"
+           TargetType="{x:Type TextBox}"
+           BasedOn="{StaticResource ModernTextBoxWithPlaceholderStyle}">
+        <Setter Property="Padding"
+                Value="0" />
+        <Setter Property="FontSize"
+                Value="14" />
+        <Setter Property="Margin"
+                Value="10,0,10,0" />
+        <Setter Property="Height"
+                Value="32" />
+        <Setter Property="VerticalAlignment"
+                Value="Center" />
+        <Setter Property="HorizontalAlignment"
+                Value="Stretch" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type TextBox}">
+                    <Border x:Name="border"
+                            Background="{TemplateBinding Background}"
+                            BorderBrush="{TemplateBinding BorderBrush}"
+                            BorderThickness="{TemplateBinding BorderThickness}"
+                            CornerRadius="8">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+
+                            <!-- Icone na Coluna 0 -->
+                            <icon:PackIconMaterial Kind="Magnify"
+                                                   Width="15"
+                                                   Height="15"
+                                                   VerticalAlignment="Center"
+                                                   Margin="10,0,0,0"
+                                                   Foreground="{DynamicResource TextSecondaryBrush}" />
+
+                            <!-- Grid na Coluna 1 para sobrepor Conteudo e Placeholder -->
+                            <Grid Grid.Column="1">
+                                <!-- PART_ContentHost (Texto) -->
+                                <ScrollViewer x:Name="PART_ContentHost"
+                                              Margin="5,4,8,4"
+                                              VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+                                              Focusable="false"
+                                              HorizontalScrollBarVisibility="Hidden"
+                                              VerticalScrollBarVisibility="Hidden" />
+
+                                <!-- Placeholder (Logica copiada do estilo base) -->
+                                <TextBlock Text="{TemplateBinding Tag}"
+                                           Margin="5,4,8,4"
+                                           VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+                                           Foreground="{DynamicResource TextSecondaryBrush}"
+                                           IsHitTestVisible="False">
+                                    <TextBlock.Style>
+                                        <Style TargetType="TextBlock">
+                                            <Setter Property="Visibility"
+                                                    Value="Collapsed" />
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding Text, RelativeSource={RelativeSource TemplatedParent}}"
+                                                             Value="">
+                                                    <Setter Property="Visibility"
+                                                            Value="Visible" />
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </TextBlock.Style>
+                                </TextBlock>
+                            </Grid>
+                        </Grid>
+                    </Border>
+
+                    <!-- Triggers -->
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver"
+                                 Value="True">
+                            <Setter TargetName="border"
+                                    Property="BorderBrush"
+                                    Value="{DynamicResource BorderBrush}" />
+                        </Trigger>
+                        <Trigger Property="IsFocused"
+                                 Value="True">
+                            <Setter TargetName="border"
+                                    Property="BorderBrush"
+                                    Value="{DynamicResource PrimaryBrush}" />
+                            <Setter TargetName="border"
+                                    Property="Background"
+                                    Value="{DynamicResource CardBrush}" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style x:Key="DurationTextBoxStyle"
+           TargetType="TextBox"
+           BasedOn="{StaticResource ModernTextBoxWithPlaceholderStyle}">
+        
+        <Setter Property="MaxLength"
+                Value="8" />
+        <Setter Property="HorizontalContentAlignment"
+                Value="Left" />
+        <Setter Property="Tag"
+                Value="HH:MM:SS" />
+        
+    </Style>
+
+    <!-- Combobox -->
+    <Style x:Key="ModernComboBoxStyle"
+           TargetType="{x:Type ComboBox}">
+        <Setter Property="Background"
+                Value="{DynamicResource InputBackgroundBrush}" />
+        <Setter Property="BorderBrush"
+                Value="{DynamicResource InputBorderBrush}" />
+        <Setter Property="BorderThickness"
+                Value="1" />
+        <Setter Property="Padding"
+                Value="8,8" />
+        <Setter Property="Margin"
+                Value="0,0,0,5" />
+        <Setter Property="FontSize"
+                Value="14" />
+        <Setter Property="Foreground"
+                Value="{DynamicResource TextPrimaryBrush}" />
+        <Setter Property="Height"
+                Value="36" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="ComboBox">
+                    <Grid>
+                        <Border Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                CornerRadius="4">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+
+                                <ContentPresenter Grid.Column="0"
+                                                  Content="{Binding SelectedItem, RelativeSource={RelativeSource TemplatedParent}}"
+                                                  Margin="{TemplateBinding Padding}"
+                                                  VerticalAlignment="Center"
+                                                  HorizontalAlignment="Left" />
+
+                                <ToggleButton Grid.Column="1"
+                                              Background="Transparent"
+                                              BorderThickness="0"
+                                              Width="30"
+                                              IsChecked="{Binding IsDropDownOpen, RelativeSource={RelativeSource TemplatedParent}}"
+                                              Focusable="False">
+                                    <icon:PackIconMaterial Kind="ChevronDown"
+                                                           Width="16"
+                                                           Height="16"
+                                                           Foreground="{DynamicResource TextSecondaryBrush}" />
+                                </ToggleButton>
+                            </Grid>
+                        </Border>
+
+                        <Popup IsOpen="{TemplateBinding IsDropDownOpen}"
+                               Placement="Bottom"
+                               Focusable="False"
+                               AllowsTransparency="True">
+                            <Border Background="{DynamicResource CardBrush}"
+                                    BorderBrush="{DynamicResource BorderBrush}"
+                                    BorderThickness="1"
+                                    CornerRadius="4"
+                                    MinWidth="{TemplateBinding ActualWidth}"
+                                    MaxHeight="200">
+                                <ScrollViewer Style="{DynamicResource ModernScrollViewerStyle}" >
+                                    <ItemsPresenter />
+                                </ScrollViewer>
+                            </Border>
+                        </Popup>
+
+                        <!-- Placeholder TextBlock -->
+                        <TextBlock Text="{TemplateBinding Tag}"
+                                   Margin="8"
+                                   VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+                                   Foreground="{DynamicResource TextSecondaryBrush}"
+                                   IsHitTestVisible="False">
+                            <TextBlock.Style>
+                                <Style TargetType="TextBlock">
+                                    <Setter Property="Visibility"
+                                            Value="Collapsed" />
+                                    <Style.Triggers>
+                                        <!-- Mostra o placeholder apenas se nenhum item estiver selecionado -->
+                                        <DataTrigger Binding="{Binding SelectedItem, RelativeSource={RelativeSource TemplatedParent}}"
+                                                     Value="{x:Null}">
+                                            <Setter Property="Visibility"
+                                                    Value="Visible" />
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </TextBlock.Style>
+                        </TextBlock>
+                    </Grid>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style x:Key="ModernDatePickerStyle"
+           TargetType="DatePicker">
+        <Setter Property="Background"
+                Value="{DynamicResource InputBackgroundBrush}" />
+        <Setter Property="BorderBrush"
+                Value="{DynamicResource InputBorderBrush}" />
+        <Setter Property="BorderThickness"
+                Value="1" />
+        <Setter Property="Padding"
+                Value="4,0" />
+        <Setter Property="Margin"
+                Value="0,0,0,5" />
+        <Setter Property="FontSize"
+                Value="14" />
+        <Setter Property="Foreground"
+                Value="{DynamicResource TextPrimaryBrush}" />
+        <Setter Property="Height"
+                Value="36" />
+
+        <Setter Property="CalendarStyle"
+                Value="{DynamicResource ModernCalendarStyle}" />
+
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="DatePicker">
+                    <Grid x:Name="PART_Root"
+                          HorizontalAlignment="Stretch">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+
+                        <Border x:Name="Border"
+                                Grid.ColumnSpan="2"
+                                Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                CornerRadius="4" />
+                        <DatePickerTextBox x:Name="PART_TextBox"
+                                           Grid.Column="0"
+                                           Background="Transparent"
+                                           Height="30"
+                                           BorderThickness="0"
+                                           Foreground="{TemplateBinding Foreground}"
+                                           Padding="{TemplateBinding Padding}"
+                                           HorizontalContentAlignment="Stretch"
+                                           VerticalContentAlignment="Center"
+                                           FontSize="{TemplateBinding FontSize}">
+                            <DatePickerTextBox.Style>
+                                <Style TargetType="{x:Type TextBox}">
+                                    <Setter Property="FocusVisualStyle"
+                                            Value="{x:Null}" />
+
+                                    <Setter Property="BorderBrush"
+                                            Value="Transparent" />
+                                    <Setter Property="BorderThickness"
+                                            Value="0" />
+                                    <Setter Property="CaretBrush"
+                                            Value="{DynamicResource TextPrimaryBrush}" />
+                                    <Setter Property="Template">
+                                        <Setter.Value>
+                                            <ControlTemplate TargetType="{x:Type TextBox}">
+                                                <Grid>
+                                                    <Border x:Name="Border"
+                                                            Background="{TemplateBinding Background}"
+                                                            BorderBrush="{TemplateBinding BorderBrush}"
+                                                            BorderThickness="{TemplateBinding BorderThickness}"
+                                                            Padding="{TemplateBinding Padding}"
+                                                            CornerRadius="0">
+                                                        <ScrollViewer x:Name="PART_ContentHost"
+                                                                      Focusable="False"
+                                                                      HorizontalScrollBarVisibility="Hidden"
+                                                                      VerticalScrollBarVisibility="Hidden" />
+                                                    </Border>
+                                                    
+                                                    <!-- Placeholder TextBlock -->
+                                                    <TextBlock Text="{TemplateBinding Tag}"
+                                                               Padding="{TemplateBinding Padding}"
+                                                               VerticalAlignment="Center"
+                                                               Foreground="{DynamicResource TextSecondaryBrush}"
+                                                               IsHitTestVisible="False">
+                                                        <TextBlock.Style>
+                                                            <Style TargetType="TextBlock">
+                                                                <Setter Property="Visibility"
+                                                                        Value="Collapsed" />
+                                                                <Style.Triggers>
+                                                                    <!-- Mostra o placeholder apenas se o Text for vazio -->
+                                                                    <DataTrigger Binding="{Binding Text, RelativeSource={RelativeSource TemplatedParent}}"
+                                                                                 Value="">
+                                                                        <Setter Property="Visibility"
+                                                                                Value="Visible" />
+                                                                    </DataTrigger>
+                                                                </Style.Triggers>
+                                                            </Style>
+                                                        </TextBlock.Style>
+                                                    </TextBlock>
+                                                </Grid>
+                                                <ControlTemplate.Triggers>
+                                                    <Trigger Property="IsFocused"
+                                                             Value="True">
+                                                        <Setter TargetName="Border"
+                                                                Property="BorderBrush"
+                                                                Value="Transparent" />
+                                                    </Trigger>
+                                                </ControlTemplate.Triggers>
+                                            </ControlTemplate>
+                                        </Setter.Value>
+                                    </Setter>
+                                </Style>
+                            </DatePickerTextBox.Style>
+                        </DatePickerTextBox>
+
+                        <Button x:Name="PART_Button"
+                                Grid.Column="1"
+                                Style="{DynamicResource DatePickerButtonStyle}"
+                                Focusable="False"
+                                Margin="0,0,6,0"
+                                Width="20"
+                                Height="20"
+                                VerticalAlignment="Center" />
+
+                        <Popup x:Name="PART_Popup"
+                               AllowsTransparency="True"
+                               Placement="Bottom"
+                               PlacementTarget="{Binding ElementName=PART_Root}"
+                               IsOpen="{TemplateBinding IsDropDownOpen}"
+                               StaysOpen="False"
+                               HorizontalOffset="-4"
+                               VerticalOffset="4" />
+                    </Grid>
+
+                    <ControlTemplate.Triggers>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style x:Key="DatePickerButtonStyle"
+           TargetType="Button">
+        <Setter Property="Background"
+                Value="Transparent" />
+        <Setter Property="BorderThickness"
+                Value="0" />
+        <Setter Property="Cursor"
+                Value="Hand" />
+        <Setter Property="Width"
+                Value="30" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="Button">
+                    <Border Background="{TemplateBinding Background}"
+                            BorderBrush="{TemplateBinding BorderBrush}"
+                            BorderThickness="{TemplateBinding BorderThickness}"
+                            CornerRadius="4">
+                        <Grid>
+                            <Path Stretch="Uniform"
+                                  Width="16"
+                                  Height="16"
+                                  HorizontalAlignment="Center"
+                                  VerticalAlignment="Center"
+                                  Fill="{DynamicResource TextSecondaryBrush}"
+                                  Data="M11,10H13V15H10V12H11V10M19,8V5H17V8H7V5H5V8H4A2,2 0 0,0 2,10V19A2,2 0 0,0 4,21H19A2,2 0 0,0 21,19V10A2,2 0 0,0 19,8M19,19H4V12H19V19Z" />
+                        </Grid>
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver"
+                                 Value="True">
+                            <Setter Property="Background"
+                                    Value="{DynamicResource InputBackgroundHoverBrush}" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>    
+       
+    <!--Estilo arredondado para CheckBox-->
+    <Style x:Key="RoundedCheckBoxStyle"
+           TargetType="CheckBox">
+        <Setter Property="Background"
+                Value="{DynamicResource InputBackgroundBrush}" />
+        <Setter Property="BorderBrush"
+                Value="{DynamicResource InputBorderBrush}" />
+        <Setter Property="Foreground"
+                Value="{DynamicResource TextPrimaryBrush}" />
+        <Setter Property="BorderThickness"
+                Value="2" />
+        <Setter Property="HorizontalAlignment"
+                Value="Center" />
+        <Setter Property="VerticalAlignment"
+                Value="Center" />
+        <Setter Property="Cursor"
+                Value="Hand" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="CheckBox">
+                    <Grid Background="Transparent">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+
+                        <!--CheckBox arredondado-->
+                        <Border x:Name="Border"
+                                Grid.Column="0"
+                                Width="22"
+                                Height="22"
+                                Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                CornerRadius="11">
+                            <Grid>
+                                <!--Icone de check-->
+                                <icon:PackIconMaterial x:Name="CheckIcon"
+                                                       Kind="Check"
+                                                       Width="14"
+                                                       Height="14"
+                                                       Foreground="{DynamicResource TextPrimaryBrush}"
+                                                       HorizontalAlignment="Center"
+                                                       VerticalAlignment="Center"
+                                                       Visibility="Collapsed" />
+                            </Grid>
+                        </Border>
+
+                        <!--Conteudo (se houver)-->
+                        <ContentPresenter Grid.Column="1"
+                                          Margin="8,0,0,0"
+                                          VerticalAlignment="Center"
+                                          HorizontalAlignment="Left" />
+                    </Grid>
+
+                    <ControlTemplate.Triggers>
+                        <!--Quando esta marcado-->
+                        <Trigger Property="IsChecked"
+                                 Value="True">
+                            <Setter TargetName="Border"
+                                    Property="Background"
+                                    Value="#4CAF50" />
+                            <Setter TargetName="Border"
+                                    Property="BorderBrush"
+                                    Value="#4CAF50" />
+                            <Setter TargetName="CheckIcon"
+                                    Property="Visibility"
+                                    Value="Visible" />
+                        </Trigger>
+
+                        <!--Quando esta desabilitado-->
+                        <Trigger Property="IsEnabled"
+                                 Value="False">
+                            <Setter TargetName="Border"
+                                    Property="Background"
+                                    Value="{DynamicResource SurfaceBrush}" />
+                            <Setter TargetName="Border"
+                                    Property="BorderBrush"
+                                    Value="{DynamicResource BorderBrush}" />
+                            <Setter TargetName="Border"
+                                    Property="Opacity"
+                                    Value="0.6" />
+                        </Trigger>
+
+                        <!--Quando esta desabilitado e marcado-->
+                        <MultiTrigger>
+                            <MultiTrigger.Conditions>
+                                <Condition Property="IsChecked"
+                                           Value="True" />
+                                <Condition Property="IsEnabled"
+                                           Value="False" />
+                            </MultiTrigger.Conditions>
+                            <Setter TargetName="Border"
+                                    Property="Background"
+                                    Value="#A5D6A7" />
+                            <Setter TargetName="Border"
+                                    Property="BorderBrush"
+                                    Value="#A5D6A7" />
+                            <Setter TargetName="CheckIcon"
+                                    Property="Visibility"
+                                    Value="Visible" />
+                        </MultiTrigger>
+
+                        <!--Hover quando habilitado-->
+                        <MultiTrigger>
+                            <MultiTrigger.Conditions>
+                                <Condition Property="IsMouseOver"
+                                           Value="True" />
+                                <Condition Property="IsEnabled"
+                                           Value="True" />
+                            </MultiTrigger.Conditions>
+                            <Setter TargetName="Border"
+                                    Property="BorderBrush"
+                                    Value="#4CAF50" />
+                        </MultiTrigger>
+
+                        <!--Hover quando marcado-->
+                        <MultiTrigger>
+                            <MultiTrigger.Conditions>
+                                <Condition Property="IsMouseOver"
+                                           Value="True" />
+                                <Condition Property="IsChecked"
+                                           Value="True" />
+                                <Condition Property="IsEnabled"
+                                           Value="True" />
+                            </MultiTrigger.Conditions>
+                            <Setter TargetName="Border"
+                                    Property="Background"
+                                    Value="#45A049" />
+                            <Setter TargetName="Border"
+                                    Property="BorderBrush"
+                                    Value="#45A049" />
+                        </MultiTrigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+</ResourceDictionary>

@@ -1,0 +1,63 @@
+<UserControl x:Class="StudyMinder.Controls.KPICard"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:icon="http://metro.mahapps.com/winfx/xaml/iconpacks"
+             mc:Ignorable="d"
+             d:DesignHeight="100"
+             d:DesignWidth="200">
+
+    <Border Style="{DynamicResource DashboardCardStyle}"
+            Margin="0"
+            Padding="0,0,16,0">
+
+        <StackPanel Orientation="Horizontal">
+
+            <!-- Ícone com Cor de Fundo -->
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="2*" />
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
+
+                <Border Grid.Row="0"
+                        VerticalAlignment="Stretch"
+                        HorizontalAlignment="Stretch"
+                        Background="{Binding ColorBrush, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                        CornerRadius="0,0,4,4"
+                        Padding="6"
+                        Margin="16,0,8,0">
+
+                    <!-- Ícone com Style (quando IconStyle é fornecido) -->
+                    <icon:PackIconMaterial x:Name="IconWithStyle"
+                                           Style="{Binding IconStyle, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                           Foreground="{DynamicResource TextOnPrimaryBrush}"
+                                           HorizontalAlignment="Center"
+                                           VerticalAlignment="Bottom" />
+                </Border>
+            </Grid>
+
+            <!-- Conteúdo (Título e Valor) -->
+            <StackPanel Orientation="Vertical"
+                        VerticalAlignment="Center">
+
+                <!-- Título -->
+                <TextBlock Text="{Binding Title, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                           Style="{DynamicResource Title3Style}"
+                           Foreground="{DynamicResource TextSecondaryBrush}"
+                           HorizontalAlignment="Left"
+                           Margin="0" />
+
+                <!-- Valor -->
+                <TextBlock Text="{Binding Value, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                           Style="{DynamicResource Title1Style}"
+                           FontSize="26"
+                           Margin="0,0,0,0"
+                           HorizontalAlignment="Left" />
+            </StackPanel>
+
+        </StackPanel>
+    </Border>
+
+</UserControl>

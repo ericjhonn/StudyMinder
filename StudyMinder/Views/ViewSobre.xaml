@@ -1,0 +1,121 @@
+<UserControl x:Class="StudyMinder.Views.ViewSobre"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:local="clr-namespace:StudyMinder.Views"
+             mc:Ignorable="d"
+             d:DesignWidth="800"
+             Height="737">
+    <Grid>
+        <StackPanel HorizontalAlignment="Center"
+                    VerticalAlignment="Center"
+                    MaxWidth="500">
+            <Image Source="/Images/logo.png"
+                   Width="80"
+                   Height="80"
+                   Margin="0,0,0,10"
+                   HorizontalAlignment="Center"
+                   RenderOptions.BitmapScalingMode="HighQuality" />
+
+            <TextBlock Text="StudyMinder"
+                       Style="{DynamicResource Title1Style}"
+                       FontSize="36"
+                       FontWeight="Bold"
+                       HorizontalAlignment="Center" />
+            <TextBlock Text="Versão 3.0"
+                       Style="{DynamicResource Title2Style}"
+                       HorizontalAlignment="Center"
+                       Margin="0" />
+
+            <Separator Margin="0,20,0,20" />
+
+            <TextBlock Text="Desenvolvido por:"
+                       Style="{DynamicResource Title3Style}"
+                       HorizontalAlignment="Center"
+                       Margin="0" />
+            <TextBlock Text="@ericjhonn"
+                       FontSize="16"
+                       FontWeight="SemiBold"
+                       HorizontalAlignment="Center"
+                       Margin="0,0,0,0"
+                       Foreground="{DynamicResource TextPrimaryBrush}" />
+
+            <Separator Margin="0,20,0,20" />
+
+            <TextBlock Text="Licença e Código Fonte"
+                       Style="{DynamicResource Title3Style}"
+                       HorizontalAlignment="Center"
+                       Margin="0,0,0,10" />
+
+            <TextBlock Text="Distribuído sob a licença GPL 3.0."
+                       Style="{DynamicResource Text2Style}"
+                       HorizontalAlignment="Center"
+                       Margin="0,0,0,5" />
+
+            <TextBlock HorizontalAlignment="Center"
+                       Style="{DynamicResource Text2Style}">
+                <Hyperlink NavigateUri="https://github.com/ericjhonn/StudyMinder"
+                           RequestNavigate="Hyperlink_RequestNavigate"
+                           Foreground="{DynamicResource TextPrimaryBrush}">
+                    Repositório no GitHub
+                </Hyperlink>
+            </TextBlock>
+
+            <Separator Margin="0,20,0,20" />
+
+            <TextBlock Text="© 2025. Desenvolvido com ❤️"
+                       FontSize="12"
+                       HorizontalAlignment="Center"
+                       Margin="0,0,0,5"
+                       Foreground="{DynamicResource TextPrimaryBrush}" />
+            <TextBlock Text="Todos podem usar, modificar e distribuir livremente"
+                       FontSize="11"
+                       TextAlignment="Center"
+                       HorizontalAlignment="Center"
+                       Foreground="{DynamicResource TextPrimaryBrush}" />
+
+            <Separator Margin="0,20,0,20" />
+
+            <Border BorderThickness="2"
+                    BorderBrush="{DynamicResource CauseBrush}"
+                    CornerRadius="8"
+                    Padding="20,15,20,15"
+                    Margin="0,10,0,0"
+                    Background="{DynamicResource CardBrush}">
+                <StackPanel>
+                    <TextBlock Text="Apoie uma Causa"
+                               FontSize="16"
+                               FontWeight="Bold"
+                               TextAlignment="Center"
+                               Foreground="{DynamicResource CauseBrush}"
+                               Margin="0,0,0,10" />
+                    <TextBlock Text="Este app é gratuito e sempre será."
+                               FontSize="12"
+                               TextAlignment="Center"
+                               HorizontalAlignment="Center"
+                               Margin="0,0,0,10"
+                               Foreground="{DynamicResource CauseBrush}" />
+                    <TextBlock FontSize="11"
+                               TextAlignment="Center"
+                               HorizontalAlignment="Center"
+                               Margin="0,0,0,8"
+                               Foreground="{DynamicResource CauseBrush}">
+                        Se este projeto foi útil, ao invés de pagar uma assinatura,<LineBreak />considere fazer uma doação ao
+                    </TextBlock>
+                    <TextBlock HorizontalAlignment="Center"
+                               Margin="0,0,0,0">
+                        <Hyperlink NavigateUri="https://hlaureano.org.br/a-fundacao/faca-uma-doacao/"
+                                   Foreground="{DynamicResource CauseBrush}"
+                                   TextDecorations="Underline"
+                                   RequestNavigate="Hyperlink_RequestNavigate">
+                            <TextBlock Text="Hospital Napoleão Laureano"
+                                       FontSize="16"
+                                       FontWeight="SemiBold" />
+                        </Hyperlink>
+                    </TextBlock>
+                </StackPanel>
+            </Border>
+        </StackPanel>
+    </Grid>
+</UserControl>

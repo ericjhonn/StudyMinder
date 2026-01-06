@@ -1,0 +1,624 @@
+﻿<UserControl x:Class="StudyMinder.Views.ViewComparadorEditais"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:icon="http://metro.mahapps.com/winfx/xaml/iconpacks"
+             xmlns:controls="clr-namespace:StudyMinder.Controls"
+             xmlns:converters="clr-namespace:StudyMinder.Converters"
+             mc:Ignorable="d"
+             d:DesignHeight="1200"
+             d:DesignWidth="1000">
+
+    <UserControl.Resources>
+        <converters:BooleanToVisibilityConverter x:Key="BoolToVis" />
+        <converters:InverseBooleanToVisibilityConverter x:Key="InverseBoolToVis" />
+
+        <converters:StringToBrushConverter x:Key="StringToBrushConverter" />
+    </UserControl.Resources>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <Border Grid.Row="0"
+                Style="{DynamicResource ViewHeaderStyle}">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+
+                <TextBlock Grid.Column="0"
+                           Text="Comparador de Editais"
+                           Style="{StaticResource Title1Style}" />
+            </Grid>
+        </Border>
+
+        <ScrollViewer Grid.Row="2"
+                      Style="{DynamicResource ModernScrollViewerStyle}"
+                      Margin="0,20"
+                      VerticalScrollBarVisibility="Visible">
+
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
+
+                <Border Grid.Row="0"
+                        Style="{StaticResource PrimaryCardStyle}"
+                        Padding="20"
+                        Margin="20,0,5,10">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+
+                        <ComboBox Grid.Column="0"
+                                  ItemsSource="{Binding ListaEditais}"
+                                  SelectedItem="{Binding EditalBaseSelecionado}"
+                                  Style="{StaticResource ModernComboBoxStyle}"
+                                  DisplayMemberPath="Nome"
+                                  Tag="Edital Base"
+                                  Margin="0" />
+
+                        <icon:PackIconMaterial Grid.Column="1"
+                                               Kind="CompareHorizontal"
+                                               Width="24"
+                                               Height="24"
+                                               VerticalAlignment="Center"
+                                               Margin="10,0"
+                                               Foreground="{DynamicResource PrimaryBrush}" />
+
+                        <ComboBox Grid.Column="2"
+                                  ItemsSource="{Binding ListaEditais}"
+                                  SelectedItem="{Binding EditalAlvoSelecionado}"
+                                  DisplayMemberPath="Nome"
+                                  Style="{StaticResource ModernComboBoxStyle}"
+                                  Tag="Edital Alvo"
+                                  Margin="0" />
+
+                        <StackPanel Grid.Column="3"
+                                    Orientation="Horizontal"
+                                    VerticalAlignment="Center"
+                                    Margin="10,0,0,0">
+                            <Button Command="{Binding LimparSelecaoCommand}"
+                                    Style="{StaticResource SecondaryButtonStyle}"
+                                    VerticalAlignment="Center"
+                                    Width="50"
+                                    Margin="0,0,10,0"
+                                    ToolTip="Limpar Seleção">
+                                <icon:PackIconMaterial Kind="Refresh" />
+                            </Button>
+
+                            <Button Command="{Binding CompararCommand}"
+                                    Style="{StaticResource ModernButtonStyle}"
+                                    VerticalAlignment="Center"
+                                    Margin="0,0,0,0">
+                                <StackPanel Orientation="Horizontal">
+                                    <icon:PackIconMaterial Kind="ScaleBalance"
+                                                           Margin="0,0,10,0"
+                                                           VerticalAlignment="Center" />
+                                    <TextBlock Text="Comparar" />
+                                </StackPanel>
+                            </Button>
+                        </StackPanel>
+                    </Grid>
+                </Border>
+
+                <Grid Grid.Row="1"
+                      Margin="20,10,5,10"
+                      Visibility="{Binding TemResultado, Converter={StaticResource InverseBoolToVis}}"
+                      VerticalAlignment="Center"
+                      HorizontalAlignment="Center"
+                      Opacity="0.8">
+                    <StackPanel HorizontalAlignment="Center">
+                        <icon:PackIconMaterial Kind="FileCompare"
+                                               Width="64"
+                                               Height="64"
+                                               HorizontalAlignment="Center"
+                                               Foreground="{DynamicResource TextPrimaryBrush}" />
+                        <TextBlock Text="Selecione dois editais acima para iniciar a análise"
+                                   Margin="0,20,0,0"
+                                   FontSize="16"
+                                   HorizontalAlignment="Center"
+                                   Foreground="{DynamicResource TextPrimaryBrush}" />
+                    </StackPanel>
+                </Grid>
+
+                <StackPanel Grid.Row="1"
+                            Visibility="{Binding TemResultado, Converter={StaticResource BoolToVis}}">
+
+                    <Grid Margin="20,10,5,10">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="480" />
+                        </Grid.RowDefinitions>
+
+                        <Border Grid.Column="0"
+                                Style="{StaticResource PrimaryCardStyle}"
+                                Margin="0,0,5,0"
+                                Padding="20">
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="*" />
+                                    <RowDefinition Height="Auto" />
+                                </Grid.RowDefinitions>
+
+                                <controls:AccuracyPieChartControl Grid.Row="0"
+                                                                  Margin="0"
+                                                                  TituloGrafico="Afinidade de Conteúdo"
+                                                                  IconKind="Lightbulb"
+                                                                  Dados="{Binding DadosGraficoAfinidade, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" />
+
+                                <TextBlock Grid.Row="1"
+                                           Text="{Binding Resultado.PercentualCompatibilidade, StringFormat='{}{0:N1}% Compatível'}"
+                                           HorizontalAlignment="Center"
+                                           Style="{DynamicResource Text1Style}"
+                                           Margin="0,10,0,0" />
+                            </Grid>
+                        </Border>
+
+                        <Border Grid.Column="2"
+                                Style="{StaticResource PrimaryCardStyle}"
+                                Margin="5,0,0,0"
+                                Padding="20">
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="*" />
+                                    <RowDefinition Height="Auto" />
+                                </Grid.RowDefinitions>
+
+                                <controls:AccuracyPieChartControl Grid.Row="0"
+                                                                  TituloGrafico="Cenário Real"
+                                                                  IconKind="Target"
+                                                                  Dados="{Binding DadosGraficoConquista, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" />
+
+                                <TextBlock Grid.Row="1"
+                                           Text="{Binding Resultado.PercentualJaConcluidoDoAlvo, StringFormat='{}{0:N1}% Concluído'}"
+                                           Style="{DynamicResource Text1Style}"
+                                           Margin="0,10,0,0" />
+                            </Grid>
+                        </Border>
+                    </Grid>
+
+                    <Border Style="{StaticResource PrimaryCardStyle}"
+                            Margin="20,10,5,10">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                            </Grid.RowDefinitions>
+
+                            <StackPanel Grid.Row="0"
+                                        Margin="0,0,0,10">
+
+                                <StackPanel Orientation="Horizontal">
+                                    <icon:PackIconMaterial Kind="StarCircle"
+                                                           Width="30"
+                                                           Height="30"
+                                                           VerticalAlignment="Center"
+                                                           Margin="0,0,10,0"
+                                                           Foreground="{DynamicResource PrimaryBrush}" />
+                                    <StackPanel>
+                                        <TextBlock Text="Oportunidades de Conciliação"
+                                                   Style="{DynamicResource Title2Style}"
+                                                   Margin="0" />
+                                        <TextBlock Text="Assuntos comuns aos dois editais que você AINDA NÃO estudou. Prioridade Máxima!"
+                                                   Style="{DynamicResource Text2Style}"
+                                                   Margin="0" />
+                                    </StackPanel>
+                                </StackPanel>
+
+                                <Separator Margin="0,15,0,0"
+                                           Background="{DynamicResource BorderBrush}"
+                                           Height="8" />
+
+                            </StackPanel>
+
+                            <TextBlock Grid.Row="1"
+                                       Text="Nenhum assunto pendente comum. Parabéns!"
+                                       HorizontalAlignment="Center"
+                                       Padding="20"
+                                       FontStyle="Italic"
+                                       Visibility="{Binding Resultado.AssuntosConciliaveisPendentes.Count, Converter={StaticResource CountToVisibilityConverter}, ConverterParameter=Invert}" />
+
+                            <ListView Grid.Row="1"
+                                      ItemsSource="{Binding AssuntosPendentesGrouped}"
+                                      Style="{DynamicResource ModernListViewStyle}"
+                                      Margin="0,0,-15,0"
+                                      MaxHeight="380"
+                                      ScrollViewer.VerticalScrollBarVisibility="Visible"
+                                      BorderThickness="0"
+                                      Visibility="{Binding Resultado.AssuntosConciliaveisPendentes.Count, Converter={StaticResource CountToVisibilityConverter}}">
+
+                                <ListView.GroupStyle>
+                                    <GroupStyle>
+                                        <GroupStyle.HeaderTemplate>
+                                            <DataTemplate>
+                                                <TextBlock Text="{Binding Name}"
+                                                           Style="{DynamicResource Title3Style}"
+                                                           FontWeight="DemiBold"
+                                                           Margin="5,0,0,5" />
+                                            </DataTemplate>
+                                        </GroupStyle.HeaderTemplate>
+                                    </GroupStyle>
+                                </ListView.GroupStyle>
+
+                                <ListView.ItemTemplate>
+                                    <DataTemplate>
+                                        <Border Style="{DynamicResource SecondaryCardStyle}"
+                                                Margin="0,0,0,8"
+                                                Padding="0">
+                                            <Grid>
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="4" />
+                                                    <ColumnDefinition Width="*" />
+                                                </Grid.ColumnDefinitions>
+
+                                                <Border Grid.Column="0"
+                                                        Background="{Binding Disciplina.Cor, Converter={StaticResource StringToBrushConverter}}"
+                                                        CornerRadius="8,0,0,8" />
+
+                                                <Border Grid.Column="1"
+                                                        Padding="16,8,0,8"
+                                                        Background="Transparent">
+                                                    <Grid>
+                                                        <Grid.RowDefinitions>
+                                                            <RowDefinition Height="Auto" />
+                                                        </Grid.RowDefinitions>
+
+                                                        <TextBlock Grid.Row="0"
+                                                                   Text="{Binding Nome}"
+                                                                   Style="{DynamicResource Title3Style}"
+                                                                   Margin="0"
+                                                                   Foreground="{DynamicResource TextPrimaryBrush}"
+                                                                   TextWrapping="Wrap" />
+
+                                                        <StackPanel Grid.Row="0"
+                                                                    Orientation="Horizontal"
+                                                                    VerticalAlignment="Center"
+                                                                    HorizontalAlignment="Right">
+                                                            <Button Style="{StaticResource IconButtonStyle}"
+                                                                    Command="{Binding DataContext.AdicionarCicloCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                                    CommandParameter="{Binding}"
+                                                                    ToolTip="Adicionar Assunto ao Ciclo de Estudo"
+                                                                    Margin="0,0,8,0">
+                                                                <icon:PackIconMaterial Style="{DynamicResource AdicionarIconStyle}" />
+                                                            </Button>
+                                                        </StackPanel>
+                                                    </Grid>
+                                                </Border>
+                                            </Grid>
+                                        </Border>
+                                    </DataTemplate>
+                                </ListView.ItemTemplate>
+                            </ListView>
+                        </Grid>
+                    </Border>
+
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="*" />
+                        </Grid.RowDefinitions>
+
+                        <Border Background="#FFF3E0"
+                                BorderBrush="#FFB74D"
+                                BorderThickness="1"
+                                CornerRadius="4"
+                                Padding="15"
+                                Margin="20,10,5,5">
+                            <StackPanel Orientation="Horizontal"
+                                        HorizontalAlignment="Center">
+                                <icon:PackIconMaterial Kind="ClockAlert"
+                                                       Width="24"
+                                                       Height="24"
+                                                       Foreground="#F57C00"
+                                                       VerticalAlignment="Center"
+                                                       Margin="0,0,10,0" />
+                                <TextBlock Text="{Binding Resultado.MensagemEstrategicaTempo}"
+                                           Foreground="#E65100"
+                                           FontWeight="Bold"
+                                           FontSize="15"
+                                           VerticalAlignment="Center" />
+                            </StackPanel>
+                        </Border>
+
+                        <Grid Grid.Row="1">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+
+                            <!-- Edital Base -->
+                            <Border Grid.Column="0"
+                                    Style="{StaticResource PrimaryCardStyle}"
+                                    Margin="20,5,5,10"
+                                    Padding="20">
+                                <Grid>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="*" />
+                                    </Grid.RowDefinitions>
+
+                                    <!-- Título -->
+                                    <StackPanel Grid.Row="0">
+                                        <StackPanel Orientation="Horizontal">
+                                            <icon:PackIconMaterial Kind="FileDocumentOutline"
+                                                                   Width="24"
+                                                                   Height="24"
+                                                                   VerticalAlignment="Center"
+                                                                   Margin="0,0,10,0"
+                                                                   Foreground="{DynamicResource PrimaryBrush}" />
+
+                                            <StackPanel VerticalAlignment="Center">
+                                                <TextBlock Text="{Binding Resultado.EditalBase.Orgao}"
+                                                           Style="{DynamicResource Title3Style}"
+                                                           FontWeight="Bold"
+                                                           Margin="0" />
+                                                <TextBlock Text="Exclusivos deste edital"
+                                                           Style="{DynamicResource Text2Style}"
+                                                           FontSize="12"
+                                                           Margin="0" />
+                                            </StackPanel>
+
+                                            <icon:PackIconMaterial Kind="ClockAlert"
+                                                                   Width="20"
+                                                                   Height="20"
+                                                                   Foreground="{DynamicResource WarningBrush}"
+                                                                   VerticalAlignment="Center"
+                                                                   Margin="10,0,0,0"
+                                                                   ToolTip="Prazo mais curto! Foque nestes assuntos.">
+                                                <icon:PackIconMaterial.Style>
+                                                    <Style TargetType="icon:PackIconMaterial">
+                                                        <Setter Property="Visibility"
+                                                                Value="Collapsed" />
+                                                        <Style.Triggers>
+                                                            <DataTrigger Binding="{Binding Resultado.IsBasePrioritaria}"
+                                                                         Value="True">
+                                                                <Setter Property="Visibility"
+                                                                        Value="Visible" />
+                                                            </DataTrigger>
+                                                        </Style.Triggers>
+                                                    </Style>
+                                                </icon:PackIconMaterial.Style>
+                                            </icon:PackIconMaterial>
+                                        </StackPanel>
+
+                                        <Separator Margin="0,15,0,0"
+                                                   Background="{DynamicResource BorderBrush}"
+                                                   Height="1" />
+                                    </StackPanel>
+                                    
+                                    <!-- Assuntos -->
+                                    <ListView Grid.Row="1"
+                                              ItemsSource="{Binding AssuntosExclusivosBaseGrouped}"
+                                              Style="{DynamicResource ModernListViewStyle}"
+                                              Margin="0,0,-15,0"
+                                              MaxHeight="380"
+                                              ScrollViewer.VerticalScrollBarVisibility="Visible"
+                                              BorderThickness="0">
+
+                                        <ListView.GroupStyle>
+                                            <GroupStyle>
+                                                <GroupStyle.HeaderTemplate>
+                                                    <DataTemplate>
+                                                        <TextBlock Text="{Binding Name}"
+                                                                   Style="{DynamicResource Title3Style}"
+                                                                   FontWeight="DemiBold"
+                                                                   Margin="5,10,0,5" />
+                                                    </DataTemplate>
+                                                </GroupStyle.HeaderTemplate>
+                                            </GroupStyle>
+                                        </ListView.GroupStyle>
+
+                                        <ListView.ItemTemplate>
+                                            <DataTemplate>
+                                                <Border Style="{DynamicResource SecondaryCardStyle}"
+                                                        Margin="0,0,0,8"
+                                                        Padding="0">
+                                                    <Grid>
+                                                        <Grid.ColumnDefinitions>
+                                                            <ColumnDefinition Width="4" />
+                                                            <ColumnDefinition Width="*" />
+                                                        </Grid.ColumnDefinitions>
+
+                                                        <Border Grid.Column="0"
+                                                                Background="{Binding Disciplina.Cor, Converter={StaticResource StringToBrushConverter}}"
+                                                                CornerRadius="8,0,0,8" />
+
+                                                        <Border Grid.Column="1"
+                                                                Padding="12,8,0,8"
+                                                                Background="Transparent">
+                                                            <Grid>
+                                                                <Grid.RowDefinitions>
+                                                                    <RowDefinition Height="Auto" />
+                                                                </Grid.RowDefinitions>
+
+                                                                <TextBlock Grid.Row="0"
+                                                                           Text="{Binding Nome}"
+                                                                           Style="{DynamicResource Title3Style}"
+                                                                           FontSize="13"
+                                                                           Margin="0"
+                                                                           Foreground="{DynamicResource TextPrimaryBrush}"
+                                                                           TextWrapping="Wrap" />
+
+                                                                <StackPanel Grid.Row="0"
+                                                                            Orientation="Horizontal"
+                                                                            VerticalAlignment="Center"
+                                                                            HorizontalAlignment="Right">
+                                                                    <Button Style="{StaticResource IconButtonStyle}"
+                                                                            Command="{Binding DataContext.AdicionarCicloCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                                            CommandParameter="{Binding}"
+                                                                            ToolTip="Adicionar ao Ciclo"
+                                                                            Margin="0,0,8,0">
+                                                                        <icon:PackIconMaterial Style="{DynamicResource AdicionarIconStyle}"
+                                                                                               Width="14"
+                                                                                               Height="14" />
+                                                                    </Button>
+                                                                </StackPanel>
+                                                            </Grid>
+                                                        </Border>
+                                                    </Grid>
+                                                </Border>
+                                            </DataTemplate>
+                                        </ListView.ItemTemplate>
+                                    </ListView>
+                                </Grid>
+                            </Border>
+
+                            <!-- Edital Alvo -->
+                            <Border Grid.Column="2"
+                                    Style="{StaticResource PrimaryCardStyle}"
+                                    Margin="5,5,5,10"
+                                    Padding="20">
+                                <Grid>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="*" />
+                                    </Grid.RowDefinitions>
+
+                                    <!-- Título -->
+                                    <StackPanel Grid.Row="0">
+                                        <StackPanel Orientation="Horizontal">
+                                            <icon:PackIconMaterial Kind="FileDocumentOutline"
+                                                                   Width="24"
+                                                                   Height="24"
+                                                                   VerticalAlignment="Center"
+                                                                   Margin="0,0,10,0"
+                                                                   Foreground="{DynamicResource PrimaryBrush}" />
+
+                                            <StackPanel VerticalAlignment="Center">
+                                                <TextBlock Text="{Binding Resultado.EditalAlvo.Orgao}"
+                                                           Style="{DynamicResource Title3Style}"
+                                                           FontWeight="Bold"
+                                                           Margin="0" />
+                                                <TextBlock Text="Exclusivos deste edital"
+                                                           Style="{DynamicResource Text2Style}"
+                                                           FontSize="12"
+                                                           Margin="0" />
+                                            </StackPanel>
+
+                                            <icon:PackIconMaterial Kind="ClockAlert"
+                                                                   Width="20"
+                                                                   Height="20"
+                                                                   Foreground="{DynamicResource WarningBrush}"
+                                                                   VerticalAlignment="Center"
+                                                                   Margin="10,0,0,0"
+                                                                   ToolTip="Prazo mais curto! Foque nestes assuntos.">
+                                                <icon:PackIconMaterial.Style>
+                                                    <Style TargetType="icon:PackIconMaterial">
+                                                        <Setter Property="Visibility"
+                                                                Value="Collapsed" />
+                                                        <Style.Triggers>
+                                                            <DataTrigger Binding="{Binding Resultado.IsAlvoPrioritario}"
+                                                                         Value="True">
+                                                                <Setter Property="Visibility"
+                                                                        Value="Visible" />
+                                                            </DataTrigger>
+                                                        </Style.Triggers>
+                                                    </Style>
+                                                </icon:PackIconMaterial.Style>
+                                            </icon:PackIconMaterial>
+                                        </StackPanel>
+
+                                        <Separator Margin="0,15,0,0"
+                                                   Background="{DynamicResource BorderBrush}"
+                                                   Height="1" />
+                                    </StackPanel>
+
+                                    <!-- Assuntos -->
+                                    <ListView Grid.Row="1"
+                                              ItemsSource="{Binding AssuntosExclusivosAlvoGrouped}"
+                                              Style="{DynamicResource ModernListViewStyle}"
+                                              Margin="0,0,-15,0"
+                                              MaxHeight="380"
+                                              ScrollViewer.VerticalScrollBarVisibility="Visible"
+                                              BorderThickness="0">
+
+                                        <ListView.GroupStyle>
+                                            <GroupStyle>
+                                                <GroupStyle.HeaderTemplate>
+                                                    <DataTemplate>
+                                                        <TextBlock Text="{Binding Name}"
+                                                                   Style="{DynamicResource Title3Style}"
+                                                                   FontWeight="DemiBold"
+                                                                   Margin="5,10,0,5" />
+                                                    </DataTemplate>
+                                                </GroupStyle.HeaderTemplate>
+                                            </GroupStyle>
+                                        </ListView.GroupStyle>
+
+                                        <ListView.ItemTemplate>
+                                            <DataTemplate>
+                                                <Border Style="{DynamicResource SecondaryCardStyle}"
+                                                        Margin="0,0,0,8"
+                                                        Padding="0">
+                                                    <Grid>
+                                                        <Grid.ColumnDefinitions>
+                                                            <ColumnDefinition Width="4" />
+                                                            <ColumnDefinition Width="*" />
+                                                        </Grid.ColumnDefinitions>
+
+                                                        <Border Grid.Column="0"
+                                                                Background="{Binding Disciplina.Cor, Converter={StaticResource StringToBrushConverter}}"
+                                                                CornerRadius="8,0,0,8" />
+
+                                                        <Border Grid.Column="1"
+                                                                Padding="12,8,0,8"
+                                                                Background="Transparent">
+                                                            <Grid>
+                                                                <Grid.RowDefinitions>
+                                                                    <RowDefinition Height="Auto" />
+                                                                </Grid.RowDefinitions>
+
+                                                                <TextBlock Grid.Row="0"
+                                                                           Text="{Binding Nome}"
+                                                                           Style="{DynamicResource Title3Style}"
+                                                                           FontSize="13"
+                                                                           Margin="0"
+                                                                           Foreground="{DynamicResource TextPrimaryBrush}"
+                                                                           TextWrapping="Wrap" />
+
+                                                                <StackPanel Grid.Row="0"
+                                                                            Orientation="Horizontal"
+                                                                            VerticalAlignment="Center"
+                                                                            HorizontalAlignment="Right">
+                                                                    <Button Style="{StaticResource IconButtonStyle}"
+                                                                            Command="{Binding DataContext.AdicionarCicloCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                                            CommandParameter="{Binding}"
+                                                                            ToolTip="Adicionar ao Ciclo"
+                                                                            Margin="0,0,8,0">
+                                                                        <icon:PackIconMaterial Style="{DynamicResource AdicionarIconStyle}"
+                                                                                               Width="14"
+                                                                                               Height="14" />
+                                                                    </Button>
+                                                                </StackPanel>
+                                                            </Grid>
+                                                        </Border>
+                                                    </Grid>
+                                                </Border>
+                                            </DataTemplate>
+                                        </ListView.ItemTemplate>
+                                    </ListView>
+                                </Grid>
+                            </Border>
+                        </Grid>
+                    </Grid>
+
+                </StackPanel>
+            </Grid>
+        </ScrollViewer>
+    </Grid>
+</UserControl>

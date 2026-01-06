@@ -1,0 +1,296 @@
+<Window x:Class="StudyMinder.Views.RemoverAssuntoDialog"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:icon="http://metro.mahapps.com/winfx/xaml/iconpacks"
+        xmlns:models="clr-namespace:StudyMinder.Models"
+        xmlns:shell="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        Title="Remover Assunto"
+        WindowStartupLocation="CenterOwner"
+        ResizeMode="NoResize"
+        Background="{DynamicResource BackgroundBrush}"
+        ShowInTaskbar="False"
+        Width="670"
+        Height="610">
+
+    <!-- WindowChrome para barra de título customizada -->
+    <shell:WindowChrome.WindowChrome>
+        <shell:WindowChrome CaptionHeight="32"
+                            ResizeBorderThickness="5"
+                            GlassFrameThickness="5"
+                            CornerRadius="0"
+                            UseAeroCaptionButtons="True" />
+    </shell:WindowChrome.WindowChrome>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <!-- Barra de título -->
+        <Border Grid.Row="0"
+                Background="{DynamicResource CardBrush}"
+                Padding="8,4"
+                BorderThickness="0">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+
+                <!-- Título -->
+                <TextBlock Grid.Column="1"
+                           Text="Remover Assunto"
+                           Style="{DynamicResource Title3Style}"
+                           Margin="0"
+                           TextTrimming="CharacterEllipsis" />
+            </Grid>
+        </Border>
+
+        <!-- Conteúdo principal -->
+        <StackPanel Grid.Row="1">
+
+            <!-- Informações do Assunto -->
+            <Border Style="{DynamicResource PrimaryCardStyle}">
+                <StackPanel>
+                    <TextBlock Text="Informações do Assunto"
+                               Style="{DynamicResource Title2Style}" />
+
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                        </Grid.RowDefinitions>
+
+                        <!-- Nome do Assunto -->
+                        <TextBox Grid.Row="0"
+                                 Text="{Binding AssuntoSelecionado.Nome}"
+                                 Style="{DynamicResource ModernTextBoxWithPlaceholderStyle}"
+                                 Margin="0,0,0,12"
+                                 Tag="Assunto"
+                                 IsReadOnly="True" />
+
+                        <!-- Disciplina Atual -->
+                        <TextBox Grid.Row="1"
+                                 Text="{Binding DisciplinaOrigem.Nome}"
+                                 Style="{DynamicResource ModernTextBoxWithPlaceholderStyle}"
+                                 Margin="0,0,0,12"
+                                 Tag="Disciplina"
+                                 IsReadOnly="True" />
+
+                        <!-- Métricas do Assunto -->
+                        <Border Grid.Row="3"
+                                Style="{DynamicResource SecondaryCardStyle}"
+                                Margin="0">
+                            <StackPanel>
+                                <TextBlock Text="Métricas do Assunto"
+                                           Style="{DynamicResource Title3Style}"
+                                           Margin="0,0,0,12" />
+
+                                <!-- Estatísticas com Ícones -->
+                                <StackPanel Grid.Column="0"
+                                            Grid.Row="1"
+                                            Orientation="Horizontal"
+                                            Margin="0,0,12,0"
+                                            VerticalAlignment="Center"
+                                            Visibility="{Binding IsEditing, Converter={StaticResource InverseBooleanToVisibilityConverter}}">
+
+                                    <!-- Acertos -->
+                                    <StackPanel Orientation="Horizontal"
+                                                VerticalAlignment="Center"
+                                                Width="40"
+                                                Margin="0,0,16,0">
+                                        <icon:PackIconMaterial Style="{DynamicResource AcertosIconStyle}" />
+                                        <TextBlock Text="{Binding TotalAcertos}"
+                                                   Style="{DynamicResource AcertosTextStyle}" />
+                                    </StackPanel>
+
+                                    <!-- Erros -->
+                                    <StackPanel Orientation="Horizontal"
+                                                VerticalAlignment="Center"
+                                                Width="40"
+                                                Margin="0,0,16,0">
+                                        <icon:PackIconMaterial Style="{DynamicResource ErrosIconStyle}" />
+                                        <TextBlock Text="{Binding TotalErros}"
+                                                   Style="{DynamicResource ErrosTextStyle}" />
+                                    </StackPanel>
+
+                                    <!-- Rendimento -->
+                                    <StackPanel Orientation="Horizontal"
+                                                VerticalAlignment="Center"
+                                                Width="70"
+                                                Margin="0,0,16,0">
+                                        <icon:PackIconMaterial Style="{DynamicResource RendimentoIconStyle}"
+                                                               Margin="0,0,4,0" />
+                                        <TextBlock Text="{Binding Rendimento, StringFormat='{}{0:F1}%'}"
+                                                   Style="{DynamicResource RendimentoTextStyle}" />
+                                    </StackPanel>
+
+                                    <!-- Horas Estudadas -->
+                                    <StackPanel Orientation="Horizontal"
+                                                VerticalAlignment="Center"
+                                                Width="70"
+                                                Margin="0,0,16,0">
+                                        <icon:PackIconMaterial Style="{DynamicResource HorasEstudadasIconStyle}" />
+                                        <TextBlock Text="{Binding HorasEstudadas}"
+                                                   Style="{DynamicResource HorasEstudadasTextStyle}" />
+                                    </StackPanel>
+
+                                    <!-- Total de Estudos -->
+                                    <StackPanel Orientation="Horizontal"
+                                                VerticalAlignment="Center"
+                                                Width="90"
+                                                Margin="0,0,16,0">
+                                        <icon:PackIconMaterial Style="{DynamicResource EstudosTotalIconStyle}" />
+                                        <TextBlock Text="{Binding TotalEstudosFormatado}"
+                                                   Style="{DynamicResource EstudosTotalTextStyle}" />
+                                    </StackPanel>
+
+                                    <!-- Status do Assunto (seguindo o padrão do MoverAssuntoDialog.xaml) -->
+                                    <Border x:Name="StatusBorder"
+                                            CornerRadius="12"
+                                            Padding="8,4">
+                                        <Border.Style>
+                                            <Style TargetType="Border">
+                                                <Setter Property="Background"
+                                                        Value="{DynamicResource SuccessBrush}" />
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding Concluido}"
+                                                                 Value="False">
+                                                        <Setter Property="Background"
+                                                                Value="{DynamicResource WarningBrush}" />
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </Border.Style>
+                                        <TextBlock Foreground="White"
+                                                   FontSize="12"
+                                                   FontWeight="SemiBold">
+                                            <TextBlock.Style>
+                                                <Style TargetType="TextBlock">
+                                                    <Setter Property="Text"
+                                                            Value="Concluído" />
+                                                    <Style.Triggers>
+                                                        <DataTrigger Binding="{Binding Concluido}"
+                                                                     Value="False">
+                                                            <Setter Property="Text"
+                                                                    Value="Em Andamento" />
+                                                        </DataTrigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </TextBlock.Style>
+                                        </TextBlock>
+                                    </Border>
+
+                                </StackPanel>
+                            </StackPanel>
+                        </Border>
+                    </Grid>
+                </StackPanel>
+            </Border>
+
+            <!-- Opções de Remoção -->
+            <Border Style="{DynamicResource PrimaryCardStyle}"
+                    Margin="20,12,20,0">
+                <StackPanel>
+                    <TextBlock Text="Opções de Remoção"
+                               Style="{DynamicResource Title2Style}"
+                               Margin="0,0,0,12" />
+
+                    <!-- Checkbox para remover em cascata -->
+                    <CheckBox x:Name="RemoverEstudosCheckBox"
+                              IsChecked="{Binding RemoverEmCascata}"
+                              Style="{DynamicResource RoundedCheckBoxStyle}"
+                              HorizontalAlignment="Left"
+                              Margin="0,0,0,16">
+                        <TextBlock Text="Remover todos os estudos vinculados ao assunto."
+                                   TextWrapping="Wrap"
+                                   LineHeight="18" />
+                    </CheckBox>
+
+                    <!-- Grid para comboboxes (aparece quando checkbox desmarcado) -->
+                    <Grid Visibility="{Binding MoverEstudosVisibility, Mode=OneWay}">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                        </Grid.RowDefinitions>
+
+                        <TextBlock Grid.Row="0"
+                                   Text="Selecione o destino dos estudos:"
+                                   Margin="0,0,0,12"
+                                   Style="{DynamicResource Text2Style}" />
+
+                        <!-- ComboBox Disciplina Destino -->
+                        <ComboBox Grid.Row="1"
+                                  ItemsSource="{Binding DisciplinasDisponiveis}"
+                                  SelectedItem="{Binding DisciplinaDestino}"
+                                  DisplayMemberPath="Nome"
+                                  Style="{DynamicResource ModernComboBoxStyle}"
+                                  Margin="0,0,0,12"
+                                  Tag="Disciplina de Destino" />
+
+                        <!-- ComboBox Assunto Destino -->
+                        <ComboBox Grid.Row="2"
+                                  ItemsSource="{Binding AssuntosDestino}"
+                                  SelectedItem="{Binding AssuntoDestino}"
+                                  DisplayMemberPath="Nome"
+                                  Style="{DynamicResource ModernComboBoxStyle}"
+                                  Margin="0,0,0,0"
+                                  Tag="Assunto de Destino" />
+                    </Grid>
+
+                    <!-- Mensagem de aviso -->
+                    <Border Background="{DynamicResource WarningBackgroundBrush}"
+                            CornerRadius="4"
+                            Padding="0"
+                            Margin="0,12,0,0"
+                            Visibility="{Binding AvisoVisibility, Mode=OneWay}">
+                        <StackPanel Orientation="Horizontal">
+                            <icon:PackIconMaterial Kind="AlertCircleOutline"
+                                                   Width="22"
+                                                   Height="22"
+                                                   Margin="0,0,8,0"
+                                                   VerticalAlignment="Center"
+                                                   Foreground="{DynamicResource WarningBrush}" />
+                            <TextBlock Text="{Binding MensagemAviso, Mode=OneWay}"
+                                       TextWrapping="Wrap"
+                                       Style="{DynamicResource Text2Style}" />
+                        </StackPanel>
+                    </Border>
+                </StackPanel>
+            </Border>
+        </StackPanel>
+
+        <!-- Botões de Ação -->
+        <StackPanel Grid.Row="2"
+                    Orientation="Horizontal"
+                    VerticalAlignment="Bottom"
+                    HorizontalAlignment="Right"
+                    Margin="20,20,20,20">
+            <Button Style="{StaticResource SecondaryButtonStyle}"
+                    Content="Cancelar"
+                    Click="Cancelar_Click"
+                    Margin="0,0,12,0"
+                    MinWidth="100" />
+
+            <Button Style="{StaticResource ModernButtonStyle}"
+                    Click="RemoverAssunto_Click"
+                    IsEnabled="{Binding PodeRemover}"
+                    MinWidth="150">
+                <StackPanel Orientation="Horizontal">
+                    <icon:PackIconMaterial Kind="TrashCanOutline"
+                                           Width="16"
+                                           Height="16"
+                                           Margin="0,0,8,0"
+                                           VerticalAlignment="Center" />
+                    <TextBlock Text="Remover" />
+                </StackPanel>
+            </Button>
+        </StackPanel>
+    </Grid>
+</Window>

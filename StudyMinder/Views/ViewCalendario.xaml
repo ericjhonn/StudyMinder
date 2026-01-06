@@ -1,0 +1,258 @@
+<UserControl x:Class="StudyMinder.Views.ViewCalendario"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:local="clr-namespace:StudyMinder.Views"
+             xmlns:icon="http://metro.mahapps.com/winfx/xaml/iconpacks"
+             mc:Ignorable="d"
+             d:DesignHeight="600"
+             d:DesignWidth="900">
+
+    <Grid >
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <!-- Cabeçalho -->
+        <Border Grid.Row="0"
+                Style="{DynamicResource ViewHeaderStyle}">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+
+                <TextBlock Grid.Column="0"
+                           Text="Calendário"
+                           Style="{DynamicResource Title1Style}" />
+
+                <!-- Botões de visualização -->
+                <StackPanel Grid.Column="1"
+                            Orientation="Horizontal"
+                            Margin="0,0,8,0">
+                    <Button Name="BtnMes"
+                            Content="Mensal"
+                            Style="{DynamicResource ModernButtonStyle}"
+                            VerticalAlignment="Center"
+                            Margin="0,0,8,0"
+                            Click="BtnMes_Click" />
+                    <Button Name="BtnSemana"
+                            Content="Semanal"
+                            VerticalAlignment="Center"
+                            Style="{DynamicResource TerciaryButtonStyle}"
+                            Click="BtnSemana_Click" />
+                </StackPanel>
+
+                <!-- Navegação de datas -->
+                <Grid Grid.Column="2">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+                    
+                    <Button Grid.Column="0"
+                            Name="BtnAnterior"
+                            Style="{StaticResource TerciaryButtonStyle}"
+                            VerticalAlignment="Center"
+                            Margin="0,0,8,0"
+                            Click="BtnAnterior_Click">
+                        <icon:PackIconMaterial Kind="ChevronLeft"
+                                               Width="16"
+                                               Height="16" />
+                    </Button>
+                    <TextBlock Grid.Column="1"
+                               Name="TxtPeriodo"
+                               Text="Novembro 2025"
+                               Style="{DynamicResource Title2Style}"
+                               VerticalAlignment="Center"
+                               HorizontalAlignment="Center"
+                               TextAlignment="Center"
+                               Margin="0,0,8,0"
+                               Width="200"/>
+                    <Button Grid.Column="2"
+                            Name="BtnProximo"
+                            VerticalAlignment="Center"
+                            Style="{StaticResource TerciaryButtonStyle}"
+                            Click="BtnProximo_Click">
+                        <icon:PackIconMaterial Kind="ChevronRight"
+                                               Width="16"
+                                               Height="16" />
+                    </Button>
+                    <Button Grid.Column="3"
+                            Name="BtnHoje"
+                            Content="Hoje"
+                            Style="{StaticResource TerciaryButtonStyle}"
+                            VerticalAlignment="Center"
+                            Margin="8,0,0,0"
+                            Click="BtnHoje_Click" />
+                </Grid>
+            </Grid>
+        </Border>
+        
+        <!-- Área do Calendário -->
+        <Border Grid.Row="2"
+                Margin="20"
+                Style="{DynamicResource PrimaryCardStyle}">
+            
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+
+                <!-- Mensagem de Erro -->
+                <Border Grid.Row="0"
+                        Background="{DynamicResource ErrorBrush}"
+                        CornerRadius="4"
+                        Margin="10"
+                        Padding="12"
+                        Visibility="{Binding TemErro, Converter={StaticResource BoolToVisibilityConverter}}">
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="⚠️"
+                                   FontSize="16"
+                                   Margin="0,0,10,0"
+                                   VerticalAlignment="Center" />
+                        <TextBlock Text="{Binding MensagemErro}"
+                                   Foreground="White"
+                                   TextWrapping="Wrap"
+                                   VerticalAlignment="Center" />
+                    </StackPanel>
+                </Border>
+
+                <Grid Grid.Row="1">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="*" />
+                    </Grid.RowDefinitions>
+
+                    <!-- Cabeçalho dos dias da semana (visibilidade controlada) -->
+                    <Grid Name="HeaderDiasSemana"
+                          Grid.Row="0"
+                          Height="40"
+                          Visibility="Visible">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Text="Dom"
+                                   Grid.Column="0"
+                                   HorizontalAlignment="Center"
+                                   VerticalAlignment="Center"
+                                   FontWeight="SemiBold"
+                                   Foreground="{DynamicResource TextSecondaryBrush}" />
+                        <TextBlock Text="Seg"
+                                   Grid.Column="1"
+                                   HorizontalAlignment="Center"
+                                   VerticalAlignment="Center"
+                                   FontWeight="SemiBold"
+                                   Foreground="{DynamicResource TextSecondaryBrush}" />
+                        <TextBlock Text="Ter"
+                                   Grid.Column="2"
+                                   HorizontalAlignment="Center"
+                                   VerticalAlignment="Center"
+                                   FontWeight="SemiBold"
+                                   Foreground="{DynamicResource TextSecondaryBrush}" />
+                        <TextBlock Text="Qua"
+                                   Grid.Column="3"
+                                   HorizontalAlignment="Center"
+                                   VerticalAlignment="Center"
+                                   FontWeight="SemiBold"
+                                   Foreground="{DynamicResource TextSecondaryBrush}" />
+                        <TextBlock Text="Qui"
+                                   Grid.Column="4"
+                                   HorizontalAlignment="Center"
+                                   VerticalAlignment="Center"
+                                   FontWeight="SemiBold"
+                                   Foreground="{DynamicResource TextSecondaryBrush}" />
+                        <TextBlock Text="Sex"
+                                   Grid.Column="5"
+                                   HorizontalAlignment="Center"
+                                   VerticalAlignment="Center"
+                                   FontWeight="SemiBold"
+                                   Foreground="{DynamicResource TextSecondaryBrush}" />
+                        <TextBlock Text="Sáb"
+                                   Grid.Column="6"
+                                   HorizontalAlignment="Center"
+                                   VerticalAlignment="Center"
+                                   FontWeight="SemiBold"
+                                   Foreground="{DynamicResource TextSecondaryBrush}" />
+                    </Grid>
+
+                    <!-- Calendário (Grid dinâmico) -->
+                    <ScrollViewer Grid.Row="1"
+                                  Style="{DynamicResource ModernScrollViewerStyle}"
+                                  Margin="0,0,-15,0"
+                                  VerticalScrollBarVisibility="Auto"
+                                  HorizontalScrollBarVisibility="Disabled">
+                        <Grid Name="CalendarioGrid">
+                            <!-- O conteúdo será gerado dinamicamente via code-behind -->
+                        </Grid>
+                    </ScrollViewer>
+                </Grid>
+
+                <!-- Legenda -->
+                <StackPanel Grid.Row="2"
+                            Orientation="Horizontal"
+                            HorizontalAlignment="Left"
+                            VerticalAlignment="Bottom"
+                            Margin="0,10,0,0">
+                    <StackPanel Orientation="Horizontal"
+                                Margin="0,0,20,0">
+                        <Border Width="12"
+                                Height="12"
+                                Background="{DynamicResource PrimaryBrush}"
+                                CornerRadius="2"
+                                Margin="0,0,5,0" />
+                        <TextBlock Text="Estudos"
+                                   FontSize="12"
+                                   Foreground="{DynamicResource TextSecondaryBrush}" />
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal"
+                                Margin="0,0,20,0">
+                        <Border Width="12"
+                                Height="12"
+                                Background="{DynamicResource WarningBrush}"
+                                CornerRadius="2"
+                                Margin="0,0,5,0" />
+                        <TextBlock Text="Revisões"
+                                   FontSize="12"
+                                   Foreground="{DynamicResource TextSecondaryBrush}" />
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal"
+                                Margin="0,0,20,0">
+                        <Border Width="12"
+                                Height="12"
+                                Background="{DynamicResource SuccessBrush}"
+                                CornerRadius="2"
+                                Margin="0,0,5,0" />
+                        <TextBlock Text="Eventos Editais"
+                                   FontSize="12"
+                                   Foreground="{DynamicResource TextSecondaryBrush}" />
+                    </StackPanel>
+                </StackPanel>
+            </Grid>
+        </Border>
+
+        <!-- Painel de Detalhes do Dia -->
+        <local:DiaDetalhesPanel x:Name="DiaDetalhesPanel"
+                                Grid.Row="0"
+                                Grid.RowSpan="4"
+                                Visibility="Collapsed"
+                                Panel.ZIndex="1000" />
+        
+    </Grid>
+</UserControl>

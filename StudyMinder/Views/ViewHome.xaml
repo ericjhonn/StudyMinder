@@ -1,0 +1,1766 @@
+<UserControl x:Class="StudyMinder.Views.ViewHome"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:local="clr-namespace:StudyMinder.Views"
+             xmlns:controls="clr-namespace:StudyMinder.Controls"
+             xmlns:behaviors="clr-namespace:StudyMinder.Behaviors"
+             xmlns:icon="http://metro.mahapps.com/winfx/xaml/iconpacks"
+             xmlns:fluent="urn:fluent-styles"
+             xmlns:converters="clr-namespace:StudyMinder.Converters"
+             xmlns:oxy="http://oxyplot.org/wpf"
+             xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
+             mc:Ignorable="d"
+             d:DesignHeight="823.5"
+             d:DesignWidth="1000">
+
+    <Grid>
+        <Grid.Resources>
+            <converters:SimpleBoolToColorConverter x:Key="SimpleBoolToColorConverter" />
+            <converters:BooleanToVisibilityConverter x:Key="BoolToVisibilityConverter" />
+            <converters:InverseBooleanToVisibilityConverter x:Key="InverseBooleanToVisibilityConverter" />
+            <converters:HorasFormatConverter x:Key="HorasFormatConverter" />
+            <converters:TipoEstudoColorConverter x:Key="TipoEstudoColorConverter" />
+            <converters:StringToBrushConverter x:Key="StringToBrushConverter" />
+            <converters:StringToBooleanConverter x:Key="StringToBooleanConverter" />
+        </Grid.Resources>
+
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="Auto" />
+        </Grid.ColumnDefinitions>
+
+        <!-- Cabeçalho -->
+        <Border Grid.Column="0"
+                Grid.Row="0"
+                Style="{DynamicResource ViewHeaderStyle}">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+
+                <TextBlock Grid.Column="0"
+                           Text="Dashboard"
+                           Style="{StaticResource Title1Style}" />
+
+                <!-- Botão de Edital -->
+                <ComboBox Grid.Column="1"
+                          Width="150"
+                          Margin="12,0,0,0"
+                          ItemsSource="{Binding EditaisDisponiveis}"
+                          SelectedItem="{Binding EditalSelecionado}"
+                          Style="{StaticResource ModernComboBoxStyle}">
+                    <ComboBox.ItemTemplate>
+                        <DataTemplate>
+                            <TextBlock Text="{Binding NomeEdital}" />
+                        </DataTemplate>
+                    </ComboBox.ItemTemplate>
+                </ComboBox>
+
+                <!-- Botão de Filtros -->
+                <Button Grid.Column="2"
+                        Style="{StaticResource ModernButtonStyle}"
+                        Command="{Binding ToggleFiltrosPanelCommand}"
+                        Margin="12,0,0,0">
+                    <StackPanel Orientation="Horizontal">
+                        <icon:PackIconMaterial Kind="Filter"
+                                               Width="16"
+                                               Height="16"
+                                               VerticalAlignment="Center"
+                                               Margin="0,0,8,0" />
+                        <TextBlock Text="Filtros"
+                                   VerticalAlignment="Center" />
+                    </StackPanel>
+                </Button>
+
+            </Grid>
+        </Border>
+
+        <!-- Conteúdo -->
+        <ScrollViewer Grid.Column="0"
+                      Grid.Row="1"
+                      Margin="0,20,04,20"
+                      Style="{DynamicResource ModernScrollViewerStyle}"
+                      VerticalScrollBarVisibility="Auto"
+                      HorizontalScrollBarVisibility="Disabled">
+
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
+
+                <!-- KPIs e Gráficos HOJE -->
+                <Grid Grid.Row="0"
+                      Margin="20,0,0,10">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="3*" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+
+                    <!-- KPIs -->
+                    <Grid Grid.Column="0"
+                          Margin="0,0,20,0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="*" />
+                            <RowDefinition Height="*" />
+                        </Grid.RowDefinitions>
+
+                        <!-- Card 1 - Horas Estudadas -->
+                        <controls:KPICard Grid.Row="0"
+                                          Grid.Column="0"
+                                          Margin="0,0,5,5"
+                                          Title="HORAS"
+                                          Value="{Binding HorasTotais, Converter={StaticResource HorasFormatConverter}}"
+                                          IconStyle="{StaticResource HorasEstudadasIconStyle}"
+                                          ColorBrush="{DynamicResource HorasEstudadasBrush}" />
+
+                        <!-- Card 2 - Dias Estudados -->
+                        <controls:KPICard Grid.Row="0"
+                                          Grid.Column="1"
+                                          Margin="5,0,5,5"
+                                          Title="DIAS"
+                                          Value="{Binding DiasEstudados}"
+                                          IconStyle="{StaticResource CalendarioIconStyle}"
+                                          ColorBrush="{DynamicResource EstudosTotalBrush}" />
+
+                        <!-- Card 3 - Média Diária -->
+                        <controls:KPICard Grid.Row="0"
+                                          Grid.Column="2"
+                                          Margin="5,0,5,5"
+                                          Title="MÉDIA"
+                                          Value="{Binding MediaHorasPorDia, Converter={StaticResource HorasFormatConverter}}"
+                                          IconStyle="{StaticResource MediaHorasIconStyle}"
+                                          ColorBrush="{DynamicResource PrimaryBrush}" />
+
+                        <!-- Card 4 - Progresso -->
+                        <controls:KPICard Grid.Row="0"
+                                          Grid.Column="3"
+                                          Margin="5,0,0,5"
+                                          Title="PROGRESSO"
+                                          Value="{Binding PercentualConclusao, StringFormat='{}{0:F1}%'}"
+                                          IconStyle="{StaticResource ProgressoIconStyle}"
+                                          ColorBrush="{DynamicResource ProgressoBrush}" />
+
+                        <!-- Card 5 - Questões -->
+                        <controls:KPICard Grid.Row="1"
+                                          Grid.Column="0"
+                                          Margin="0,5,5,0"
+                                          Title="QUESTÕES"
+                                          Value="{Binding QuestoesTotal}"
+                                          IconStyle="{StaticResource QuestoesIconStyle}"
+                                          ColorBrush="{DynamicResource QuestoesBrush}" />
+
+                        <!-- Card 6 - Acertos -->
+                        <controls:KPICard Grid.Row="1"
+                                          Grid.Column="1"
+                                          Margin="5,5,5,0"
+                                          Title="ACERTOS"
+                                          Value="{Binding TotalAcertos}"
+                                          IconStyle="{StaticResource AcertosIconStyle}"
+                                          ColorBrush="{DynamicResource AcertosBrush}" />
+
+                        <!-- Card 7 - Erros -->
+                        <controls:KPICard Grid.Row="1"
+                                          Grid.Column="2"
+                                          Margin="5,5,5,0"
+                                          Title="ERROS"
+                                          Value="{Binding TotalErros}"
+                                          IconStyle="{StaticResource ErrosIconStyle}"
+                                          ColorBrush="{DynamicResource ErrosBrush}" />
+
+                        <!-- Card 8 - Rendimento -->
+                        <controls:KPICard Grid.Row="1"
+                                          Grid.Column="3"
+                                          Margin="5,5,0,0"
+                                          Title="RENDIMENTO"
+                                          Value="{Binding RendimentoGeral, StringFormat='{}{0:F1}%'}"
+                                          IconStyle="{StaticResource RendimentoIconStyle}"
+                                          ColorBrush="{DynamicResource RendimentoBrush}" />
+
+                    </Grid>
+
+                    <!-- Gráfico HOJE -->
+                    <Border Grid.Column="1"
+                            Margin="0,0,0,0"
+                            Height="290"
+                            Style="{StaticResource DashboardCardStyle}">
+
+                        <StackPanel>
+
+                            <!-- Título e Navegação -->
+                            <Grid Margin="0,0,0,0">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+
+                                <!-- Data Selecionada -->
+                                <TextBlock Grid.Column="0"
+                                           Text="{Binding TextoDataSelecionada}"
+                                           Style="{DynamicResource Title2Style}"
+                                           Margin="0"
+                                           VerticalAlignment="Center" />
+
+                                <!-- Navegação Temporal -->
+                                <StackPanel Grid.Column="1"
+                                            Orientation="Horizontal"
+                                            VerticalAlignment="Center"
+                                            Margin="0,0,4,0">
+
+                                    <Button Style="{StaticResource ModernButtonStyle}"
+                                            Command="{Binding NavegarParaAnteriorCommand}"
+                                            Width="24"
+                                            Height="24"
+                                            Padding="0"
+                                            Margin="0,0,4,0"
+                                            ToolTip="Dia anterior">
+                                        <icon:PackIconMaterial Kind="ChevronLeft"
+                                                               Foreground="White"
+                                                               Width="12"
+                                                               Height="12" />
+                                    </Button>
+
+                                    <Button Style="{StaticResource ModernButtonStyle}"
+                                            Command="{Binding NavegarParaProximoCommand}"
+                                            Width="24"
+                                            Height="24"
+                                            Padding="0"
+                                            ToolTip="Próximo dia">
+                                        <icon:PackIconMaterial Kind="ChevronRight"
+                                                               Width="12"
+                                                               Height="12" />
+                                    </Button>
+
+                                </StackPanel>
+
+                                <Button Grid.Column="2"
+                                        Style="{StaticResource ModernButtonStyle}"
+                                        Command="{Binding NavegarParaHojeCommand}"
+                                        Padding="8,4"
+                                        ToolTip="Ir para hoje">
+                                    <TextBlock Text="Hoje"
+                                               FontSize="10" />
+                                </Button>
+                            </Grid>
+
+                            <!-- Gráfico de Pizza -->
+                            <Grid Height="170"
+                                  HorizontalAlignment="Center"
+                                  VerticalAlignment="Center"
+                                  Margin="0,0,0,0">
+
+                                <!-- Gráfico quando há dados -->
+                                <controls:PieChartControl DataSource="{Binding PizzaChartData}"
+                                                          Colors="{Binding PizzaChartColors}"
+                                                          Width="170"
+                                                          Height="170"
+                                                          HorizontalAlignment="Center"
+                                                          VerticalAlignment="Center"
+                                                          Visibility="{Binding TemDadosPizza, Converter={StaticResource BoolToVisibilityConverter}}" />
+
+                                <!-- Mensagem quando não há dados -->
+                                <StackPanel HorizontalAlignment="Center"
+                                            VerticalAlignment="Center"
+                                            Visibility="{Binding TemDadosPizza, Converter={StaticResource InverseBooleanToVisibilityConverter}}">
+                                    <icon:PackIconMaterial Kind="ChartPie"
+                                                           Width="32"
+                                                           Height="32"
+                                                           HorizontalAlignment="Center"
+                                                           Foreground="{DynamicResource TextDisabledBrush}"
+                                                           Margin="0,0,0,8" />
+                                    <TextBlock Text="Nenhum estudo neste dia"
+                                               Style="{DynamicResource Text2Style}"
+                                               HorizontalAlignment="Center"
+                                               FontSize="11" />
+                                </StackPanel>
+                            </Grid>
+
+                            <!-- Legenda com Dados Detalhados -->
+                            <StackPanel Visibility="{Binding TemDadosPizza, Converter={StaticResource BoolToVisibilityConverter}}"
+                                        Margin="0,0,0,0">
+
+                                <!-- Legenda de Tipos de Estudo (Horizontal) -->
+                                <ItemsControl ItemsSource="{Binding PizzaChartData}">
+                                    <ItemsControl.ItemsPanel>
+                                        <ItemsPanelTemplate>
+                                            <WrapPanel Orientation="Horizontal"
+                                                       HorizontalAlignment="Center" />
+                                        </ItemsPanelTemplate>
+                                    </ItemsControl.ItemsPanel>
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate>
+                                            <StackPanel Orientation="Horizontal"
+                                                        Margin="0,0,12,8"
+                                                        VerticalAlignment="Center">
+                                                <Rectangle Width="8"
+                                                           Height="8"
+                                                           Fill="{Binding ., Converter={StaticResource TipoEstudoColorConverter}}"
+                                                           Margin="0,0,4,0"
+                                                           VerticalAlignment="Center" />
+                                                <TextBlock Text="{Binding TipoEstudoNome}"
+                                                           FontSize="9"
+                                                           Foreground="{DynamicResource TextSecondaryBrush}"
+                                                           VerticalAlignment="Center" />
+                                            </StackPanel>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+
+                                <Border Style="{DynamicResource SecondaryCardStyle}"
+                                        Padding="0,8">
+
+                                    <!-- Dados Resumidos (Horizontal) -->
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*" />
+                                            <ColumnDefinition Width="*" />
+                                            <ColumnDefinition Width="*" />
+                                            <ColumnDefinition Width="*" />
+                                        </Grid.ColumnDefinitions>
+
+                                        <!-- Horas Estudadas -->
+                                        <StackPanel Grid.Column="0"
+                                                    VerticalAlignment="Center"
+                                                    HorizontalAlignment="Center">
+                                            <TextBlock Text="Horas:"
+                                                       FontSize="9"
+                                                       Foreground="{DynamicResource TextSecondaryBrush}" />
+                                            <TextBlock Text="{Binding PizzaHorasEstudadas, Converter={StaticResource HorasFormatConverter}}"
+                                                       FontSize="9"
+                                                       FontWeight="SemiBold"
+                                                       Foreground="{DynamicResource TextPrimaryBrush}" />
+                                        </StackPanel>
+
+                                        <!-- Questões -->
+                                        <StackPanel Grid.Column="1"
+                                                    VerticalAlignment="Center"
+                                                    HorizontalAlignment="Center">
+                                            <TextBlock Text="Questões:"
+                                                       FontSize="9"
+                                                       Foreground="{DynamicResource TextSecondaryBrush}" />
+                                            <TextBlock Text="{Binding PizzaTotalQuestoes}"
+                                                       FontSize="9"
+                                                       FontWeight="SemiBold"
+                                                       Foreground="{DynamicResource TextPrimaryBrush}" />
+                                        </StackPanel>
+
+                                        <!-- Rendimento -->
+                                        <StackPanel Grid.Column="2"
+                                                    VerticalAlignment="Center"
+                                                    HorizontalAlignment="Center">
+                                            <TextBlock Text="Rendimento:"
+                                                       FontSize="9"
+                                                       Foreground="{DynamicResource TextSecondaryBrush}" />
+                                            <TextBlock Text="{Binding PizzaRendimento, StringFormat='{}{0:F1}%'}"
+                                                       FontSize="9"
+                                                       FontWeight="SemiBold"
+                                                       Foreground="{DynamicResource TextPrimaryBrush}" />
+                                        </StackPanel>
+
+                                        <!-- Páginas -->
+                                        <StackPanel Grid.Column="3"
+                                                    VerticalAlignment="Center"
+                                                    HorizontalAlignment="Center"
+                                                    Margin="0,0,0,0">
+                                            <TextBlock Text="Páginas:"
+                                                       FontSize="9"
+                                                       Foreground="{DynamicResource TextSecondaryBrush}" />
+                                            <TextBlock Text="{Binding PizzaTotalPaginas}"
+                                                       FontSize="9"
+                                                       FontWeight="SemiBold"
+                                                       Foreground="{DynamicResource TextPrimaryBrush}" />
+                                        </StackPanel>
+                                    </Grid>
+                                </Border>
+                            </StackPanel>
+
+                        </StackPanel>
+                    </Border>
+                </Grid>
+
+                <!-- Heatmap -->
+                <Border Grid.Row="1"
+                        Style="{DynamicResource PrimaryCardStyle}"
+                        Margin="20,10,0,10"
+                        Padding="8">
+
+                    <!-- Grid de 31 dias -->
+                    <ItemsControl ItemsSource="{Binding HeatmapDias}"
+                                  VerticalAlignment="Stretch">
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <UniformGrid Rows="1"
+                                             Columns="31"
+                                             HorizontalAlignment="Stretch" />
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <StackPanel VerticalAlignment="Center">
+                                    <StackPanel.ToolTip>
+                                        <TextBlock Text="{Binding Dia, StringFormat='Dia {0}'}" />
+                                    </StackPanel.ToolTip>
+
+                                    <!-- Ícone de fogo com cores do tema -->
+                                    <icon:PackIconMaterial Kind="Fire"
+                                                           Width="16"
+                                                           Height="16"
+                                                           Margin="0,0,0,2"
+                                                           HorizontalAlignment="Center"
+                                                           VerticalAlignment="Top"
+                                                           Foreground="{Binding TemEstudo, Converter={StaticResource SimpleBoolToColorConverter}}" />
+
+                                    <!-- Número do dia -->
+                                    <TextBlock Text="{Binding Dia}"
+                                               HorizontalAlignment="Center"
+                                               VerticalAlignment="Bottom"
+                                               Foreground="{Binding TemEstudo, Converter={StaticResource SimpleBoolToColorConverter}}" />
+                                </StackPanel>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </Border>
+
+                <!-- Grid de Informações Detalhadas -->
+                <Grid Grid.Row="2"
+                      Margin="20,10,0,0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+
+                    <!-- Coluna 1: Pontos de Atenção -->
+                    <Border Grid.Column="0"
+                            Style="{DynamicResource DashboardCardStyle}"
+                            Margin="0,0,10,0">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="*" />
+                            </Grid.RowDefinitions>
+
+                            <!-- Título -->
+                            <StackPanel Grid.Row="0"
+                                        Orientation="Horizontal"
+                                        Margin="0,0,0,12">
+                                <icon:PackIconMaterial Kind="AlertOutline"
+                                                       Width="20"
+                                                       Height="20"
+                                                       Foreground="{DynamicResource WarningBrush}"
+                                                       Margin="0,0,8,0"
+                                                       VerticalAlignment="Center" />
+                                <TextBlock Text="Pontos de Atenção"
+                                           Style="{DynamicResource Title3Style}"
+                                           Margin="0"
+                                           VerticalAlignment="Center" />
+                            </StackPanel>
+
+                            <!-- Estado Vazio - Aparece quando não há dados -->
+                            <StackPanel Grid.Row="2"
+                                        HorizontalAlignment="Center"
+                                        VerticalAlignment="Center"
+                                        Visibility="{Binding TemAssuntosMenorRendimento, Converter={StaticResource InverseBooleanToVisibilityConverter}}"
+                                        Margin="0,20,0,20">
+                                <icon:PackIconMaterial Kind="CheckCircleOutline"
+                                                       Width="40"
+                                                       Height="40"
+                                                       HorizontalAlignment="Center"
+                                                       Foreground="{DynamicResource SuccessBrush}"
+                                                       Margin="0,0,0,12" />
+                                <TextBlock Text="Nenhum ponto de atenção"
+                                           Style="{DynamicResource Title3Style}"
+                                           HorizontalAlignment="Center"
+                                           Margin="0,0,0,4" />
+                                <TextBlock Text="Todos os seus assuntos têm bom rendimento!"
+                                           Style="{DynamicResource Text2Style}"
+                                           HorizontalAlignment="Center"
+                                           Foreground="{DynamicResource TextSecondaryBrush}" />
+                            </StackPanel>
+
+                            <!-- ListView dos 5 assuntos com menor rendimento -->
+                            <ItemsControl Grid.Row="2"
+                                          ItemsSource="{Binding AssuntosMenorRendimento}"
+                                          VerticalAlignment="Stretch"
+                                          BorderThickness="0"
+                                          Background="Transparent"
+                                          Margin="0,0,0,-8"
+                                          Visibility="{Binding TemAssuntosMenorRendimento, Converter={StaticResource BoolToVisibilityConverter}}"
+                                          VirtualizingPanel.IsVirtualizing="True"
+                                          VirtualizingPanel.VirtualizationMode="Recycling"
+                                          VirtualizingPanel.ScrollUnit="Item"
+                                          VirtualizingPanel.CacheLength="10,10"
+                                          VirtualizingPanel.CacheLengthUnit="Page">
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <Border Style="{DynamicResource SecondaryCardStyle}"
+                                                Padding="0"
+                                                Margin="0,0,0,8">
+                                            <Grid>
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="4" />
+                                                    <ColumnDefinition Width="*" />
+                                                </Grid.ColumnDefinitions>
+
+                                                <!-- Barra de cor lateral esquerda (cor da disciplina) -->
+                                                <Border Grid.Column="0"
+                                                        Grid.Row="0"
+                                                        Grid.RowSpan="2"
+                                                        Background="{Binding Disciplina.Cor, Converter={StaticResource StringToBrushConverter}}"
+                                                        CornerRadius="8,0,0,8" />
+
+                                                <!-- Conteúdo principal -->
+                                                <Grid Grid.Column="2"
+                                                      Grid.Row="1"
+                                                      Margin="8">
+                                                    <Grid.ColumnDefinitions>
+                                                        <ColumnDefinition Width="*" />
+                                                        <ColumnDefinition Width="Auto" />
+                                                    </Grid.ColumnDefinitions>
+                                                    <Grid.RowDefinitions>
+                                                        <RowDefinition Height="Auto" />
+                                                        <RowDefinition Height="Auto" />
+                                                    </Grid.RowDefinitions>
+
+                                                    <!-- Nome do Assunto -->
+                                                    <TextBlock Grid.Column="0"
+                                                               Grid.Row="0"
+                                                               Text="{Binding Nome}"
+                                                               Style="{DynamicResource Title3Style}" />
+
+                                                    <!-- Estatísticas com Ícones -->
+                                                    <StackPanel Grid.Column="0"
+                                                                Grid.Row="1"
+                                                                Orientation="Horizontal"
+                                                                VerticalAlignment="Center">
+
+                                                        <!-- Acertos -->
+                                                        <StackPanel Orientation="Horizontal"
+                                                                    VerticalAlignment="Center"
+                                                                    Width="50">
+                                                            <icon:PackIconMaterial Style="{DynamicResource AcertosIconStyle}" />
+                                                            <TextBlock Text="{Binding TotalAcertos}"
+                                                                       Style="{DynamicResource AcertosTextStyle}" />
+                                                        </StackPanel>
+
+                                                        <!-- Erros -->
+                                                        <StackPanel Orientation="Horizontal"
+                                                                    VerticalAlignment="Center"
+                                                                    Width="50">
+                                                            <icon:PackIconMaterial Style="{DynamicResource ErrosIconStyle}" />
+                                                            <TextBlock Text="{Binding TotalErros}"
+                                                                       Style="{DynamicResource ErrosTextStyle}" />
+                                                        </StackPanel>
+
+                                                        <!-- Rendimento -->
+                                                        <StackPanel Orientation="Horizontal"
+                                                                    VerticalAlignment="Center"
+                                                                    Width="70">
+                                                            <icon:PackIconMaterial Style="{DynamicResource RendimentoIconStyle}"
+                                                                                   Margin="0,0,4,0" />
+                                                            <TextBlock Text="{Binding Rendimento, StringFormat='{}{0:F1}%'}"
+                                                                       Style="{DynamicResource RendimentoTextStyle}" />
+                                                        </StackPanel>
+
+                                                        <!-- Horas Estudadas -->
+                                                        <StackPanel Orientation="Horizontal"
+                                                                    VerticalAlignment="Center"
+                                                                    Width="70">
+                                                            <icon:PackIconMaterial Style="{DynamicResource HorasEstudadasIconStyle}" />
+                                                            <TextBlock Text="{Binding HorasEstudadas, Converter={StaticResource HorasFormatConverter}}"
+                                                                       Style="{DynamicResource HorasEstudadasTextStyle}" />
+                                                        </StackPanel>
+                                                    </StackPanel>
+
+                                                    <!-- Botão Iniciar Estudo -->
+                                                    <Button Grid.Column="1"
+                                                            Grid.Row="0"
+                                                            Grid.RowSpan="2"
+                                                            Margin="8,0,0,0"
+                                                            Style="{StaticResource IconButtonStyle}"
+                                                            Command="{Binding DataContext.IniciarEstudoCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                            CommandParameter="{Binding}"
+                                                            ToolTip="Iniciar Estudo">
+                                                        <icon:PackIconMaterial Kind="Play"
+                                                                               Style="{DynamicResource ActionsIconBaseStyle}"
+                                                                               Foreground="{DynamicResource PrimaryBrush}" />
+                                                    </Button>
+
+                                                </Grid>
+                                            </Grid>
+                                        </Border>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                        </Grid>
+                    </Border>
+
+                    <!-- Coluna 2: Próximas Revisões -->
+                    <Border Grid.Column="1"
+                            Style="{DynamicResource DashboardCardStyle}"
+                            Margin="10,0,10,0">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="*" />
+                            </Grid.RowDefinitions>
+
+                            <!-- Título -->
+                            <Grid Grid.Row="0"
+                                  Margin="0,0,0,12">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+
+                                <StackPanel Grid.Column="0"
+                                            Orientation="Horizontal">
+                                    <icon:PackIconMaterial Kind="CalendarClock"
+                                                           Width="20"
+                                                           Height="20"
+                                                           Foreground="{DynamicResource InfoBrush}"
+                                                           Margin="0,0,8,0"
+                                                           VerticalAlignment="Center" />
+                                    <TextBlock Text="Próximas Revisões"
+                                               Style="{DynamicResource Title3Style}"
+                                               Margin="0" />
+                                </StackPanel>
+
+                                <StackPanel Grid.Column="1"
+                                            Orientation="Horizontal">
+
+                                    <Button Style="{StaticResource ModernButtonStyle}"
+                                            Command="{Binding FiltrarRevisoesCommand}"
+                                            CommandParameter="Clássicas"
+                                            Height="24"
+                                            Width="60"
+                                            Padding="0"
+                                            FontSize="11"
+                                            Margin="0,0,4,0">
+                                        <TextBlock Text="Clássicas" />
+                                    </Button>
+
+                                    <Button Style="{StaticResource ModernButtonStyle}"
+                                            Command="{Binding FiltrarRevisoesCommand}"
+                                            CommandParameter="4.2"
+                                            Height="24"
+                                            Width="60"
+                                            Padding="0"
+                                            FontSize="11"
+                                            Margin="0">
+                                        <TextBlock Text="4.2" />
+                                    </Button>
+                                </StackPanel>
+
+                            </Grid>
+
+                            <!-- Estado Vazio - Aparece quando não há revisões -->
+                            <StackPanel Grid.Row="2"
+                                        HorizontalAlignment="Center"
+                                        VerticalAlignment="Center"
+                                        Visibility="{Binding TemProximasRevisoes, Converter={StaticResource InverseBooleanToVisibilityConverter}}"
+                                        Margin="0,20,0,20">
+                                <icon:PackIconMaterial Kind="CalendarClock"
+                                                       Width="40"
+                                                       Height="40"
+                                                       HorizontalAlignment="Center"
+                                                       Foreground="{DynamicResource TextDisabledBrush}"
+                                                       Margin="0,0,0,12" />
+                                <TextBlock Text="Nenhuma revisão pendente"
+                                           Style="{DynamicResource Title3Style}"
+                                           HorizontalAlignment="Center"
+                                           Margin="0,0,0,4" />
+                                <TextBlock Text="Você está em dia com suas revisões!"
+                                           Style="{DynamicResource Text2Style}"
+                                           HorizontalAlignment="Center"
+                                           Foreground="{DynamicResource TextSecondaryBrush}" />
+                            </StackPanel>
+
+                            <!-- ListView das próximas 5 revisões -->
+                            <ItemsControl Grid.Row="2"
+                                          ItemsSource="{Binding ProximasRevisoes}"
+                                          VerticalAlignment="Stretch"
+                                          BorderThickness="0"
+                                          Background="Transparent"
+                                          Margin="0,0,0,-8"
+                                          Visibility="{Binding TemProximasRevisoes, Converter={StaticResource BoolToVisibilityConverter}}"
+                                          VirtualizingPanel.IsVirtualizing="True"
+                                          VirtualizingPanel.VirtualizationMode="Recycling"
+                                          VirtualizingPanel.ScrollUnit="Item"
+                                          VirtualizingPanel.CacheLength="10,10"
+                                          VirtualizingPanel.CacheLengthUnit="Page">
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <Border Style="{DynamicResource SecondaryCardStyle}"
+                                                Padding="0"
+                                                Margin="0,0,0,8">
+
+                                            <Grid>
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="4" />
+                                                    <ColumnDefinition Width="*" />
+                                                    <ColumnDefinition Width="Auto" />
+                                                </Grid.ColumnDefinitions>
+                                                <Grid.RowDefinitions>
+                                                    <RowDefinition Height="Auto" />
+                                                    <RowDefinition Height="Auto" />
+                                                </Grid.RowDefinitions>
+
+                                                <!-- Barra de cor lateral esquerda (cor da disciplina) -->
+                                                <Border Grid.Column="0"
+                                                        Grid.Row="0"
+                                                        Grid.RowSpan="2"
+                                                        Background="{Binding Assunto.Disciplina.Cor, Converter={StaticResource StringToBrushConverter}}"
+                                                        CornerRadius="8,0,0,8" />
+
+                                                <!-- Conteúdo principal -->
+                                                <Grid  Grid.Column="1"
+                                                       Grid.Row="0"
+                                                       Margin="8,5">
+                                                    <Grid.ColumnDefinitions>
+                                                        <ColumnDefinition Width="*" />
+                                                        <ColumnDefinition Width="Auto" />
+                                                    </Grid.ColumnDefinitions>
+                                                    <Grid.RowDefinitions>
+                                                        <RowDefinition Height="Auto" />
+                                                        <RowDefinition Height="Auto" />
+                                                    </Grid.RowDefinitions>
+
+                                                    <!-- Nome do Assunto -->
+                                                    <TextBlock Grid.Column="0"
+                                                               Grid.Row="0"
+                                                               Text="{Binding Assunto.Nome}"
+                                                               Style="{DynamicResource Title3Style}"
+                                                               Margin="0,0,0,8" />
+
+                                                    <!-- Informações da Revisão -->
+                                                    <StackPanel Grid.Column="0"
+                                                                Grid.Row="1"
+                                                                Orientation="Horizontal"
+                                                                VerticalAlignment="Center"
+                                                                Margin="0,0,12,0">
+
+                                                        <!-- Data -->
+                                                        <StackPanel Orientation="Horizontal"
+                                                                    VerticalAlignment="Center"
+                                                                    Margin="0,0,16,0">
+                                                            <icon:PackIconMaterial Kind="Calendar"
+                                                                                   Width="14"
+                                                                                   Height="14"
+                                                                                   Foreground="{DynamicResource TextSecondaryBrush}"
+                                                                                   Margin="0,0,6,0" />
+                                                            <TextBlock Text="{Binding DataFormatada}"
+                                                                       Style="{DynamicResource Text2Style}" />
+                                                        </StackPanel>
+
+                                                        <!-- Tipo de Revisão -->
+                                                        <Border CornerRadius="12"
+                                                                Padding="8,4"
+                                                                Background="{DynamicResource InfoBrush}">
+                                                            <TextBlock Text="{Binding TipoRevisaoNome}"
+                                                                       Foreground="White"
+                                                                       FontSize="10"
+                                                                       FontWeight="SemiBold" />
+                                                        </Border>
+                                                    </StackPanel>
+
+                                                    <!-- Botão Iniciar Revisão -->
+                                                    <Button Grid.Column="1"
+                                                            Grid.Row="0"
+                                                            Grid.RowSpan="2"
+                                                            Margin="8,0,0,0"
+                                                            Style="{StaticResource IconButtonStyle}"
+                                                            Command="{Binding DataContext.IniciarRevisaoCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                            CommandParameter="{Binding}"
+                                                            ToolTip="Iniciar Revisão">
+                                                        <icon:PackIconMaterial Kind="Play"
+                                                                               Style="{DynamicResource ActionsIconBaseStyle}"
+                                                                               Foreground="{DynamicResource PrimaryBrush}" />
+                                                    </Button>
+                                                </Grid>
+                                            </Grid>
+                                        </Border>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                        </Grid>
+                    </Border>
+
+                    <!-- Coluna 3: Próximos Eventos -->
+                    <Border Grid.Column="2"
+                            Style="{DynamicResource DashboardCardStyle}"
+                            Margin="10,0,10,0">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="*" />
+                            </Grid.RowDefinitions>
+
+                            <!-- Título -->
+                            <Grid Grid.Row="0"
+                                  Margin="0,0,0,12">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+
+                                <StackPanel Grid.Column="0"
+                                            Orientation="Horizontal">
+                                    <icon:PackIconMaterial Kind="CalendarClock"
+                                                           Width="20"
+                                                           Height="20"
+                                                           Foreground="{DynamicResource InfoBrush}"
+                                                           Margin="0,0,8,0"
+                                                           VerticalAlignment="Center" />
+                                    <TextBlock Text="Próximos Eventos"
+                                               Style="{DynamicResource Title3Style}"
+                                               Margin="0" />
+                                </StackPanel>
+
+                                <StackPanel Grid.Column="1"
+                                            Orientation="Horizontal">
+
+                                    <!-- Exibir Eventos Atrasados -->
+                                    <Button Grid.Column="1"
+                                            Style="{StaticResource ModernButtonStyle}"
+                                            Command="{Binding ExibirEventosAtrasadosCommand}"
+                                            Height="24"
+                                            Width="60"
+                                            Padding="0"
+                                            FontSize="11"
+                                            Margin="0,0,4,0">
+                                        <TextBlock Text="Arasados" />
+                                    </Button>
+
+                                    <!-- Exibir Eventos Próximos -->
+                                    <Button Grid.Column="1"
+                                            Style="{StaticResource ModernButtonStyle}"
+                                            Command="{Binding ExibirEventosProximosCommand}"
+                                            Height="24"
+                                            Width="60"
+                                            Padding="0"
+                                            FontSize="11"
+                                            Margin="0">
+                                        <TextBlock Text="Próximos" />
+                                    </Button>
+                                </StackPanel>
+                            </Grid>
+
+                            <!-- Estado Vazio - Aparece quando não há eventos -->
+                            <StackPanel Grid.Row="1"
+                                        HorizontalAlignment="Center"
+                                        VerticalAlignment="Center"
+                                        Visibility="{Binding TemProximosEventos, Converter={StaticResource InverseBooleanToVisibilityConverter}}"
+                                        Margin="0,20,0,20">
+                                <icon:PackIconMaterial Kind="CalendarBlank"
+                                                       Width="40"
+                                                       Height="40"
+                                                       HorizontalAlignment="Center"
+                                                       Foreground="{DynamicResource TextDisabledBrush}"
+                                                       Margin="0,0,0,12" />
+                                <TextBlock Text="Nenhum evento pendente"
+                                           Style="{DynamicResource Title3Style}"
+                                           HorizontalAlignment="Center"
+                                           Margin="0,0,0,4" />
+                                <TextBlock Text="Todos os eventos estão concluídos ou ignorados!"
+                                           Style="{DynamicResource Text2Style}"
+                                           HorizontalAlignment="Center"
+                                           Foreground="{DynamicResource TextSecondaryBrush}" />
+                            </StackPanel>
+
+                            <!-- ItemsControl dos próximos 5 eventos de editais -->
+                            <ItemsControl Grid.Row="1"
+                                          ItemsSource="{Binding ProximosEventos}"
+                                          VerticalAlignment="Stretch"
+                                          BorderThickness="0"
+                                          Background="Transparent"
+                                          Margin="0,0,0,-8"
+                                          Visibility="{Binding TemProximosEventos, Converter={StaticResource BoolToVisibilityConverter}}"
+                                          VirtualizingPanel.IsVirtualizing="True"
+                                          VirtualizingPanel.VirtualizationMode="Recycling"
+                                          VirtualizingPanel.ScrollUnit="Item"
+                                          VirtualizingPanel.CacheLength="10,10"
+                                          VirtualizingPanel.CacheLengthUnit="Page">
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <Border Style="{DynamicResource SecondaryCardStyle}"
+                                                Padding="0"
+                                                Margin="0,0,0,8">
+
+                                            <Grid Margin="8,7">
+                                                <Grid.RowDefinitions>
+                                                    <RowDefinition Height="Auto" />
+                                                    <RowDefinition Height="Auto" />
+                                                </Grid.RowDefinitions>
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="*" />
+                                                </Grid.ColumnDefinitions>
+
+                                                <!-- Nome do Evento -->
+                                                <TextBlock Grid.Row="0"
+                                                           Style="{DynamicResource Title3Style}"
+                                                           Margin="0,0,0,4">
+                                                    <TextBlock.Text>
+                                                        <MultiBinding StringFormat="{}{0} ({1})">
+                                                            <Binding Path="Evento" />
+                                                            <Binding Path="Edital.Orgao" />
+                                                        </MultiBinding>
+                                                    </TextBlock.Text>
+                                                </TextBlock>
+
+                                                <!-- Data e Checkboxes -->
+                                                <StackPanel Grid.Row="1"
+                                                            Orientation="Horizontal"
+                                                            VerticalAlignment="Center">
+
+                                                    <!-- Data -->
+                                                    <StackPanel Orientation="Horizontal"
+                                                                VerticalAlignment="Center"
+                                                                Margin="0,0,16,0">
+                                                        <icon:PackIconMaterial Kind="Calendar"
+                                                                               Width="14"
+                                                                               Height="14"
+                                                                               Foreground="{DynamicResource TextSecondaryBrush}"
+                                                                               VerticalAlignment="Center"
+                                                                               Margin="0,0,6,0" />
+                                                        <TextBlock Text="{Binding DataEvento, StringFormat='{}{0:dd/MM/yyyy}'}"
+                                                                   Style="{DynamicResource Text2Style}" />
+                                                    </StackPanel>
+
+                                                    <!-- Checkboxes -->
+                                                    <CheckBox IsChecked="{Binding Concluido, UpdateSourceTrigger=PropertyChanged}"
+                                                              Content="Concluir"
+                                                              Style="{DynamicResource RoundedCheckBoxStyle}"
+                                                              Margin="0,0,8,0">
+                                                        <i:Interaction.Triggers>
+                                                            <i:EventTrigger EventName="Checked">
+                                                                <i:InvokeCommandAction Command="{Binding DataContext.AtualizarEventoCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                                                       CommandParameter="{Binding}" />
+                                                            </i:EventTrigger>
+                                                            <i:EventTrigger EventName="Unchecked">
+                                                                <i:InvokeCommandAction Command="{Binding DataContext.AtualizarEventoCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                                                       CommandParameter="{Binding}" />
+                                                            </i:EventTrigger>
+                                                        </i:Interaction.Triggers>
+                                                    </CheckBox>
+
+                                                    <CheckBox IsChecked="{Binding Ignorado, UpdateSourceTrigger=PropertyChanged}"
+                                                              Content="Ignorar"
+                                                              Style="{DynamicResource RoundedCheckBoxStyle}">
+                                                        <i:Interaction.Triggers>
+                                                            <i:EventTrigger EventName="Checked">
+                                                                <i:InvokeCommandAction Command="{Binding DataContext.AtualizarEventoCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                                                       CommandParameter="{Binding}" />
+                                                            </i:EventTrigger>
+                                                            <i:EventTrigger EventName="Unchecked">
+                                                                <i:InvokeCommandAction Command="{Binding DataContext.AtualizarEventoCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                                                       CommandParameter="{Binding}" />
+                                                            </i:EventTrigger>
+                                                        </i:Interaction.Triggers>
+                                                    </CheckBox>
+                                                </StackPanel>
+
+                                            </Grid>
+                                        </Border>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                        </Grid>
+                    </Border>
+
+                    <!-- Coluna 4: Próxima Prova e Metas -->
+                    <Grid Grid.Column="3"
+                          Margin="10,0,0,0">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="*" />
+                        </Grid.RowDefinitions>
+
+                        <!-- Linha 1: Próxima Prova -->
+                        <Border Grid.Row="0"
+                                Style="{DynamicResource DashboardCardStyle}"
+                                Margin="0,0,0,16">
+
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                </Grid.RowDefinitions>
+
+                                <!-- Título -->
+                                <StackPanel Grid.Row="0"
+                                            Orientation="Horizontal"
+                                            Margin="0,0,0,16">
+                                    <icon:PackIconMaterial Kind="Calendar"
+                                                           Width="20"
+                                                           Height="20"
+                                                           Foreground="{DynamicResource PrimaryBrush}"
+                                                           Margin="0,0,8,0"
+                                                           VerticalAlignment="Center" />
+                                    <TextBlock Text="Próxima Prova"
+                                               Style="{DynamicResource Title3Style}"
+                                               Margin="0" />
+                                </StackPanel>
+
+                                <Grid Grid.Row="1">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*" />
+                                    </Grid.ColumnDefinitions>
+
+                                    <!-- Exibir quando há próxima prova -->
+                                    <Grid Grid.Column="0"
+                                          d:Visibility="Hidden"
+                                          Visibility="{Binding TemProximaProva, Converter={StaticResource BoolToVisibilityConverter}}">
+
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="3*" />
+                                            <ColumnDefinition Width="Auto" />
+                                            <ColumnDefinition Width="*" />
+                                        </Grid.ColumnDefinitions>
+
+                                        <StackPanel Grid.Column="0"
+                                                    VerticalAlignment="Center">
+                                            <TextBlock Text="{Binding ProximaProva.Orgao}"
+                                                       Style="{DynamicResource Title1Style}"
+                                                       Margin="0" />
+
+                                            <TextBlock Text="{Binding ProximaProva.DataExtenso}"
+                                                       Style="{DynamicResource Text2Style}"
+                                                       TextWrapping="Wrap"
+                                                       Margin="0" />
+                                        </StackPanel>
+
+                                        <Separator Grid.Column="1"
+                                                   Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}"
+                                                   Margin="16,0" />
+
+                                        <StackPanel  Grid.Column="2"
+                                                     VerticalAlignment="Center"
+                                                     HorizontalAlignment="Center">
+                                            <TextBlock Text="{Binding ProximaProva.DiasParaProva}"
+                                                       Style="{DynamicResource Title1Style}"
+                                                       HorizontalAlignment="Center"
+                                                       Margin="0" />
+
+                                            <TextBlock Text="dias para a prova"
+                                                       Style="{DynamicResource Text2Style}"
+                                                       HorizontalAlignment="Center"
+                                                       VerticalAlignment="Center"
+                                                       Margin="0"
+                                                       TextWrapping="Wrap" />
+                                        </StackPanel>
+                                    </Grid>
+
+                                    <!-- Exibir quando não há próxima prova -->
+                                    <StackPanel Grid.Column="0"
+                                                Visibility="{Binding TemProximaProva, Converter={StaticResource InverseBooleanToVisibilityConverter}}"
+                                                HorizontalAlignment="Center"
+                                                VerticalAlignment="Center">
+                                        <TextBlock Text="Nenhuma prova agendada"
+                                                   Style="{DynamicResource Text2Style}"
+                                                   HorizontalAlignment="Center"
+                                                   Margin="0" />
+                                    </StackPanel>
+
+                                </Grid>
+
+                            </Grid>
+
+
+                        </Border>
+
+                        <!-- Linha 2: Metas -->
+                        <Border Grid.Row="1"
+                                Style="{DynamicResource DashboardCardStyle}"
+                                Margin="0,0,0,0">
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="*" />
+                                </Grid.RowDefinitions>
+
+                                <!-- Título com Navegação -->
+                                <Grid Grid.Row="0"
+                                      Margin="0,0,0,16">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="Auto" />
+                                    </Grid.ColumnDefinitions>
+
+                                    <!-- Título -->
+                                    <StackPanel Grid.Column="0"
+                                                Orientation="Horizontal">
+                                        <icon:PackIconMaterial Kind="Target"
+                                                               Width="20"
+                                                               Height="20"
+                                                               Foreground="{DynamicResource SuccessBrush}"
+                                                               Margin="0,0,8,0"
+                                                               VerticalAlignment="Center" />
+                                        <TextBlock Text="Metas Semanais"
+                                                   Style="{DynamicResource Title3Style}"
+                                                   Margin="0"
+                                                   VerticalAlignment="Center"
+                                                   HorizontalAlignment="Center" />
+                                    </StackPanel>
+
+                                    <!-- Período -->
+                                    <TextBlock Grid.Column="1"
+                                               Text="{Binding MetasSemana.PeriodoFormatado}"
+                                               Style="{DynamicResource Text2Style}"
+                                               TextAlignment="Center"
+                                               HorizontalAlignment="Center" />
+
+                                    <!-- Navegação Temporal -->
+                                    <StackPanel Grid.Column="2"
+                                                Orientation="Horizontal"
+                                                VerticalAlignment="Center"
+                                                Margin="0,0,4,0">
+
+                                        <Button Style="{StaticResource ModernButtonStyle}"
+                                                Command="{Binding NavegarSemanaAnteriorCommand}"
+                                                Width="24"
+                                                Height="24"
+                                                Padding="0"
+                                                Margin="0,0,4,0"
+                                                ToolTip="Dia anterior">
+                                            <icon:PackIconMaterial Kind="ChevronLeft"
+                                                                   Foreground="White"
+                                                                   Width="12"
+                                                                   Height="12" />
+                                        </Button>
+
+                                        <Button Style="{StaticResource ModernButtonStyle}"
+                                                Command="{Binding NavegarSemanaProximaCommand}"
+                                                Width="24"
+                                                Height="24"
+                                                Padding="0"
+                                                ToolTip="Próximo dia">
+                                            <icon:PackIconMaterial Kind="ChevronRight"
+                                                                   Width="12"
+                                                                   Height="12" />
+                                        </Button>
+
+                                    </StackPanel>
+
+                                    <Button Grid.Column="3"
+                                            Style="{StaticResource ModernButtonStyle}"
+                                            Command="{Binding NavegarSemanaAtualCommand}"
+                                            Padding="8,4"
+                                            ToolTip="Ir para hoje">
+                                        <TextBlock Text="Atual"
+                                                   FontSize="10" />
+                                    </Button>
+
+                                </Grid>
+
+                                <!-- Conteúdo das Metas -->
+                                <StackPanel Grid.Row="1"
+                                            Orientation="Vertical">
+
+                                    <!-- Meta de Horas -->
+                                    <StackPanel Orientation="Vertical"
+                                                Margin="0,0,0,16">
+                                        <Grid>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="*" />
+                                                <ColumnDefinition Width="Auto" />
+                                            </Grid.ColumnDefinitions>
+
+                                            <StackPanel Grid.Column="0"
+                                                        Orientation="Horizontal"
+                                                        VerticalAlignment="Center"
+                                                        Margin="0,0,0,4">
+                                                <icon:PackIconMaterial Kind="ClockOutline"
+                                                                       Width="16"
+                                                                       Height="16"
+                                                                       Foreground="{DynamicResource HorasEstudadasBrush}"
+                                                                       Margin="0,0,8,0" />
+                                                <TextBlock Text="Horas Estudadas"
+                                                           Style="{DynamicResource HorasEstudadasTextStyle}" />
+                                            </StackPanel>
+
+                                            <TextBlock Grid.Column="1"
+                                                       Style="{DynamicResource HorasEstudadasTextStyle}">
+                                                <TextBlock.Text>
+                                                    <MultiBinding StringFormat="{}{0} / {1}">
+                                                        <Binding Path="MetasSemana.HorasRealizadas"
+                                                                 Converter="{StaticResource HorasFormatConverter}" />
+                                                        <Binding Path="MetasSemana.MetaHoras"
+                                                                 Converter="{StaticResource HorasFormatConverter}" />
+                                                    </MultiBinding>
+                                                </TextBlock.Text>
+                                            </TextBlock>
+
+                                        </Grid>
+
+                                        <Grid Height="24">
+                                            <ProgressBar Height="24"
+                                                         Minimum="0"
+                                                         Maximum="100"
+                                                         Value="{Binding MetasSemana.PercentualHoras, Mode=OneWay}"
+                                                         Background="{DynamicResource BorderBrush}"
+                                                         Foreground="{DynamicResource HorasEstudadasBrush}"
+                                                         BorderThickness="0">
+                                                <ProgressBar.Style>
+                                                    <Style TargetType="ProgressBar">
+                                                        <Setter Property="Template">
+                                                            <Setter.Value>
+                                                                <ControlTemplate TargetType="ProgressBar">
+                                                                    <Border Background="{TemplateBinding Background}"
+                                                                            CornerRadius="6"
+                                                                            Height="{TemplateBinding Height}">
+                                                                        <Grid>
+                                                                            <Border Name="PART_Track"
+                                                                                    Background="{TemplateBinding Background}"
+                                                                                    CornerRadius="6" />
+                                                                            <Border Name="PART_Indicator"
+                                                                                    Background="{TemplateBinding Foreground}"
+                                                                                    CornerRadius="6"
+                                                                                    HorizontalAlignment="Left" />
+                                                                        </Grid>
+                                                                    </Border>
+                                                                </ControlTemplate>
+                                                            </Setter.Value>
+                                                        </Setter>
+                                                    </Style>
+                                                </ProgressBar.Style>
+                                            </ProgressBar>
+                                            <TextBlock Text="{Binding MetasSemana.PercentualHoras, StringFormat={}{0:F0}%}"
+                                                       HorizontalAlignment="Center"
+                                                       VerticalAlignment="Center"
+                                                       FontSize="11"
+                                                       FontWeight="SemiBold"
+                                                       Foreground="White" />
+                                        </Grid>
+                                    </StackPanel>
+
+                                    <!-- Meta de Questões -->
+                                    <StackPanel Orientation="Vertical"
+                                                Margin="0,0,0,16">
+                                        <Grid>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="*" />
+                                                <ColumnDefinition Width="Auto" />
+                                            </Grid.ColumnDefinitions>
+
+                                            <StackPanel Grid.Column="0"
+                                                        Orientation="Horizontal"
+                                                        VerticalAlignment="Center"
+                                                        Margin="0,0,0,4">
+                                                <icon:PackIconMaterial Style="{DynamicResource QuestoesIconStyle}"
+                                                                       Margin="0,0,8,0" />
+                                                <TextBlock Text="Questões Respondidas"
+                                                           Style="{DynamicResource QuestoesTextStyle}" />
+                                            </StackPanel>
+
+                                            <TextBlock Grid.Column="1"
+                                                       Style="{DynamicResource QuestoesTextStyle}">
+                                                <TextBlock.Text>
+                                                    <MultiBinding StringFormat="{}{0} / {1}">
+                                                        <Binding Path="MetasSemana.QuestoesRealizadas" />
+                                                        <Binding Path="MetasSemana.MetaQuestoes" />
+                                                    </MultiBinding>
+                                                </TextBlock.Text>
+                                            </TextBlock>
+                                        </Grid>
+                                        <Grid Height="24">
+                                            <ProgressBar Height="24"
+                                                         Minimum="0"
+                                                         Maximum="100"
+                                                         Value="{Binding MetasSemana.PercentualQuestoes, Mode=OneWay}"
+                                                         Background="{DynamicResource BorderBrush}"
+                                                         Foreground="{DynamicResource QuestoesBrush}"
+                                                         BorderThickness="0">
+                                                <ProgressBar.Style>
+                                                    <Style TargetType="ProgressBar">
+                                                        <Setter Property="Template">
+                                                            <Setter.Value>
+                                                                <ControlTemplate TargetType="ProgressBar">
+                                                                    <Border Background="{TemplateBinding Background}"
+                                                                            CornerRadius="6"
+                                                                            Height="{TemplateBinding Height}">
+                                                                        <Grid>
+                                                                            <Border Name="PART_Track"
+                                                                                    Background="{TemplateBinding Background}"
+                                                                                    CornerRadius="6" />
+                                                                            <Border Name="PART_Indicator"
+                                                                                    Background="{TemplateBinding Foreground}"
+                                                                                    CornerRadius="6"
+                                                                                    HorizontalAlignment="Left" />
+                                                                        </Grid>
+                                                                    </Border>
+                                                                </ControlTemplate>
+                                                            </Setter.Value>
+                                                        </Setter>
+                                                    </Style>
+                                                </ProgressBar.Style>
+                                            </ProgressBar>
+                                            <TextBlock Text="{Binding MetasSemana.PercentualQuestoes, StringFormat={}{0:F0}%}"
+                                                       HorizontalAlignment="Center"
+                                                       VerticalAlignment="Center"
+                                                       FontSize="11"
+                                                       FontWeight="SemiBold"
+                                                       Foreground="White" />
+                                        </Grid>
+                                    </StackPanel>
+
+                                    <!-- Meta de Páginas -->
+                                    <StackPanel Orientation="Vertical">
+                                        <Grid>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="*" />
+                                                <ColumnDefinition Width="Auto" />
+                                            </Grid.ColumnDefinitions>
+                                            <StackPanel Grid.Column="0"
+                                                        Orientation="Horizontal"
+                                                        VerticalAlignment="Center"
+                                                        Margin="0,0,0,4">
+                                                <icon:PackIconMaterial Style="{DynamicResource PaginasLidasIconStyle}"
+                                                                       Margin="0,0,8,0" />
+                                                <TextBlock Text="Páginas Lidas"
+                                                           Style="{DynamicResource PaginasLidasTextStyle}" />
+                                            </StackPanel>
+                                            <TextBlock Grid.Column="1"
+                                                       Style="{DynamicResource PaginasLidasTextStyle}">
+                                                <TextBlock.Text>
+                                                    <MultiBinding StringFormat="{}{0} / {1}">
+                                                        <Binding Path="MetasSemana.PaginasRealizadas" />
+                                                        <Binding Path="MetasSemana.MetaPaginas" />
+                                                    </MultiBinding>
+                                                </TextBlock.Text>
+                                            </TextBlock>
+                                        </Grid>
+                                        <Grid Height="24">
+                                            <ProgressBar Height="24"
+                                                         Minimum="0"
+                                                         Maximum="100"
+                                                         Value="{Binding MetasSemana.PercentualPaginas, Mode=OneWay}"
+                                                         Background="{DynamicResource BorderBrush}"
+                                                         Foreground="{DynamicResource PaginasLidasBrush}"
+                                                         BorderThickness="0">
+                                                <ProgressBar.Style>
+                                                    <Style TargetType="ProgressBar">
+                                                        <Setter Property="Template">
+                                                            <Setter.Value>
+                                                                <ControlTemplate TargetType="ProgressBar">
+                                                                    <Border Background="{TemplateBinding Background}"
+                                                                            CornerRadius="6"
+                                                                            Height="{TemplateBinding Height}">
+                                                                        <Grid>
+                                                                            <Border Name="PART_Track"
+                                                                                    Background="{TemplateBinding Background}"
+                                                                                    CornerRadius="6" />
+                                                                            <Border Name="PART_Indicator"
+                                                                                    Background="{TemplateBinding Foreground}"
+                                                                                    CornerRadius="6"
+                                                                                    HorizontalAlignment="Left" />
+                                                                        </Grid>
+                                                                    </Border>
+                                                                </ControlTemplate>
+                                                            </Setter.Value>
+                                                        </Setter>
+                                                    </Style>
+                                                </ProgressBar.Style>
+                                            </ProgressBar>
+                                            <TextBlock Text="{Binding MetasSemana.PercentualPaginas, StringFormat={}{0:F0}%}"
+                                                       HorizontalAlignment="Center"
+                                                       VerticalAlignment="Center"
+                                                       FontSize="11"
+                                                       FontWeight="SemiBold"
+                                                       Foreground="White" />
+                                        </Grid>
+                                    </StackPanel>
+
+                                </StackPanel>
+
+                            </Grid>
+                        </Border>
+                    </Grid>
+
+
+                </Grid>
+
+                <!-- Gráficos de Questões -->
+                <Grid Grid.Row="3"
+                      Height="500"
+                      Margin="20,20,0,10">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="1.5*" />
+                    </Grid.ColumnDefinitions>
+
+
+                    <!-- Gráfico de Pizza TotalAcertos e TotalErros -->
+                    <Border Grid.Column="0"
+                            Style="{DynamicResource DashboardCardStyle}"
+                            Margin="0,0,10,0"
+                            Padding="16">
+                        <controls:AccuracyPieChartControl TituloGrafico="Acertos vs Erros"
+                                                          IconKind="CheckCircle"
+                                                          Acertos="{Binding AcertosGrafico, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"
+                                                          Erros="{Binding ErrosGrafico, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" />
+                    </Border>
+
+                    <!-- Gráfico de Linhas TotalQuestões ao Longo do Tempo -->
+                    <Border Grid.Column="1"
+                            Style="{DynamicResource DashboardCardStyle}"
+                            Margin="0,0,0,0">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="*" />
+                            </Grid.RowDefinitions>
+
+                            <!-- Título e Botões de Filtro -->
+                            <Grid Grid.Row="0"
+                                  Margin="0,0,0,16">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+
+                                <!-- Título -->
+                                <StackPanel Grid.Column="0"
+                                            Orientation="Horizontal">
+                                    <icon:PackIconMaterial Kind="ChartLine"
+                                                           Width="20"
+                                                           Height="20"
+                                                           Foreground="{DynamicResource PrimaryBrush}"
+                                                           Margin="0,0,8,0"
+                                                           VerticalAlignment="Center" />
+                                    <TextBlock Text="{Binding TextoPeriodoGrafico}"
+                                               Style="{DynamicResource Title3Style}"
+                                               Margin="0"
+                                               VerticalAlignment="Center" />
+                                </StackPanel>
+
+                                <!-- Botões de Filtro -->
+                                <StackPanel Grid.Column="1"
+                                            Orientation="Horizontal"
+                                            VerticalAlignment="Center">
+                                    <Button Style="{StaticResource ModernButtonStyle}"
+                                            Command="{Binding FiltrarGraficoCommand}"
+                                            CommandParameter="Dia"
+                                            Height="24"
+                                            Padding="6"
+                                            FontSize="11"
+                                            Margin="0"
+                                            ToolTip="Exibir dia a dia">
+                                        <TextBlock Text="Dia" />
+                                    </Button>
+                                    <Button Style="{StaticResource ModernButtonStyle}"
+                                            Command="{Binding FiltrarGraficoCommand}"
+                                            CommandParameter="Semana"
+                                            Height="24"
+                                            Padding="6"
+                                            FontSize="11"
+                                            Margin="4,0"
+                                            ToolTip="Exibir semana a semana">
+                                        <TextBlock Text="Semana" />
+                                    </Button>
+                                    <Button Style="{StaticResource ModernButtonStyle}"
+                                            Command="{Binding FiltrarGraficoCommand}"
+                                            CommandParameter="Mês"
+                                            Height="24"
+                                            Padding="6"
+                                            FontSize="11"
+                                            Margin="0"
+                                            ToolTip="Exibir mês a mês">
+                                        <TextBlock Text="Mês" />
+                                    </Button>
+                                </StackPanel>
+                            </Grid>
+
+                            <!-- Gráfico de Linhas -->
+                            <Grid Grid.Row="1">
+                                <!-- Quando há dados -->
+                                <oxy:PlotView Model="{Binding PlotModel}"
+                                              Background="Transparent"
+                                              Controller="{Binding PlotController}">
+                                    <oxy:PlotView.DefaultTrackerTemplate>
+                                        <ControlTemplate>
+                                            <Border Background="#CC000000"
+                                                    BorderThickness="1"
+                                                    BorderBrush="#444"
+                                                    CornerRadius="4"
+                                                    Padding="8,4">
+                                                <StackPanel>
+                                                    <TextBlock Text="{Binding Title}"
+                                                               FontWeight="Bold"
+                                                               Foreground="White" />
+                                                    <TextBlock Text="{Binding XValue, StringFormat='Data: {0}'}"
+                                                               Foreground="#DDD" />
+                                                    <TextBlock Text="{Binding YValue, StringFormat='{}{0}'}"
+                                                               Foreground="#DDD" />
+                                                </StackPanel>
+                                            </Border>
+                                        </ControlTemplate>
+                                    </oxy:PlotView.DefaultTrackerTemplate>
+                                </oxy:PlotView>
+                            </Grid>
+                        </Grid>
+                    </Border>
+                </Grid>
+
+                <!-- Gráficos de Editais -->
+                <Border Grid.Row="4"
+                        Style="{DynamicResource DashboardCardStyle}"
+                        Height="500"
+                        Margin="20,10,0,0">
+                    
+                    <!-- Gráfico de Linhas que compara o RendimentoProva dos editais classificados por data da prova -->
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="*" />
+                        </Grid.RowDefinitions>
+
+                        <!-- Título e Botões de Filtro -->
+                        <Grid Grid.Row="0"
+                              Margin="0,0,0,16">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+
+                            <!-- Título -->
+                            <StackPanel Grid.Column="0"
+                                        Orientation="Horizontal">
+                                <icon:PackIconMaterial Kind="ChartLine"
+                                                       Width="20"
+                                                       Height="20"
+                                                       Foreground="{DynamicResource PrimaryBrush}"
+                                                       Margin="0,0,8,0"
+                                                       VerticalAlignment="Center" />
+                                <TextBlock Text="Evolução em Editais"
+                                           Style="{DynamicResource Title3Style}" Margin="0"
+                                           VerticalAlignment="Center" />
+                            </StackPanel>
+
+                            <!-- Botões de Filtro -->
+                            <StackPanel Grid.Column="1"
+                                        Orientation="Horizontal"
+                                        VerticalAlignment="Center">
+                                <Button Style="{StaticResource ModernButtonStyle}"
+                                        Command="{Binding FiltrarGraficoEditaisCommand}"
+                                        CommandParameter="Médio"
+                                        Height="24"
+                                        Padding="6"
+                                        FontSize="11"
+                                        Margin="0"
+                                        ToolTip="Exibir concursos de nível médio">
+                                    <TextBlock Text="Nível Médio" />
+                                </Button>
+                                <Button Style="{StaticResource ModernButtonStyle}"
+                                        Command="{Binding FiltrarGraficoEditaisCommand}"
+                                        CommandParameter="Superior"
+                                        Height="24"
+                                        Padding="6"
+                                        FontSize="11"
+                                        Margin="4,0"
+                                        ToolTip="Exibir concursos de nível superior">
+                                    <TextBlock Text="Nível Superior" />
+                                </Button>
+                                <Button Style="{StaticResource ModernButtonStyle}"
+                                        Command="{Binding FiltrarGraficoEditaisCommand}"
+                                        CommandParameter="Tudo"
+                                        Height="24"
+                                        Padding="6"
+                                        FontSize="11"
+                                        Margin="0"
+                                        ToolTip="Exibir sem filtro de níveis">
+                                    <TextBlock Text="Tudo" />
+                                </Button>
+                            </StackPanel>
+                        </Grid>
+
+                        <!-- Gráfico de Linhas -->
+                        <oxy:PlotView Grid.Row="1" Model="{Binding PlotModelEditais}"
+                                      Background="Transparent"
+                                      Controller="{Binding PlotController}">
+
+                            <!-- Behavior para tooltip customizado -->
+                            <i:Interaction.Behaviors>
+                                <behaviors:PlotViewTrackerBehavior DadosEditais="{Binding DadosEditaisGrafico}" />
+                            </i:Interaction.Behaviors>
+
+                            <oxy:PlotView.DefaultTrackerTemplate>
+                                <ControlTemplate>
+                                    <Border Background="#CC000000"
+                                            BorderThickness="1"
+                                            BorderBrush="#444"
+                                            CornerRadius="4"
+                                            Padding="8,4">
+                                        <StackPanel>
+                                            <TextBlock Text="{Binding Title}"
+                                                       FontWeight="Bold"
+                                                       Foreground="White" />
+                                            <TextBlock Text="{Binding XValue, StringFormat='Data: {0}'}"
+                                                       Foreground="#DDD" />
+                                            <TextBlock Text="{Binding YValue, StringFormat='{}{0}'}"
+                                                       Foreground="#DDD" />
+                                        </StackPanel>
+                                    </Border>
+                                </ControlTemplate>
+                            </oxy:PlotView.DefaultTrackerTemplate>
+                        </oxy:PlotView>
+
+                    </Grid>
+                </Border>
+            </Grid>
+        </ScrollViewer>
+
+        <!-- Painel Lateral de Filtros - Implementado e Funcional -->
+        <Border Grid.Column="1"
+                Grid.Row="0"
+                Grid.RowSpan="2"
+                Margin="0,10,0,0"
+                Padding="0"
+                Width="300"
+                d:Visibility="Collapsed"
+                Style="{DynamicResource PrimaryCardStyle}"
+                Visibility="{Binding IsFiltrosPanelVisible, Converter={StaticResource BoolToVisibilityConverter}}">
+            <ScrollViewer VerticalScrollBarVisibility="Auto">
+                <StackPanel Margin="20">
+                    <!-- Cabeçalho do Painel -->
+                    <Grid Margin="0,0,0,20">
+                        <TextBlock Text="Filtros"
+                                   FontSize="18"
+                                   FontWeight="SemiBold"
+                                   Foreground="{DynamicResource TextPrimaryBrush}"
+                                   VerticalAlignment="Center" />
+                        <Button HorizontalAlignment="Right"
+                                Style="{StaticResource IconButtonStyle}"
+                                Command="{Binding ToggleFiltrosPanelCommand}"
+                                ToolTip="Fechar">
+                            <icon:PackIconMaterial Kind="Close"
+                                                   Width="16"
+                                                   Height="16" />
+                        </Button>
+                    </Grid>
+
+                    <!-- Datas -->
+                    <Grid Margin="0,0,0,8">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+
+                        <!-- Início -->
+                        <StackPanel Grid.Column="0"
+                                    Margin="0,0,4,0">
+                            <TextBlock Text="Data Início"
+                                       Style="{DynamicResource Title4Style}" />
+                            <DatePicker SelectedDate="{Binding DataFiltroInicio}"
+                                        Style="{StaticResource ModernDatePickerStyle}"
+                                        Tag="Inicio" />
+                        </StackPanel>
+
+                        <!-- Fim -->
+                        <StackPanel Grid.Column="1"
+                                    Margin="4,0,0,0">
+                            <TextBlock Text="Data Fim"
+                                       Style="{DynamicResource Title4Style}" />
+                            <DatePicker SelectedDate="{Binding DataFiltroFim}"
+                                        Style="{StaticResource ModernDatePickerStyle}" />
+                        </StackPanel>
+
+                    </Grid>
+
+                    <!-- Tipo de Estudo -->
+                    <StackPanel Margin="0,0,0,8">
+                        <ComboBox ItemsSource="{Binding TiposEstudo}"
+                                  SelectedItem="{Binding TipoEstudoFiltro}"
+                                  DisplayMemberPath="Nome"
+                                  Style="{StaticResource ModernComboBoxStyle}"
+                                  Tag="Tipo de Estudo" />
+                    </StackPanel>
+
+                    <!-- Disciplina -->
+                    <StackPanel Margin="0,0,0,8">
+                        <ComboBox ItemsSource="{Binding Disciplinas}"
+                                  SelectedItem="{Binding DisciplinaFiltro}"
+                                  DisplayMemberPath="Nome"
+                                  Style="{StaticResource ModernComboBoxStyle}"
+                                  Tag="Disciplina" />
+                    </StackPanel>
+
+                    <!-- Assunto -->
+                    <StackPanel Margin="0,0,0,8">
+                        <ComboBox ItemsSource="{Binding Assuntos}"
+                                  SelectedItem="{Binding AssuntoFiltro}"
+                                  DisplayMemberPath="Nome"
+                                  Style="{StaticResource ModernComboBoxStyle}"
+                                  Tag="Assunto" />
+                    </StackPanel>
+
+                    <!-- Assunto Concluído -->
+                    <StackPanel Margin="0,0,0,20"
+                                HorizontalAlignment="Left">
+                        <CheckBox Content="Assuntos concluídos"
+                                  IsChecked="{Binding FiltrarAssuntosConcluidos}"
+                                  Style="{DynamicResource RoundedCheckBoxStyle}" />
+                    </StackPanel>
+
+                    <!-- Botões de Ação -->
+                    <StackPanel Orientation="Horizontal"
+                                HorizontalAlignment="Stretch">
+                        <Button Command="{Binding AplicarFiltrosCommand}"
+                                Margin="0,0,10,0"
+                                Height="36"
+                                HorizontalAlignment="Stretch"
+                                Width="125"
+                                Style="{StaticResource ModernButtonStyle}">
+                            <StackPanel Orientation="Horizontal">
+                                <icon:PackIconMaterial Kind="Filter"
+                                                       Width="16"
+                                                       Height="16"
+                                                       Margin="0,0,8,0" />
+                                <TextBlock Text="Aplicar" />
+                            </StackPanel>
+                        </Button>
+
+                        <Button Command="{Binding LimparFiltrosCommand}"
+                                Height="36"
+                                HorizontalAlignment="Stretch"
+                                Width="125"
+                                Style="{StaticResource ModernButtonStyle}"
+                                IsEnabled="{Binding FiltrosAtivos}">
+                            <StackPanel Orientation="Horizontal">
+                                <icon:PackIconMaterial Kind="FilterRemove"
+                                                       Width="16"
+                                                       Height="16"
+                                                       Margin="0,0,8,0" />
+                                <TextBlock Text="Limpar" />
+                            </StackPanel>
+                        </Button>
+                    </StackPanel>
+                </StackPanel>
+            </ScrollViewer>
+        </Border>
+    </Grid>
+</UserControl>

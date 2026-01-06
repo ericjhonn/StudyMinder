@@ -1,0 +1,33 @@
+using System.Windows.Controls;
+using StudyMinder.ViewModels;
+
+namespace StudyMinder.Views
+{
+    public partial class ViewDisciplinas : UserControl
+    {
+        public ViewDisciplinas()
+        {
+            InitializeComponent();
+            Loaded += ViewDisciplinas_Loaded;
+        }
+
+        private void ViewDisciplinas_Loaded(object sender, System.Windows.RoutedEventArgs e)
+        {
+            System.Diagnostics.Debug.WriteLine($"[ViewDisciplinas] Loaded - DataContext: {DataContext?.GetType().Name ?? "null"}");
+            
+            // Recarregar dados quando a view for exibida
+            if (DataContext is DisciplinasViewModel viewModel)
+            {
+                // Forçar atualização de bindings quando a view é carregada
+                // Isso resolve o problema de LoadingAndEmptyStatePanel não atualizar ao navegar
+                this.DataContext = null;
+                this.DataContext = viewModel;
+            }
+        }
+
+        private void BtnNovaDisciplina_Click(object sender, System.Windows.RoutedEventArgs e)
+        {
+            // Implementação futura
+        }
+    }
+}
