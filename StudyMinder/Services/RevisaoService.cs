@@ -497,6 +497,7 @@ namespace StudyMinder.Services
 
         /// <summary>
         /// Determina o próximo tipo de revisão na sequência clássica
+        /// Sequência: 24h → 7d → 30d → 90d → 120d → 180d
         /// </summary>
         private TipoRevisaoEnum? ObterProximoTipoRevisao(TipoRevisaoEnum tipoAtual)
         {
@@ -504,7 +505,10 @@ namespace StudyMinder.Services
             {
                 TipoRevisaoEnum.Classico24h => TipoRevisaoEnum.Classico7d,
                 TipoRevisaoEnum.Classico7d => TipoRevisaoEnum.Classico30d,
-                TipoRevisaoEnum.Classico30d => null, // Fim da sequência
+                TipoRevisaoEnum.Classico30d => TipoRevisaoEnum.Classico90d,
+                TipoRevisaoEnum.Classico90d => TipoRevisaoEnum.Classico120d,
+                TipoRevisaoEnum.Classico120d => TipoRevisaoEnum.Classico180d,
+                TipoRevisaoEnum.Classico180d => null, // Fim da sequência
                 TipoRevisaoEnum.Ciclo42 => null, // Não tem sequência automática
                 TipoRevisaoEnum.Ciclico => null, // Não tem sequência automática
                 _ => null
@@ -513,6 +517,7 @@ namespace StudyMinder.Services
 
         /// <summary>
         /// Calcula a data da próxima revisão baseada no tipo
+        /// Sequência clássica estendida com intervalos de longo prazo (Ebbinghaus aprimorado)
         /// </summary>
         private DateTime CalcularDataProximaRevisao(TipoRevisaoEnum tipo)
         {
@@ -520,10 +525,13 @@ namespace StudyMinder.Services
             
             return tipo switch
             {
-                TipoRevisaoEnum.Classico24h => agora.AddDays(1),
-                TipoRevisaoEnum.Classico7d => agora.AddDays(7),
-                TipoRevisaoEnum.Classico30d => agora.AddDays(30),
-                TipoRevisaoEnum.Ciclo42 => agora.AddDays(1), // Lógica específica do 4.2
+                TipoRevisaoEnum.Classico24h => agora.AddDays(1),      // 1 dia - Fixação imediata
+                TipoRevisaoEnum.Classico7d => agora.AddDays(7),       // 7 dias - Memória curto prazo
+                TipoRevisaoEnum.Classico30d => agora.AddDays(30),     // 30 dias - Consolidação média
+                TipoRevisaoEnum.Classico90d => agora.AddDays(90),     // 90 dias - Retenção estendida
+                TipoRevisaoEnum.Classico120d => agora.AddDays(120),   // 120 dias - Revisão de longo prazo
+                TipoRevisaoEnum.Classico180d => agora.AddDays(180),   // 180 dias - Consolidação máxima
+                TipoRevisaoEnum.Ciclo42 => agora.AddDays(1),          // Lógica específica do 4.2
                 _ => agora.AddDays(1)
             };
         }

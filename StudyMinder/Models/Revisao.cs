@@ -8,6 +8,9 @@ namespace StudyMinder.Models
         Classico24h = 1,
         Classico7d = 2,
         Classico30d = 3,
+        Classico90d = 4,
+        Classico120d = 5,
+        Classico180d = 6,
         Ciclo42 = 10,
         Ciclico = 20
     }

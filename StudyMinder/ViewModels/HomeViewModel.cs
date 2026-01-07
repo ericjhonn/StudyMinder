@@ -292,10 +292,14 @@ namespace StudyMinder.ViewModels
 
             IEnumerable<RevisaoProxima> revisoesFiltradasEnumeravel = filtro switch
             {
+                "Tudo" => TodasRevisoes,
                 "Clássicas" => TodasRevisoes.Where(r =>
                     r.TipoRevisao == TipoRevisaoEnum.Classico24h ||
                     r.TipoRevisao == TipoRevisaoEnum.Classico7d ||
-                    r.TipoRevisao == TipoRevisaoEnum.Classico30d),
+                    r.TipoRevisao == TipoRevisaoEnum.Classico30d ||
+                    r.TipoRevisao == TipoRevisaoEnum.Classico90d ||
+                    r.TipoRevisao == TipoRevisaoEnum.Classico120d ||
+                    r.TipoRevisao == TipoRevisaoEnum.Classico180d),
                 "4.2" => TodasRevisoes.Where(r => r.TipoRevisao == TipoRevisaoEnum.Ciclo42),
                 _ => TodasRevisoes.Where(r => r.TipoRevisao == TipoRevisaoEnum.Ciclo42)
             };

@@ -137,7 +137,10 @@ namespace StudyMinder.ViewModels
                 {
                     TipoRevisaoEnum.Classico24h,
                     TipoRevisaoEnum.Classico7d,
-                    TipoRevisaoEnum.Classico30d
+                    TipoRevisaoEnum.Classico30d,
+                    TipoRevisaoEnum.Classico90d,
+                    TipoRevisaoEnum.Classico120d,
+                    TipoRevisaoEnum.Classico180d
                 };
 
                 var resultado = await _revisaoService.ObterRevisoesPendentesAsync(
@@ -327,6 +330,9 @@ namespace StudyMinder.ViewModels
                 TipoRevisaoEnum.Classico24h => "24h",
                 TipoRevisaoEnum.Classico7d => "7d",
                 TipoRevisaoEnum.Classico30d => "30d",
+                TipoRevisaoEnum.Classico90d => "90d",
+                TipoRevisaoEnum.Classico120d => "120d",
+                TipoRevisaoEnum.Classico180d => "180d",
                 _ => tipo.ToString()
             };
         }

@@ -100,6 +100,7 @@
                     <RowDefinition Height="*" />
                     <RowDefinition Height="*" />
                     <RowDefinition Height="*" />
+                    <RowDefinition Height="*" />
                 </Grid.RowDefinitions>
 
                 <!-- KPIs e Gráficos HOJE -->
@@ -443,377 +444,18 @@
                     </ItemsControl>
                 </Border>
 
-                <!-- Grid de Informações Detalhadas -->
+                <!-- Grid de Eventos e Metas -->
                 <Grid Grid.Row="2"
-                      Margin="20,10,0,0">
+                      Margin="20,10,0,10">
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*" />
-                        <ColumnDefinition Width="*" />
-                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="1.5*" />
                         <ColumnDefinition Width="*" />
                     </Grid.ColumnDefinitions>
 
-                    <!-- Coluna 1: Pontos de Atenção -->
+                    <!-- Próximos Eventos -->
                     <Border Grid.Column="0"
                             Style="{DynamicResource DashboardCardStyle}"
                             Margin="0,0,10,0">
-                        <Grid>
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="Auto" />
-                                <RowDefinition Height="*" />
-                            </Grid.RowDefinitions>
-
-                            <!-- Título -->
-                            <StackPanel Grid.Row="0"
-                                        Orientation="Horizontal"
-                                        Margin="0,0,0,12">
-                                <icon:PackIconMaterial Kind="AlertOutline"
-                                                       Width="20"
-                                                       Height="20"
-                                                       Foreground="{DynamicResource WarningBrush}"
-                                                       Margin="0,0,8,0"
-                                                       VerticalAlignment="Center" />
-                                <TextBlock Text="Pontos de Atenção"
-                                           Style="{DynamicResource Title3Style}"
-                                           Margin="0"
-                                           VerticalAlignment="Center" />
-                            </StackPanel>
-
-                            <!-- Estado Vazio - Aparece quando não há dados -->
-                            <StackPanel Grid.Row="2"
-                                        HorizontalAlignment="Center"
-                                        VerticalAlignment="Center"
-                                        Visibility="{Binding TemAssuntosMenorRendimento, Converter={StaticResource InverseBooleanToVisibilityConverter}}"
-                                        Margin="0,20,0,20">
-                                <icon:PackIconMaterial Kind="CheckCircleOutline"
-                                                       Width="40"
-                                                       Height="40"
-                                                       HorizontalAlignment="Center"
-                                                       Foreground="{DynamicResource SuccessBrush}"
-                                                       Margin="0,0,0,12" />
-                                <TextBlock Text="Nenhum ponto de atenção"
-                                           Style="{DynamicResource Title3Style}"
-                                           HorizontalAlignment="Center"
-                                           Margin="0,0,0,4" />
-                                <TextBlock Text="Todos os seus assuntos têm bom rendimento!"
-                                           Style="{DynamicResource Text2Style}"
-                                           HorizontalAlignment="Center"
-                                           Foreground="{DynamicResource TextSecondaryBrush}" />
-                            </StackPanel>
-
-                            <!-- ListView dos 5 assuntos com menor rendimento -->
-                            <ItemsControl Grid.Row="2"
-                                          ItemsSource="{Binding AssuntosMenorRendimento}"
-                                          VerticalAlignment="Stretch"
-                                          BorderThickness="0"
-                                          Background="Transparent"
-                                          Margin="0,0,0,-8"
-                                          Visibility="{Binding TemAssuntosMenorRendimento, Converter={StaticResource BoolToVisibilityConverter}}"
-                                          VirtualizingPanel.IsVirtualizing="True"
-                                          VirtualizingPanel.VirtualizationMode="Recycling"
-                                          VirtualizingPanel.ScrollUnit="Item"
-                                          VirtualizingPanel.CacheLength="10,10"
-                                          VirtualizingPanel.CacheLengthUnit="Page">
-                                <ItemsControl.ItemTemplate>
-                                    <DataTemplate>
-                                        <Border Style="{DynamicResource SecondaryCardStyle}"
-                                                Padding="0"
-                                                Margin="0,0,0,8">
-                                            <Grid>
-                                                <Grid.ColumnDefinitions>
-                                                    <ColumnDefinition Width="4" />
-                                                    <ColumnDefinition Width="*" />
-                                                </Grid.ColumnDefinitions>
-
-                                                <!-- Barra de cor lateral esquerda (cor da disciplina) -->
-                                                <Border Grid.Column="0"
-                                                        Grid.Row="0"
-                                                        Grid.RowSpan="2"
-                                                        Background="{Binding Disciplina.Cor, Converter={StaticResource StringToBrushConverter}}"
-                                                        CornerRadius="8,0,0,8" />
-
-                                                <!-- Conteúdo principal -->
-                                                <Grid Grid.Column="2"
-                                                      Grid.Row="1"
-                                                      Margin="8">
-                                                    <Grid.ColumnDefinitions>
-                                                        <ColumnDefinition Width="*" />
-                                                        <ColumnDefinition Width="Auto" />
-                                                    </Grid.ColumnDefinitions>
-                                                    <Grid.RowDefinitions>
-                                                        <RowDefinition Height="Auto" />
-                                                        <RowDefinition Height="Auto" />
-                                                    </Grid.RowDefinitions>
-
-                                                    <!-- Nome do Assunto -->
-                                                    <TextBlock Grid.Column="0"
-                                                               Grid.Row="0"
-                                                               Text="{Binding Nome}"
-                                                               Style="{DynamicResource Title3Style}" />
-
-                                                    <!-- Estatísticas com Ícones -->
-                                                    <StackPanel Grid.Column="0"
-                                                                Grid.Row="1"
-                                                                Orientation="Horizontal"
-                                                                VerticalAlignment="Center">
-
-                                                        <!-- Acertos -->
-                                                        <StackPanel Orientation="Horizontal"
-                                                                    VerticalAlignment="Center"
-                                                                    Width="50">
-                                                            <icon:PackIconMaterial Style="{DynamicResource AcertosIconStyle}" />
-                                                            <TextBlock Text="{Binding TotalAcertos}"
-                                                                       Style="{DynamicResource AcertosTextStyle}" />
-                                                        </StackPanel>
-
-                                                        <!-- Erros -->
-                                                        <StackPanel Orientation="Horizontal"
-                                                                    VerticalAlignment="Center"
-                                                                    Width="50">
-                                                            <icon:PackIconMaterial Style="{DynamicResource ErrosIconStyle}" />
-                                                            <TextBlock Text="{Binding TotalErros}"
-                                                                       Style="{DynamicResource ErrosTextStyle}" />
-                                                        </StackPanel>
-
-                                                        <!-- Rendimento -->
-                                                        <StackPanel Orientation="Horizontal"
-                                                                    VerticalAlignment="Center"
-                                                                    Width="70">
-                                                            <icon:PackIconMaterial Style="{DynamicResource RendimentoIconStyle}"
-                                                                                   Margin="0,0,4,0" />
-                                                            <TextBlock Text="{Binding Rendimento, StringFormat='{}{0:F1}%'}"
-                                                                       Style="{DynamicResource RendimentoTextStyle}" />
-                                                        </StackPanel>
-
-                                                        <!-- Horas Estudadas -->
-                                                        <StackPanel Orientation="Horizontal"
-                                                                    VerticalAlignment="Center"
-                                                                    Width="70">
-                                                            <icon:PackIconMaterial Style="{DynamicResource HorasEstudadasIconStyle}" />
-                                                            <TextBlock Text="{Binding HorasEstudadas, Converter={StaticResource HorasFormatConverter}}"
-                                                                       Style="{DynamicResource HorasEstudadasTextStyle}" />
-                                                        </StackPanel>
-                                                    </StackPanel>
-
-                                                    <!-- Botão Iniciar Estudo -->
-                                                    <Button Grid.Column="1"
-                                                            Grid.Row="0"
-                                                            Grid.RowSpan="2"
-                                                            Margin="8,0,0,0"
-                                                            Style="{StaticResource IconButtonStyle}"
-                                                            Command="{Binding DataContext.IniciarEstudoCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
-                                                            CommandParameter="{Binding}"
-                                                            ToolTip="Iniciar Estudo">
-                                                        <icon:PackIconMaterial Kind="Play"
-                                                                               Style="{DynamicResource ActionsIconBaseStyle}"
-                                                                               Foreground="{DynamicResource PrimaryBrush}" />
-                                                    </Button>
-
-                                                </Grid>
-                                            </Grid>
-                                        </Border>
-                                    </DataTemplate>
-                                </ItemsControl.ItemTemplate>
-                            </ItemsControl>
-                        </Grid>
-                    </Border>
-
-                    <!-- Coluna 2: Próximas Revisões -->
-                    <Border Grid.Column="1"
-                            Style="{DynamicResource DashboardCardStyle}"
-                            Margin="10,0,10,0">
-                        <Grid>
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="Auto" />
-                                <RowDefinition Height="Auto" />
-                                <RowDefinition Height="*" />
-                            </Grid.RowDefinitions>
-
-                            <!-- Título -->
-                            <Grid Grid.Row="0"
-                                  Margin="0,0,0,12">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="*" />
-                                    <ColumnDefinition Width="Auto" />
-                                </Grid.ColumnDefinitions>
-
-                                <StackPanel Grid.Column="0"
-                                            Orientation="Horizontal">
-                                    <icon:PackIconMaterial Kind="CalendarClock"
-                                                           Width="20"
-                                                           Height="20"
-                                                           Foreground="{DynamicResource InfoBrush}"
-                                                           Margin="0,0,8,0"
-                                                           VerticalAlignment="Center" />
-                                    <TextBlock Text="Próximas Revisões"
-                                               Style="{DynamicResource Title3Style}"
-                                               Margin="0" />
-                                </StackPanel>
-
-                                <StackPanel Grid.Column="1"
-                                            Orientation="Horizontal">
-
-                                    <Button Style="{StaticResource ModernButtonStyle}"
-                                            Command="{Binding FiltrarRevisoesCommand}"
-                                            CommandParameter="Clássicas"
-                                            Height="24"
-                                            Width="60"
-                                            Padding="0"
-                                            FontSize="11"
-                                            Margin="0,0,4,0">
-                                        <TextBlock Text="Clássicas" />
-                                    </Button>
-
-                                    <Button Style="{StaticResource ModernButtonStyle}"
-                                            Command="{Binding FiltrarRevisoesCommand}"
-                                            CommandParameter="4.2"
-                                            Height="24"
-                                            Width="60"
-                                            Padding="0"
-                                            FontSize="11"
-                                            Margin="0">
-                                        <TextBlock Text="4.2" />
-                                    </Button>
-                                </StackPanel>
-
-                            </Grid>
-
-                            <!-- Estado Vazio - Aparece quando não há revisões -->
-                            <StackPanel Grid.Row="2"
-                                        HorizontalAlignment="Center"
-                                        VerticalAlignment="Center"
-                                        Visibility="{Binding TemProximasRevisoes, Converter={StaticResource InverseBooleanToVisibilityConverter}}"
-                                        Margin="0,20,0,20">
-                                <icon:PackIconMaterial Kind="CalendarClock"
-                                                       Width="40"
-                                                       Height="40"
-                                                       HorizontalAlignment="Center"
-                                                       Foreground="{DynamicResource TextDisabledBrush}"
-                                                       Margin="0,0,0,12" />
-                                <TextBlock Text="Nenhuma revisão pendente"
-                                           Style="{DynamicResource Title3Style}"
-                                           HorizontalAlignment="Center"
-                                           Margin="0,0,0,4" />
-                                <TextBlock Text="Você está em dia com suas revisões!"
-                                           Style="{DynamicResource Text2Style}"
-                                           HorizontalAlignment="Center"
-                                           Foreground="{DynamicResource TextSecondaryBrush}" />
-                            </StackPanel>
-
-                            <!-- ListView das próximas 5 revisões -->
-                            <ItemsControl Grid.Row="2"
-                                          ItemsSource="{Binding ProximasRevisoes}"
-                                          VerticalAlignment="Stretch"
-                                          BorderThickness="0"
-                                          Background="Transparent"
-                                          Margin="0,0,0,-8"
-                                          Visibility="{Binding TemProximasRevisoes, Converter={StaticResource BoolToVisibilityConverter}}"
-                                          VirtualizingPanel.IsVirtualizing="True"
-                                          VirtualizingPanel.VirtualizationMode="Recycling"
-                                          VirtualizingPanel.ScrollUnit="Item"
-                                          VirtualizingPanel.CacheLength="10,10"
-                                          VirtualizingPanel.CacheLengthUnit="Page">
-                                <ItemsControl.ItemTemplate>
-                                    <DataTemplate>
-                                        <Border Style="{DynamicResource SecondaryCardStyle}"
-                                                Padding="0"
-                                                Margin="0,0,0,8">
-
-                                            <Grid>
-                                                <Grid.ColumnDefinitions>
-                                                    <ColumnDefinition Width="4" />
-                                                    <ColumnDefinition Width="*" />
-                                                    <ColumnDefinition Width="Auto" />
-                                                </Grid.ColumnDefinitions>
-                                                <Grid.RowDefinitions>
-                                                    <RowDefinition Height="Auto" />
-                                                    <RowDefinition Height="Auto" />
-                                                </Grid.RowDefinitions>
-
-                                                <!-- Barra de cor lateral esquerda (cor da disciplina) -->
-                                                <Border Grid.Column="0"
-                                                        Grid.Row="0"
-                                                        Grid.RowSpan="2"
-                                                        Background="{Binding Assunto.Disciplina.Cor, Converter={StaticResource StringToBrushConverter}}"
-                                                        CornerRadius="8,0,0,8" />
-
-                                                <!-- Conteúdo principal -->
-                                                <Grid  Grid.Column="1"
-                                                       Grid.Row="0"
-                                                       Margin="8,5">
-                                                    <Grid.ColumnDefinitions>
-                                                        <ColumnDefinition Width="*" />
-                                                        <ColumnDefinition Width="Auto" />
-                                                    </Grid.ColumnDefinitions>
-                                                    <Grid.RowDefinitions>
-                                                        <RowDefinition Height="Auto" />
-                                                        <RowDefinition Height="Auto" />
-                                                    </Grid.RowDefinitions>
-
-                                                    <!-- Nome do Assunto -->
-                                                    <TextBlock Grid.Column="0"
-                                                               Grid.Row="0"
-                                                               Text="{Binding Assunto.Nome}"
-                                                               Style="{DynamicResource Title3Style}"
-                                                               Margin="0,0,0,8" />
-
-                                                    <!-- Informações da Revisão -->
-                                                    <StackPanel Grid.Column="0"
-                                                                Grid.Row="1"
-                                                                Orientation="Horizontal"
-                                                                VerticalAlignment="Center"
-                                                                Margin="0,0,12,0">
-
-                                                        <!-- Data -->
-                                                        <StackPanel Orientation="Horizontal"
-                                                                    VerticalAlignment="Center"
-                                                                    Margin="0,0,16,0">
-                                                            <icon:PackIconMaterial Kind="Calendar"
-                                                                                   Width="14"
-                                                                                   Height="14"
-                                                                                   Foreground="{DynamicResource TextSecondaryBrush}"
-                                                                                   Margin="0,0,6,0" />
-                                                            <TextBlock Text="{Binding DataFormatada}"
-                                                                       Style="{DynamicResource Text2Style}" />
-                                                        </StackPanel>
-
-                                                        <!-- Tipo de Revisão -->
-                                                        <Border CornerRadius="12"
-                                                                Padding="8,4"
-                                                                Background="{DynamicResource InfoBrush}">
-                                                            <TextBlock Text="{Binding TipoRevisaoNome}"
-                                                                       Foreground="White"
-                                                                       FontSize="10"
-                                                                       FontWeight="SemiBold" />
-                                                        </Border>
-                                                    </StackPanel>
-
-                                                    <!-- Botão Iniciar Revisão -->
-                                                    <Button Grid.Column="1"
-                                                            Grid.Row="0"
-                                                            Grid.RowSpan="2"
-                                                            Margin="8,0,0,0"
-                                                            Style="{StaticResource IconButtonStyle}"
-                                                            Command="{Binding DataContext.IniciarRevisaoCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
-                                                            CommandParameter="{Binding}"
-                                                            ToolTip="Iniciar Revisão">
-                                                        <icon:PackIconMaterial Kind="Play"
-                                                                               Style="{DynamicResource ActionsIconBaseStyle}"
-                                                                               Foreground="{DynamicResource PrimaryBrush}" />
-                                                    </Button>
-                                                </Grid>
-                                            </Grid>
-                                        </Border>
-                                    </DataTemplate>
-                                </ItemsControl.ItemTemplate>
-                            </ItemsControl>
-                        </Grid>
-                    </Border>
-
-                    <!-- Coluna 3: Próximos Eventos -->
-                    <Border Grid.Column="2"
-                            Style="{DynamicResource DashboardCardStyle}"
-                            Margin="10,0,10,0">
                         <Grid>
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="Auto" />
@@ -925,9 +567,10 @@
                                                            Style="{DynamicResource Title3Style}"
                                                            Margin="0,0,0,4">
                                                     <TextBlock.Text>
-                                                        <MultiBinding StringFormat="{}{0} ({1})">
+                                                        <MultiBinding StringFormat="{}{0} ({1} - {2})">
                                                             <Binding Path="Evento" />
                                                             <Binding Path="Edital.Orgao" />
+                                                            <Binding Path="Edital.Cargo" />
                                                         </MultiBinding>
                                                     </TextBlock.Text>
                                                 </TextBlock>
@@ -992,15 +635,15 @@
                         </Grid>
                     </Border>
 
-                    <!-- Coluna 4: Próxima Prova e Metas -->
-                    <Grid Grid.Column="3"
+                    <!-- Próxima Prova e Metas -->
+                    <Grid Grid.Column="1"
                           Margin="10,0,0,0">
                         <Grid.RowDefinitions>
                             <RowDefinition Height="Auto" />
                             <RowDefinition Height="*" />
                         </Grid.RowDefinitions>
 
-                        <!-- Linha 1: Próxima Prova -->
+                        <!-- Próxima Prova -->
                         <Border Grid.Row="0"
                                 Style="{DynamicResource DashboardCardStyle}"
                                 Margin="0,0,0,16">
@@ -1046,6 +689,7 @@
                                                     VerticalAlignment="Center">
                                             <TextBlock Text="{Binding ProximaProva.Orgao}"
                                                        Style="{DynamicResource Title1Style}"
+                                                       TextWrapping="Wrap"
                                                        Margin="0" />
 
                                             <TextBlock Text="{Binding ProximaProva.DataExtenso}"
@@ -1093,7 +737,7 @@
 
                         </Border>
 
-                        <!-- Linha 2: Metas -->
+                        <!-- Metas -->
                         <Border Grid.Row="1"
                                 Style="{DynamicResource DashboardCardStyle}"
                                 Margin="0,0,0,0">
@@ -1402,19 +1046,394 @@
                             </Grid>
                         </Border>
                     </Grid>
+                </Grid>
+                
+                <!-- Grid de Informações Detalhadas -->
+                <Grid Grid.Row="3"
+                      Margin="20,10,0,0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
 
+                    <!-- Pontos de Atenção -->
+                    <Border Grid.Column="0"
+                            Style="{DynamicResource DashboardCardStyle}"
+                            Margin="0,0,10,0">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="*" />
+                            </Grid.RowDefinitions>
+
+                            <!-- Título -->
+                            <StackPanel Grid.Row="0"
+                                        Orientation="Horizontal"
+                                        Margin="0,0,0,12">
+                                <icon:PackIconMaterial Kind="AlertOutline"
+                                                       Width="20"
+                                                       Height="20"
+                                                       Foreground="{DynamicResource WarningBrush}"
+                                                       Margin="0,0,8,0"
+                                                       VerticalAlignment="Center" />
+                                <TextBlock Text="Pontos de Atenção"
+                                           Style="{DynamicResource Title3Style}"
+                                           Margin="0"
+                                           VerticalAlignment="Center" />
+                            </StackPanel>
+
+                            <!-- Estado Vazio - Aparece quando não há dados -->
+                            <StackPanel Grid.Row="2"
+                                        HorizontalAlignment="Center"
+                                        VerticalAlignment="Center"
+                                        Visibility="{Binding TemAssuntosMenorRendimento, Converter={StaticResource InverseBooleanToVisibilityConverter}}"
+                                        Margin="0,20,0,20">
+                                <icon:PackIconMaterial Kind="CheckCircleOutline"
+                                                       Width="40"
+                                                       Height="40"
+                                                       HorizontalAlignment="Center"
+                                                       Foreground="{DynamicResource SuccessBrush}"
+                                                       Margin="0,0,0,12" />
+                                <TextBlock Text="Nenhum ponto de atenção"
+                                           Style="{DynamicResource Title3Style}"
+                                           HorizontalAlignment="Center"
+                                           Margin="0,0,0,4" />
+                                <TextBlock Text="Todos os seus assuntos têm bom rendimento!"
+                                           Style="{DynamicResource Text2Style}"
+                                           HorizontalAlignment="Center"
+                                           Foreground="{DynamicResource TextSecondaryBrush}" />
+                            </StackPanel>
+
+                            <!-- ListView dos 5 assuntos com menor rendimento -->
+                            <ItemsControl Grid.Row="2"
+                                          ItemsSource="{Binding AssuntosMenorRendimento}"
+                                          VerticalAlignment="Stretch"
+                                          BorderThickness="0"
+                                          Background="Transparent"
+                                          Margin="0,0,0,-8"
+                                          Visibility="{Binding TemAssuntosMenorRendimento, Converter={StaticResource BoolToVisibilityConverter}}"
+                                          VirtualizingPanel.IsVirtualizing="True"
+                                          VirtualizingPanel.VirtualizationMode="Recycling"
+                                          VirtualizingPanel.ScrollUnit="Item"
+                                          VirtualizingPanel.CacheLength="10,10"
+                                          VirtualizingPanel.CacheLengthUnit="Page">
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <Border Style="{DynamicResource SecondaryCardStyle}"
+                                                Padding="0"
+                                                Margin="0,0,0,8">
+                                            <Grid>
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="4" />
+                                                    <ColumnDefinition Width="*" />
+                                                </Grid.ColumnDefinitions>
+
+                                                <!-- Barra de cor lateral esquerda (cor da disciplina) -->
+                                                <Border Grid.Column="0"
+                                                        Grid.Row="0"
+                                                        Grid.RowSpan="2"
+                                                        Background="{Binding Disciplina.Cor, Converter={StaticResource StringToBrushConverter}}"
+                                                        CornerRadius="8,0,0,8" />
+
+                                                <!-- Conteúdo principal -->
+                                                <Grid Grid.Column="2"
+                                                      Grid.Row="1"
+                                                      Margin="8">
+                                                    <Grid.ColumnDefinitions>
+                                                        <ColumnDefinition Width="*" />
+                                                        <ColumnDefinition Width="Auto" />
+                                                    </Grid.ColumnDefinitions>
+                                                    <Grid.RowDefinitions>
+                                                        <RowDefinition Height="Auto" />
+                                                        <RowDefinition Height="Auto" />
+                                                    </Grid.RowDefinitions>
+
+                                                    <!-- Nome do Assunto -->
+                                                    <TextBlock Grid.Column="0"
+                                                               Grid.Row="0"
+                                                               Text="{Binding Nome}"
+                                                               Style="{DynamicResource Title3Style}" />
+
+                                                    <!-- Estatísticas com Ícones -->
+                                                    <StackPanel Grid.Column="0"
+                                                                Grid.Row="1"
+                                                                Orientation="Horizontal"
+                                                                VerticalAlignment="Center">
+
+                                                        <!-- Acertos -->
+                                                        <StackPanel Orientation="Horizontal"
+                                                                    VerticalAlignment="Center"
+                                                                    Width="50">
+                                                            <icon:PackIconMaterial Style="{DynamicResource AcertosIconStyle}" />
+                                                            <TextBlock Text="{Binding TotalAcertos}"
+                                                                       Style="{DynamicResource AcertosTextStyle}" />
+                                                        </StackPanel>
+
+                                                        <!-- Erros -->
+                                                        <StackPanel Orientation="Horizontal"
+                                                                    VerticalAlignment="Center"
+                                                                    Width="50">
+                                                            <icon:PackIconMaterial Style="{DynamicResource ErrosIconStyle}" />
+                                                            <TextBlock Text="{Binding TotalErros}"
+                                                                       Style="{DynamicResource ErrosTextStyle}" />
+                                                        </StackPanel>
+
+                                                        <!-- Rendimento -->
+                                                        <StackPanel Orientation="Horizontal"
+                                                                    VerticalAlignment="Center"
+                                                                    Width="70">
+                                                            <icon:PackIconMaterial Style="{DynamicResource RendimentoIconStyle}"
+                                                                                   Margin="0,0,4,0" />
+                                                            <TextBlock Text="{Binding Rendimento, StringFormat='{}{0:F1}%'}"
+                                                                       Style="{DynamicResource RendimentoTextStyle}" />
+                                                        </StackPanel>
+
+                                                        <!-- Horas Estudadas -->
+                                                        <StackPanel Orientation="Horizontal"
+                                                                    VerticalAlignment="Center"
+                                                                    Width="70">
+                                                            <icon:PackIconMaterial Style="{DynamicResource HorasEstudadasIconStyle}" />
+                                                            <TextBlock Text="{Binding HorasEstudadas, Converter={StaticResource HorasFormatConverter}}"
+                                                                       Style="{DynamicResource HorasEstudadasTextStyle}" />
+                                                        </StackPanel>
+                                                    </StackPanel>
+
+                                                    <!-- Botão Iniciar Estudo -->
+                                                    <Button Grid.Column="1"
+                                                            Grid.Row="0"
+                                                            Grid.RowSpan="2"
+                                                            Margin="8,0,0,0"
+                                                            Style="{StaticResource IconButtonStyle}"
+                                                            Command="{Binding DataContext.IniciarEstudoCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                            CommandParameter="{Binding}"
+                                                            ToolTip="Iniciar Estudo">
+                                                        <icon:PackIconMaterial Kind="Play"
+                                                                               Style="{DynamicResource ActionsIconBaseStyle}"
+                                                                               Foreground="{DynamicResource PrimaryBrush}" />
+                                                    </Button>
+
+                                                </Grid>
+                                            </Grid>
+                                        </Border>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                        </Grid>
+                    </Border>
+
+                    <!-- Próximas Revisões -->
+                    <Border Grid.Column="1"
+                            Style="{DynamicResource DashboardCardStyle}"
+                            Margin="10,0,0,0">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="*" />
+                            </Grid.RowDefinitions>
+
+                            <!-- Título -->
+                            <Grid Grid.Row="0"
+                                  Margin="0,0,0,12">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+
+                                <StackPanel Grid.Column="0"
+                                            Orientation="Horizontal">
+                                    <icon:PackIconMaterial Kind="CalendarClock"
+                                                           Width="20"
+                                                           Height="20"
+                                                           Foreground="{DynamicResource InfoBrush}"
+                                                           Margin="0,0,8,0"
+                                                           VerticalAlignment="Center" />
+                                    <TextBlock Text="Próximas Revisões"
+                                               Style="{DynamicResource Title3Style}"
+                                               Margin="0" />
+                                </StackPanel>
+
+                                <StackPanel Grid.Column="1"
+                                            Orientation="Horizontal">
+                                    
+                                    <Button Style="{StaticResource ModernButtonStyle}"
+                                            Command="{Binding FiltrarRevisoesCommand}"
+                                            CommandParameter="Tudo"
+                                            Height="24"
+                                            Width="60"
+                                            Padding="0"
+                                            FontSize="11"
+                                            Margin="0,0,4,0">
+                                        <TextBlock Text="Tudo" />
+                                    </Button>
+                                    
+                                    <Button Style="{StaticResource ModernButtonStyle}"
+                                            Command="{Binding FiltrarRevisoesCommand}"
+                                            CommandParameter="Clássicas"
+                                            Height="24"
+                                            Width="60"
+                                            Padding="0"
+                                            FontSize="11"
+                                            Margin="0,0,4,0">
+                                        <TextBlock Text="Clássicas" />
+                                    </Button>
+
+                                    <Button Style="{StaticResource ModernButtonStyle}"
+                                            Command="{Binding FiltrarRevisoesCommand}"
+                                            CommandParameter="4.2"
+                                            Height="24"
+                                            Width="60"
+                                            Padding="0"
+                                            FontSize="11"
+                                            Margin="0">
+                                        <TextBlock Text="4.2" />
+                                    </Button>
+                                </StackPanel>
+
+                            </Grid>
+
+                            <!-- Estado Vazio - Aparece quando não há revisões -->
+                            <StackPanel Grid.Row="2"
+                                        HorizontalAlignment="Center"
+                                        VerticalAlignment="Center"
+                                        Visibility="{Binding TemProximasRevisoes, Converter={StaticResource InverseBooleanToVisibilityConverter}}"
+                                        Margin="0,20,0,20">
+                                <icon:PackIconMaterial Kind="CalendarClock"
+                                                       Width="40"
+                                                       Height="40"
+                                                       HorizontalAlignment="Center"
+                                                       Foreground="{DynamicResource TextDisabledBrush}"
+                                                       Margin="0,0,0,12" />
+                                <TextBlock Text="Nenhuma revisão pendente"
+                                           Style="{DynamicResource Title3Style}"
+                                           HorizontalAlignment="Center"
+                                           Margin="0,0,0,4" />
+                                <TextBlock Text="Você está em dia com suas revisões!"
+                                           Style="{DynamicResource Text2Style}"
+                                           HorizontalAlignment="Center"
+                                           Foreground="{DynamicResource TextSecondaryBrush}" />
+                            </StackPanel>
+
+                            <!-- ListView das próximas 5 revisões -->
+                            <ItemsControl Grid.Row="2"
+                                          ItemsSource="{Binding ProximasRevisoes}"
+                                          VerticalAlignment="Stretch"
+                                          BorderThickness="0"
+                                          Background="Transparent"
+                                          Margin="0,0,0,-8"
+                                          Visibility="{Binding TemProximasRevisoes, Converter={StaticResource BoolToVisibilityConverter}}"
+                                          VirtualizingPanel.IsVirtualizing="True"
+                                          VirtualizingPanel.VirtualizationMode="Recycling"
+                                          VirtualizingPanel.ScrollUnit="Item"
+                                          VirtualizingPanel.CacheLength="10,10"
+                                          VirtualizingPanel.CacheLengthUnit="Page">
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <Border Style="{DynamicResource SecondaryCardStyle}"
+                                                Padding="0"
+                                                Margin="0,0,0,8">
+
+                                            <Grid>
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="4" />
+                                                    <ColumnDefinition Width="*" />
+                                                    <ColumnDefinition Width="Auto" />
+                                                </Grid.ColumnDefinitions>
+                                                <Grid.RowDefinitions>
+                                                    <RowDefinition Height="Auto" />
+                                                    <RowDefinition Height="Auto" />
+                                                </Grid.RowDefinitions>
+
+                                                <!-- Barra de cor lateral esquerda (cor da disciplina) -->
+                                                <Border Grid.Column="0"
+                                                        Grid.Row="0"
+                                                        Grid.RowSpan="2"
+                                                        Background="{Binding Assunto.Disciplina.Cor, Converter={StaticResource StringToBrushConverter}}"
+                                                        CornerRadius="8,0,0,8" />
+
+                                                <!-- Conteúdo principal -->
+                                                <Grid  Grid.Column="1"
+                                                       Grid.Row="0"
+                                                       Margin="8,5">
+                                                    <Grid.ColumnDefinitions>
+                                                        <ColumnDefinition Width="*" />
+                                                        <ColumnDefinition Width="Auto" />
+                                                    </Grid.ColumnDefinitions>
+                                                    <Grid.RowDefinitions>
+                                                        <RowDefinition Height="Auto" />
+                                                        <RowDefinition Height="Auto" />
+                                                    </Grid.RowDefinitions>
+
+                                                    <!-- Nome do Assunto -->
+                                                    <TextBlock Grid.Column="0"
+                                                               Grid.Row="0"
+                                                               Text="{Binding Assunto.Nome}"
+                                                               Style="{DynamicResource Title3Style}"
+                                                               Margin="0,0,0,8" />
+
+                                                    <!-- Informações da Revisão -->
+                                                    <StackPanel Grid.Column="0"
+                                                                Grid.Row="1"
+                                                                Orientation="Horizontal"
+                                                                VerticalAlignment="Center"
+                                                                Margin="0,0,12,0">
+
+                                                        <!-- Data -->
+                                                        <StackPanel Orientation="Horizontal"
+                                                                    VerticalAlignment="Center"
+                                                                    Margin="0,0,16,0">
+                                                            <icon:PackIconMaterial Kind="Calendar"
+                                                                                   Width="14"
+                                                                                   Height="14"
+                                                                                   Foreground="{DynamicResource TextSecondaryBrush}"
+                                                                                   Margin="0,0,6,0" />
+                                                            <TextBlock Text="{Binding DataFormatada}"
+                                                                       Style="{DynamicResource Text2Style}" />
+                                                        </StackPanel>
+
+                                                        <!-- Tipo de Revisão -->
+                                                        <Border CornerRadius="12"
+                                                                Padding="8,4"
+                                                                Background="{DynamicResource InfoBrush}">
+                                                            <TextBlock Text="{Binding TipoRevisaoNome}"
+                                                                       Foreground="White"
+                                                                       FontSize="10"
+                                                                       FontWeight="SemiBold" />
+                                                        </Border>
+                                                    </StackPanel>
+
+                                                    <!-- Botão Iniciar Revisão -->
+                                                    <Button Grid.Column="1"
+                                                            Grid.Row="0"
+                                                            Grid.RowSpan="2"
+                                                            Margin="8,0,0,0"
+                                                            Style="{StaticResource IconButtonStyle}"
+                                                            Command="{Binding DataContext.IniciarRevisaoCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                            CommandParameter="{Binding}"
+                                                            ToolTip="Iniciar Revisão">
+                                                        <icon:PackIconMaterial Kind="Play"
+                                                                               Style="{DynamicResource ActionsIconBaseStyle}"
+                                                                               Foreground="{DynamicResource PrimaryBrush}" />
+                                                    </Button>
+                                                </Grid>
+                                            </Grid>
+                                        </Border>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                        </Grid>
+                    </Border>
 
                 </Grid>
 
                 <!-- Gráficos de Questões -->
-                <Grid Grid.Row="3"
+                <Grid Grid.Row="4"
                       Height="500"
                       Margin="20,20,0,10">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*" />
                         <ColumnDefinition Width="1.5*" />
                     </Grid.ColumnDefinitions>
-
 
                     <!-- Gráfico de Pizza TotalAcertos e TotalErros -->
                     <Border Grid.Column="0"
@@ -1529,7 +1548,7 @@
                 </Grid>
 
                 <!-- Gráficos de Editais -->
-                <Border Grid.Row="4"
+                <Border Grid.Row="5"
                         Style="{DynamicResource DashboardCardStyle}"
                         Height="500"
                         Margin="20,10,0,0">
@@ -1632,6 +1651,7 @@
                         </oxy:PlotView>
 
                     </Grid>
+                    
                 </Border>
             </Grid>
         </ScrollViewer>

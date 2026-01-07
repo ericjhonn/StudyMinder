@@ -1294,12 +1294,16 @@ namespace StudyMinder.ViewModels
 
                 if (tipoRevisao == TipoRevisaoEnum.Classico24h)
                 {
-                    // Criar 3 revisões: 24h, 7d, 30d
+                    // Criar 6 revisões: 24h, 7d, 30d, 90d, 120d, 180d
+                    // Sequência estendida de Ebbinghaus para retenção de longo prazo
                     revisoes.Add(CriarRevisao(TipoRevisaoEnum.Classico24h, DataEstudo.AddDays(1)));
                     revisoes.Add(CriarRevisao(TipoRevisaoEnum.Classico7d, DataEstudo.AddDays(7)));
                     revisoes.Add(CriarRevisao(TipoRevisaoEnum.Classico30d, DataEstudo.AddDays(30)));
+                    revisoes.Add(CriarRevisao(TipoRevisaoEnum.Classico90d, DataEstudo.AddDays(90)));
+                    revisoes.Add(CriarRevisao(TipoRevisaoEnum.Classico120d, DataEstudo.AddDays(120)));
+                    revisoes.Add(CriarRevisao(TipoRevisaoEnum.Classico180d, DataEstudo.AddDays(180)));
 
-                    System.Diagnostics.Debug.WriteLine($"[DEBUG] ✅ Preparadas 3 revisões clássicas");
+                    System.Diagnostics.Debug.WriteLine($"[DEBUG] ✅ Preparadas 6 revisões clássicas estendidas");
                 }
                 else if (tipoRevisao == TipoRevisaoEnum.Ciclo42)
                 {
