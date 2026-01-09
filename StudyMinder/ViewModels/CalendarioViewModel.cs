@@ -271,7 +271,7 @@ namespace StudyMinder.ViewModels
                                       .ToListAsync(token);
 
             var revisoesTask = _context.Revisoes.AsNoTracking().Include(r => r.EstudoOrigem.Assunto).Include(e => e.EstudoOrigem.Assunto.Disciplina)
-                                       .Where(r => r.DataProgramadaTicks >= de.Ticks && r.DataProgramadaTicks <= ate.Ticks)
+                                       .Where(r => r.DataProgramadaTicks >= de.Ticks && r.DataProgramadaTicks <= ate.Ticks && r.EstudoRealizadoId == null)
                                        .ToListAsync(token);
 
             // NOVA BUSCA: Editais para projeção de datas importantes

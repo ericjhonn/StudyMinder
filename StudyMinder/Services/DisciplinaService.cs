@@ -34,6 +34,7 @@ namespace StudyMinder.Services
             var query = _context.Disciplinas
                 .Include(d => d.Assuntos)
                     .ThenInclude(a => a.Estudos)
+                    .OrderBy(d => d.Nome)
                 .AsQueryable();
 
             if (!incluirArquivadas)

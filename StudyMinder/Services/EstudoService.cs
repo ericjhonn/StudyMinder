@@ -90,6 +90,7 @@ namespace StudyMinder.Services
                 .Include(e => e.TipoEstudo)
                 .Include(e => e.Assunto)
                     .ThenInclude(a => a.Disciplina)
+                    .OrderBy(e => e.Id)
                 .AsQueryable();
 
             if (assuntoId.HasValue)
