@@ -25,9 +25,10 @@
                 <ResourceDictionary Source="pack://application:,,,/Styles/HeaderFooter.xaml"/>
                 <ResourceDictionary Source="pack://application:,,,/Styles/Other.xaml"/>
                 <ResourceDictionary Source="pack://application:,,,/Styles/Toast.xaml"/>
+                <ResourceDictionary Source="pack://application:,,,/Styles/Calendar.xaml" />
             </ResourceDictionary.MergedDictionaries>
-            
-            <!-- Converters -->
+
+            <!-- Converters -->            
             <converters:BooleanToColorConverter x:Key="BooleanToColorConverter"/>
             <converters:BooleanToStatusConverter x:Key="BooleanToStatusConverter"/>
             <converters:CountToVisibilityConverter x:Key="CountToVisibilityConverter"/>

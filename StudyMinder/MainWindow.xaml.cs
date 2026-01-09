@@ -393,10 +393,20 @@ public partial class MainWindow : Window
     {
         SetActiveButton(BtnCalendario);
         _navigationService.NavigateTo(_calendarioView);
+        var estudoTransactionService = new EstudoTransactionService(_context, _auditoriaService, _revisaoNotificacaoService);
         var calendarioViewModel = new CalendarioViewModel(
             _context,
             _estudoNotificacaoService,
-            _editalCronogramaNotificacaoService);
+            _editalCronogramaNotificacaoService,
+            _estudoService,
+            _tipoEstudoService,
+            _assuntoService,
+            _disciplinaService,
+            estudoTransactionService,
+            _navigationService,
+            _revisaoService,
+            NotificationService.Instance,
+            _configurationService);
         _calendarioView.DataContext = calendarioViewModel;
     }
 

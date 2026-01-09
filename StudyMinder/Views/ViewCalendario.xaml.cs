@@ -105,7 +105,11 @@ namespace StudyMinder.Views
                 case nameof(CalendarioViewModel.DiaSelecionado):
                     if (_viewModel.DiaSelecionado != null)
                     {
-                        DiaDetalhesPanel.ExibirDetalhes(_viewModel.DiaSelecionado);
+                        DiaDetalhesPanel.ExibirDetalhes(
+                            _viewModel.DiaSelecionado,
+                            _viewModel.MoverEventoCommand,
+                            _viewModel.EditarEstudoCommand,
+                            _viewModel.IniciarRevisaoCommand);
                     }
                     else
                     {

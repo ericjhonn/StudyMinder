@@ -560,15 +560,30 @@
                                                 </Grid.RowDefinitions>
                                                 <Grid.ColumnDefinitions>
                                                     <ColumnDefinition Width="*" />
+                                                    <ColumnDefinition Width="Auto" />
                                                 </Grid.ColumnDefinitions>
 
                                                 <!-- Nome do Evento -->
                                                 <TextBlock Grid.Row="0"
+                                                           Grid.Column="0"
                                                            Style="{DynamicResource Title3Style}"
                                                            Margin="0,0,0,4">
                                                     <TextBlock.Text>
-                                                        <MultiBinding StringFormat="{}{0} ({1} - {2})">
+                                                        <MultiBinding StringFormat="{}{0}">
                                                             <Binding Path="Evento" />
+                                                            <Binding Path="Edital.Orgao" />
+                                                            <Binding Path="Edital.Cargo" />
+                                                        </MultiBinding>
+                                                    </TextBlock.Text>
+                                                </TextBlock>
+
+                                                <!-- Concurso -->
+                                                <TextBlock Grid.Row="1"
+                                                           Grid.Column="0"
+                                                           Style="{DynamicResource Title4Style}"
+                                                           Margin="0,0,0,4">
+                                                    <TextBlock.Text>
+                                                        <MultiBinding StringFormat="{}{0} - {1}">
                                                             <Binding Path="Edital.Orgao" />
                                                             <Binding Path="Edital.Cargo" />
                                                         </MultiBinding>
@@ -577,6 +592,7 @@
 
                                                 <!-- Data e Checkboxes -->
                                                 <StackPanel Grid.Row="1"
+                                                            Grid.Column="2"
                                                             Orientation="Horizontal"
                                                             VerticalAlignment="Center">
 

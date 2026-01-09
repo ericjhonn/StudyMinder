@@ -456,7 +456,7 @@ namespace StudyMinder.ViewModels
                     DataEstudo = DateTime.Now.Date;
 
                     // Definir título
-                    Title = $"Revisão - {assunto.Nome}";
+                    Title = $"Estudar Revisão";
 
                     System.Diagnostics.Debug.WriteLine($"[DEBUG] Modo revisão inicializado:");
                     System.Diagnostics.Debug.WriteLine($"  - Disciplina: {DisciplinaSelecionada?.Nome}");

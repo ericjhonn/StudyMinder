@@ -18,8 +18,8 @@ namespace StudyMinder.Views
         private readonly CalendarioStyleManager _styleManager;
         private readonly Grid _grid;
         private const int DIAS_SEMANA = 7;
-        private const int HORA_INICIO = 6;
-        private const int HORA_FIM = 22;
+        private const int HORA_INICIO = 0;
+        private const int HORA_FIM = 23;
         private const int COLUNA_HORARIO_WIDTH = 80;
         private const int ALTURA_LINHA_HORA = 60;
         private const int ALTURA_HEADER = 40;
@@ -177,8 +177,8 @@ namespace StudyMinder.Views
             {
                 var estudoText = new TextBlock
                 {
-                    Text = $"📚 {estudo.Assunto?.Nome}",
-                    FontSize = 9,
+                    Text = $"{estudo.Assunto?.Nome}",
+                    FontSize = 12,
                     Foreground = _styleManager.ObterBrush("PrimaryBrush", Brushes.Blue),
                     Margin = new Thickness(0, 2, 0, 0),
                     TextTrimming = TextTrimming.CharacterEllipsis
@@ -190,8 +190,8 @@ namespace StudyMinder.Views
             {
                 var eventoText = new TextBlock
                 {
-                    Text = $"📋 {evento.Evento}",
-                    FontSize = 9,
+                    Text = $"{evento.Evento}",
+                    FontSize = 12,
                     Foreground = _styleManager.ObterBrush("SuccessBrush", Brushes.Green),
                     Margin = new Thickness(0, 2, 0, 0),
                     TextTrimming = TextTrimming.CharacterEllipsis
@@ -203,8 +203,8 @@ namespace StudyMinder.Views
             {
                 var revisaoText = new TextBlock
                 {
-                    Text = $"🔄 {revisao.EstudoOrigem?.Assunto?.Nome}",
-                    FontSize = 9,
+                    Text = $"{revisao.EstudoOrigem?.Assunto?.Nome}",
+                    FontSize = 12,
                     Foreground = _styleManager.ObterBrush("WarningBrush", Brushes.Orange),
                     Margin = new Thickness(0, 2, 0, 0),
                     TextTrimming = TextTrimming.CharacterEllipsis
@@ -246,8 +246,8 @@ namespace StudyMinder.Views
                 {
                     var estudoText = new TextBlock
                     {
-                        Text = $"📚 {estudo.Assunto?.Nome}",
-                        FontSize = 9,
+                        Text = $"{estudo.Assunto?.Nome}",
+                        FontSize = 12,
                         Foreground = _styleManager.ObterBrush("PrimaryBrush", Brushes.Blue),
                         Margin = new Thickness(0, 2, 0, 0),
                         TextTrimming = TextTrimming.CharacterEllipsis
@@ -259,8 +259,8 @@ namespace StudyMinder.Views
                 {
                     var eventoText = new TextBlock
                     {
-                        Text = $"📋 {evento.Evento}",
-                        FontSize = 9,
+                        Text = $"{evento.Evento}",
+                        FontSize = 12,
                         Foreground = _styleManager.ObterBrush("SuccessBrush", Brushes.Green),
                         Margin = new Thickness(0, 2, 0, 0),
                         TextTrimming = TextTrimming.CharacterEllipsis
@@ -272,8 +272,8 @@ namespace StudyMinder.Views
                 {
                     var revisaoText = new TextBlock
                     {
-                        Text = $"🔄 {revisao.EstudoOrigem?.Assunto?.Nome}",
-                        FontSize = 9,
+                        Text = $"{revisao.EstudoOrigem?.Assunto?.Nome}",
+                        FontSize = 12,
                         Foreground = _styleManager.ObterBrush("WarningBrush", Brushes.Orange),
                         Margin = new Thickness(0, 2, 0, 0),
                         TextTrimming = TextTrimming.CharacterEllipsis

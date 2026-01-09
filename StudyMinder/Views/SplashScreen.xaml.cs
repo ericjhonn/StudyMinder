@@ -36,5 +36,14 @@ namespace StudyMinder.Views
         {
             this.Close();
         }
+
+        /// <summary>
+        /// Handles the navigation request for a hyperlink by opening the specified URI in the default web browser.
+        /// </summary>
+        private void Hyperlink_RequestNavigate(object sender, System.Windows.Navigation.RequestNavigateEventArgs e)
+        {
+            System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo(e.Uri.AbsoluteUri) { UseShellExecute = true });
+            e.Handled = true;
+        }
     }
 }

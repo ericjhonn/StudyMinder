@@ -8,7 +8,7 @@
         Width="600"
         Topmost="True"
         ShowInTaskbar="False">
-    
+
     <WindowChrome.WindowChrome>
         <shell:WindowChrome CaptionHeight="0"
                             ResizeBorderThickness="5"
@@ -16,7 +16,7 @@
                             CornerRadius="20"
                             UseAeroCaptionButtons="True" />
     </WindowChrome.WindowChrome>
-    
+
     <Grid Background="{DynamicResource BackgroundBrush}">
         <Border CornerRadius="0"
                 Background="{DynamicResource CardBrush}"
@@ -28,11 +28,11 @@
                                   ShadowDepth="0"
                                   Opacity="0.3" />
             </Border.Effect>
-            
+
             <StackPanel VerticalAlignment="Center"
                         HorizontalAlignment="Center"
                         Margin="40">
-                
+
                 <!-- Logo -->
                 <Image Source="/Images/logo.png"
                        Width="100"
@@ -40,7 +40,7 @@
                        Margin="0,0,0,20"
                        HorizontalAlignment="Center"
                        RenderOptions.BitmapScalingMode="HighQuality" />
-                
+
                 <!-- Nome do App -->
                 <TextBlock Text="StudyMinder"
                            FontSize="48"
@@ -48,14 +48,14 @@
                            HorizontalAlignment="Center"
                            Foreground="{DynamicResource TextPrimaryBrush}"
                            Margin="0,0,0,5" />
-                
+
                 <!-- Versão -->
                 <TextBlock Text="Versão 3.0"
                            FontSize="14"
                            HorizontalAlignment="Center"
                            Foreground="{DynamicResource TextSecondaryBrush}"
-                           Margin="0,0,0,50" />
-                
+                           Margin="0,0,0,30" />
+
                 <!-- Mensagem de Status -->
                 <TextBlock x:Name="StatusText"
                            Text="Inicializando..."
@@ -63,7 +63,7 @@
                            HorizontalAlignment="Center"
                            Foreground="{DynamicResource TextSecondaryBrush}"
                            Margin="0,0,0,15" />
-                
+
                 <!-- Progress Bar -->
                 <ProgressBar x:Name="ProgressBar"
                              Height="4"
@@ -71,7 +71,20 @@
                              Foreground="{DynamicResource PrimaryBrush}"
                              IsIndeterminate="True"
                              Margin="0,0,0,20" />
-                
+
+                <!-- Apoie uma Causa -->
+                <TextBlock HorizontalAlignment="Center"
+                           Margin="0,0,0,10">
+                        <Hyperlink NavigateUri="https://hlaureano.org.br/a-fundacao/faca-uma-doacao/"
+                                   Foreground="{DynamicResource TextSecondaryBrush}"
+                                   TextDecorations="Underline"
+                                   RequestNavigate="Hyperlink_RequestNavigate">
+                            <TextBlock Text="Apoie o Hospital Napoleão Laureano"
+                                   FontSize="10"
+                                   FontWeight="SemiBold" />
+                         </Hyperlink>
+                 </TextBlock>            
+
                 <!-- Footer -->
                 <TextBlock Text="Desenvolvido com ❤️"
                            FontSize="10"
