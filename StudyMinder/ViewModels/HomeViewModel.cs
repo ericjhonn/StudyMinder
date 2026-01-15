@@ -1077,7 +1077,7 @@ namespace StudyMinder.ViewModels
                     // Calcular dados da legenda
                     totalQuestoes = estudosDia.Sum(e => e.Acertos + e.Erros);
                     totalAcertos = estudosDia.Sum(e => e.Acertos);
-                    totalPaginas = estudosDia.Sum(e => e.PaginaFinal - e.PaginaInicial);
+                    totalPaginas = estudosDia.Sum(e => e.TotalPaginas);
 
                     PizzaHorasEstudadas = totalHoras;
                     PizzaTotalQuestoes = totalQuestoes;
@@ -1382,7 +1382,7 @@ namespace StudyMinder.ViewModels
                 // Calcular totalizações
                 var horasRealizadas = estudosSemana.Sum(e => TimeSpan.FromTicks(e.DuracaoTicks).TotalHours);
                 var questoesRealizadas = estudosSemana.Sum(e => e.Acertos + e.Erros);
-                var paginasRealizadas = estudosSemana.Sum(e => (e.PaginaFinal - e.PaginaInicial));
+                var paginasRealizadas = estudosSemana.Sum(e => e.TotalPaginas);
 
                 // Obter metas das configurações
                 var settings = App.ConfigurationService.Settings;

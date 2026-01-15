@@ -100,7 +100,7 @@ namespace StudyMinder.Models
         }
         
         [NotMapped]
-        public int TotalPaginas => PaginaFinal - PaginaInicial;
+        public int TotalPaginas => (PaginaFinal > 0 && PaginaInicial > 0) ? (PaginaFinal - PaginaInicial + 1) : 0;
         
         [NotMapped]
         public string HorasEstudadas

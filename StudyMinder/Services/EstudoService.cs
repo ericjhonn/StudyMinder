@@ -284,7 +284,7 @@ namespace StudyMinder.Services
                 { "TotalAcertos", estudos.Sum(e => e.Acertos) },
                 { "TotalErros", estudos.Sum(e => e.Erros) },
                 { "TotalQuestoes", estudos.Sum(e => e.Acertos + e.Erros) },
-                { "TotalPaginas", estudos.Sum(e => e.PaginaFinal - e.PaginaInicial) }
+                { "TotalPaginas", estudos.Sum(e => e.TotalPaginas) }
             };
         }
 
