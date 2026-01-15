@@ -629,6 +629,6 @@ Desenvolvido com ❤️ por **Eric Jhon**.
 
 **Versão:** 3.0 (Em Desenvolvimento)  
 **Última Atualização:** Janeiro 2026  
-*Construído com ❤️, C# e muito café.* ☕📚#   S t u d y M i n d e r 
- 
- 
+*Construído com ❤️, C# e muito café.* ☕📚
+
+# S t u d y M i n d e r
