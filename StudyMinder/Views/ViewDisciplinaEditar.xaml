@@ -9,6 +9,7 @@
              xmlns:models="clr-namespace:StudyMinder.Models"
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
              xmlns:converters="clr-namespace:StudyMinder.Converters"
+             xmlns:helpers="clr-namespace:StudyMinder.Behaviors"
              mc:Ignorable="d"
              d:DesignHeight="600"
              d:DesignWidth="800"
@@ -113,6 +114,7 @@
                                  Text="{Binding Nome, UpdateSourceTrigger=PropertyChanged, ValidatesOnNotifyDataErrors=True}"
                                  Margin="0,0,6,0"
                                  Style="{DynamicResource ModernTextBoxWithPlaceholderStyle}"
+                                 helpers:IconHelper.Icon="BookOpenPageVariant"
                                  Tag="Nome da disciplina" />
 
                         <!-- TextBox para edição manual -->
@@ -122,6 +124,7 @@
                                  Margin="0"
                                  HorizontalAlignment="Stretch"
                                  Tag="#RRGGBB"
+                                 helpers:IconHelper.Icon="Brush"
                                  ToolTip="Hexadecimal da cor" />
 
                         <!-- Preview da cor atual -->
@@ -878,6 +881,7 @@
                                                      Margin="0,0,0,12"
                                                      Visibility="{Binding IsEditing, Converter={StaticResource BoolToVisibilityConverter}}"
                                                      Style="{DynamicResource ModernTextBoxWithPlaceholderStyle}"
+                                                     helpers:IconHelper.Icon="FileDocumentMultiple"
                                                      Tag="Nome do assunto" />
 
                                             <!-- Modo de Edição: Rótulo e TextBox do Caderno de Questões -->
@@ -888,6 +892,7 @@
                                                      Margin="0,0,0,12"
                                                      Visibility="{Binding IsEditing, Converter={StaticResource BoolToVisibilityConverter}}"
                                                      Style="{DynamicResource ModernTextBoxWithPlaceholderStyle}"
+                                                     helpers:IconHelper.Icon="Earth"
                                                      Tag="Caderno de questões" />
 
                                             <!-- Modo de Edição: CheckBox de Conclusão com Botão Salvar -->

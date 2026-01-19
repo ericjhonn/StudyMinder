@@ -6,6 +6,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:icon="http://metro.mahapps.com/winfx/xaml/iconpacks"
              xmlns:converters="clr-namespace:StudyMinder.Converters"
+             xmlns:behaviors="clr-namespace:StudyMinder.Behaviors"
              mc:Ignorable="d"
              d:DesignHeight="600"
              d:DesignWidth="800">
@@ -44,13 +45,15 @@
                              Text="{Binding Cargo, UpdateSourceTrigger=PropertyChanged}"
                              Style="{DynamicResource ModernTextBoxWithPlaceholderStyle}"
                              Margin="0,0,8,0"
-                             Tag="Cargo" />
+                             Tag="Cargo"
+                             behaviors:IconHelper.Icon="AccountTie" />
 
                     <TextBox Grid.Column="1"
                              Text="{Binding Orgao, UpdateSourceTrigger=PropertyChanged}"
                              Style="{DynamicResource ModernTextBoxWithPlaceholderStyle}"
                              Margin="0,0,8,0"
-                             Tag="Órgão" />
+                             Tag="Órgão"
+                             behaviors:IconHelper.Icon="OfficeBuilding" />
 
                     <ComboBox Grid.Column="5"
                               ItemsSource="{Binding Escolaridades}"
@@ -59,7 +62,8 @@
                               SelectedValuePath="Id"
                               Style="{DynamicResource ModernComboBoxStyle}"
                               Margin="0,0,0,0"
-                              Tag="Escolaridade" />
+                              Tag="Escolaridade"
+                              behaviors:IconHelper.Icon="School" />
                 </Grid>
 
                 <Grid Margin="0,0,0,8">
@@ -73,19 +77,22 @@
                              Text="{Binding Salario, UpdateSourceTrigger=PropertyChanged}"
                              Style="{DynamicResource ModernTextBoxWithPlaceholderStyle}"
                              Margin="0,0,8,0"
-                             Tag="Salário" />
+                             Tag="Salário"
+                             behaviors:IconHelper.Icon="CurrencyUsd" />
 
                     <TextBox Grid.Column="1"
                              Text="{Binding VagasImediatas, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource NullableIntConverter}}"
                              Style="{DynamicResource ModernTextBoxWithPlaceholderStyle}"
                              Margin="0,0,8,0"
-                             Tag="Vagas Imediatas" />
+                             Tag="Vagas Imediatas"
+                             behaviors:IconHelper.Icon="AccountGroup" />
 
                     <TextBox Grid.Column="2"
                              Text="{Binding VagasCadastroReserva, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource NullableIntConverter}}"
                              Style="{DynamicResource ModernTextBoxWithPlaceholderStyle}"
                              Margin="0,0,0,0"
-                             Tag="Cadastro de Reserva" />
+                             Tag="Cadastro de Reserva"
+                             behaviors:IconHelper.Icon="AccountClock" />
                 </Grid>
             </StackPanel>
 
@@ -113,28 +120,32 @@
                               SelectedValuePath="Id"
                               Style="{DynamicResource ModernComboBoxStyle}"
                               Margin="0,0,8,0"
-                              Tag="Fase" />
+                              Tag="Fase"
+                              behaviors:IconHelper.Icon="Newspaper" />
 
                     <TextBox Grid.Column="1"
                              Grid.Row="0"
                              Text="{Binding Banca, UpdateSourceTrigger=PropertyChanged}"
                              Style="{DynamicResource ModernTextBoxWithPlaceholderStyle}"
                              Margin="0,0,8,0"
-                             Tag="Banca" />
+                             Tag="Banca"
+                             behaviors:IconHelper.Icon="School" />
 
                     <TextBox Grid.Column="2"
                              Grid.Row="0"
                              Text="{Binding Area, UpdateSourceTrigger=PropertyChanged}"
                              Style="{DynamicResource ModernTextBoxWithPlaceholderStyle}"
                              Margin="0,0,8,0"
-                             Tag="Área" />
+                             Tag="Área"
+                             behaviors:IconHelper.Icon="MapMarker" />
 
                     <TextBox Grid.Column="3"
                              Grid.Row="0"
                              Text="{Binding Link, UpdateSourceTrigger=PropertyChanged}"
                              Style="{DynamicResource ModernTextBoxWithPlaceholderStyle}"
                              Margin="0,0,0,0"
-                             Tag="Link do Edital" />
+                             Tag="Link do Edital"
+                             behaviors:IconHelper.Icon="LinkVariant" />
 
                     <Button Grid.Column="4"
                             Style="{StaticResource SecondaryButtonStyle}"
@@ -168,7 +179,8 @@
                              Text="{Binding ValorInscricao, UpdateSourceTrigger=PropertyChanged}"
                              Style="{DynamicResource ModernTextBoxWithPlaceholderStyle}"
                              Margin="0,0,8,0"
-                             Tag="Valor da Inscrição" />
+                             Tag="Valor da Inscrição"
+                             behaviors:IconHelper.Icon="InvoiceList" />
 
                     <DatePicker Grid.Column="1"
                                 Grid.Row="0"
@@ -231,26 +243,30 @@
                              Text="{Binding NumeroInscricao, UpdateSourceTrigger=PropertyChanged}"
                              Style="{DynamicResource ModernTextBoxWithPlaceholderStyle}"
                              Margin="0,0,8,0"
-                             Tag="Número de Inscrição" />
+                             Tag="Número de Inscrição"
+                             behaviors:IconHelper.Icon="Identifier" />
 
                     <TextBox Grid.Column="1"
                              Text="{Binding Concorrencia, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource NullableIntConverter}}"
                              Style="{DynamicResource ModernTextBoxWithPlaceholderStyle}"
                              Margin="0,0,8,0"
-                             Tag="Concorrência" />
+                             Tag="Concorrência"
+                             behaviors:IconHelper.Icon="AccountMultiple" />
 
                     <TextBox Grid.Column="2"
                              Text="{Binding Colocacao, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource NullableIntConverter}}"
                              Style="{DynamicResource ModernTextBoxWithPlaceholderStyle}"
                              Margin="0,0,8,0"
-                             Tag="Colocação" />
+                             Tag="Colocação"
+                             behaviors:IconHelper.Icon="Trophy" />
 
                     <TextBox Grid.Column="3"
                              Text="{Binding ColocacaoPercentil, Mode=OneWay, StringFormat='{}{0:F2}%'}"
                              Style="{DynamicResource ModernTextBoxWithPlaceholderStyle}"
                              Margin="0,0,8,0"
                              Tag="Percentil"
-                             IsReadOnly="True" />
+                             IsReadOnly="True"
+                             behaviors:IconHelper.Icon="PercentCircle" />
 
                     <!-- Status Badge -->
                     <Border Grid.Column="4"
@@ -283,38 +299,44 @@
                               SelectedValuePath="Id"
                               Style="{DynamicResource ModernComboBoxStyle}"
                               Margin="0,0,8,0"
-                              Tag="Tipo de Prova" />
+                              Tag="Tipo de Prova"
+                              behaviors:IconHelper.Icon="ListStatus" />
 
                     <TextBox Grid.Column="1"
                              Text="{Binding AcertosProva, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource NullableIntConverter}}"
                              Style="{DynamicResource ModernTextBoxWithPlaceholderStyle}"
                              Margin="0,0,8,0"
-                             Tag="Acertos na Prova" />
+                             Tag="Acertos na Prova"
+                             behaviors:IconHelper.Icon="CheckCircle" />
 
                     <TextBox Grid.Column="2"
                              Text="{Binding ErrosProva, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource NullableIntConverter}}"
                              Style="{DynamicResource ModernTextBoxWithPlaceholderStyle}"
                              Margin="0,0,8,0"
-                             Tag="Erros na Prova" />
+                             Tag="Erros na Prova"
+                             behaviors:IconHelper.Icon="CloseCircle" />
 
                     <TextBox Grid.Column="3"
                              Text="{Binding BrancosProva, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource NullableIntConverter}}"
                              Style="{DynamicResource ModernTextBoxWithPlaceholderStyle}"
                              Margin="0,0,8,0"
-                             Tag="Em Branco na Prova" />
+                             Tag="Em Branco na Prova"
+                             behaviors:IconHelper.Icon="RadioboxBlank" />
 
                     <TextBox Grid.Column="4"
                              Text="{Binding AnuladasProva, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource NullableIntConverter}}"
                              Style="{DynamicResource ModernTextBoxWithPlaceholderStyle}"
                              Margin="0,0,8,0"
-                             Tag="Anuladas" />
+                             Tag="Anuladas"
+                             behaviors:IconHelper.Icon="Cancel" />
 
                     <TextBox Grid.Column="5"
                              Text="{Binding CurrentEdital.RendimentoProva, StringFormat='{}{0:F2}%', Mode=OneWay}"
                              Style="{DynamicResource ModernTextBoxWithPlaceholderStyle}"
                              Margin="0,0,0,0"
                              Tag="Rendimento na Prova"
-                             IsReadOnly="True" />
+                             IsReadOnly="True"
+                             behaviors:IconHelper.Icon="PercentCircle" />
 
                 </Grid>
             </StackPanel>
@@ -337,14 +359,16 @@
                          Text="{Binding Validade}"
                          Style="{DynamicResource ModernTextBoxWithPlaceholderStyle}"
                          Margin="0,0,8,0"
-                         Tag="Validade (meses)" />
+                         Tag="Validade (meses)"
+                         behaviors:IconHelper.Icon="CalendarExpandHorizontal" />
 
                 <DatePicker Grid.Column="1"
                             Grid.Row="0"
                             SelectedDate="{Binding DataHomologacao}"
                             Style="{DynamicResource ModernDatePickerStyle}"
                             Margin="0,0,8,0"
-                            Tag="Data da Homologação" />
+                            Tag="Data da Homologação"
+                            behaviors:IconHelper.Icon="CalendarCheck" />
 
                 <!-- Fim da Validade é um campo calculado adicionando os meses de Validade à Data de homologação -->
                 <TextBox Grid.Column="2"
@@ -352,7 +376,8 @@
                          Style="{DynamicResource ModernTextBoxWithPlaceholderStyle}"
                          IsReadOnly="True"
                          Margin="0,0,8,0"
-                         Tag="Fim da Validade" />
+                         Tag="Fim da Validade"
+                         behaviors:IconHelper.Icon="CalendarClock" />
 
                 <!-- Encerrado será um campo calculado a partir de 'data de homologação != null'-->
                 <CheckBox Grid.Column="3"
