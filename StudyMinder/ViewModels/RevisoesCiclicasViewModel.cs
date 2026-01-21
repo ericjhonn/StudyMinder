@@ -233,21 +233,31 @@ namespace StudyMinder.ViewModels
         {
             if (!IsEditingAssuntos)
             {
+                // CORREÇÃO CRÍTICA: 
+                // Inicializar o dicionário com TODOS os assuntos ativos atuais.
+                // Isso impede que assuntos ativos fora da página atual sejam considerados "removidos" ao salvar.
+                _selecoesPorAssuntoId.Clear();
+                foreach (var assunto in AssuntosAtivos)
+                {
+                    _selecoesPorAssuntoId[assunto.Id] = true;
+                }
+
                 PaginaAtual = 1;
 
                 // Calcular paginação para assuntos ativos + apenas assuntos disponíveis CONCLUÍDOS
                 var assuntosDisponiveisConcluidos = AssuntosDisponiveis.Where(a => a.Concluido).ToList();
-                var totalAssuntos = AssuntosAtivos.Count + assuntosDisponiveisConcluidos.Count;
-                TotalItens = totalAssuntos;
-                TotalPaginas = (int)Math.Ceiling((double)TotalItens / ItensPorPagina);
+
+                // Nota: AssuntosAtivos já estão incluídos no count, mas a lista combinada pode ter duplicatas
+                // se a lógica de união não for cuidadosa, mas aqui usamos a contagem para paginação.
+                // O ideal é basear o TotalItens na lista combinada real que será gerada em CarregarAssuntos...
+                // Mas para inicializar, podemos estimar ou deixar o Carregar... atualizar o TotalItens.
 
                 CarregarAssuntosDisponiveisParaSelecao();
                 SearchText = string.Empty;
                 IsEditingAssuntos = true;
 
                 OnPropertyChanged(nameof(IsEditingAssuntos));
-                OnPropertyChanged(nameof(TotalItens));
-                OnPropertyChanged(nameof(TotalPaginas));
+                // TotalItens e TotalPaginas serão atualizados dentro de CarregarAssuntosDisponiveisParaSelecao
             }
             else
             {
@@ -656,61 +666,56 @@ namespace StudyMinder.ViewModels
                 Carregando = true;
                 IsCarregando = true;
 
-                // OTIMIZAÇÃO: Carregar assuntos com paginação real
-                // Página 1 com 100 itens por página (carrega mais conforme necessário)
-                var ativosTask = _revisaoCicloAtivoService.ObterAssuntosAtivosAsync();
-                var disponiveisTask = _revisaoCicloAtivoService.ObterAssuntosDisponiveisPaginadoAsync(1, 100);
+                // Chamamos os métodos (agora refatorados) pedindo "Página 1"
+                // O Serviço ignorará o tamanho e retornará a lista completa e ordenada corretamente.
+                var ativosTask = _revisaoCicloAtivoService.ObterAssuntosPaginadoAsync(1, int.MaxValue);
+                var disponiveisTask = _revisaoCicloAtivoService.ObterAssuntosDisponiveisPaginadoAsync(1, int.MaxValue);
 
                 await Task.WhenAll(ativosTask, disponiveisTask);
 
-                var listaAtivosCompleta = ativosTask.Result;
+                var resultadoAtivos = ativosTask.Result;
                 var resultadoDisponiveis = disponiveisTask.Result;
 
-#pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
-                Dispatcher.CurrentDispatcher.BeginInvoke(() =>
+                // Executar na thread de UI
+                System.Windows.Application.Current.Dispatcher.Invoke(() =>
                 {
-                    // Atualizar coleção de assuntos ativos com TODOS os itens
+                    // 1. Atualizar Lista de Ativos
                     AssuntosAtivos.Clear();
-                    foreach (var assunto in listaAtivosCompleta)
+                    foreach (var assunto in resultadoAtivos.Items)
                     {
                         AssuntosAtivos.Add(assunto);
                     }
-
-                    // Preencher o status do ciclo para os assuntos ativos
                     PreencherStatusCiclo(AssuntosAtivos);
 
-                    // Atualizar coleção de assuntos disponíveis
+                    // 2. Atualizar Lista de Disponíveis
                     AssuntosDisponiveis.Clear();
                     foreach (var assunto in resultadoDisponiveis.Items)
                     {
                         AssuntosDisponiveis.Add(assunto);
                     }
+                    // Opcional: Se quiser filtrar por texto de pesquisa nos disponíveis AQUI também:
+                    // (Mas o serviço já trouxe apenas os concluídos)
 
-                    PreencherStatusCiclo(AssuntosDisponiveis);
-
-                    // Calcular total baseado na lista completa
+                    // 3. Atualizar Totais para a UI
+                    // Como carregamos tudo, o total é a contagem da lista
                     if (IsEditingAssuntos)
                     {
-                        var assuntosDisponiveisConcluidos = AssuntosDisponiveis.Where(a => a.Concluido).ToList();
-                        TotalItens = listaAtivosCompleta.Count + assuntosDisponiveisConcluidos.Count;
+                        // Modo Edição: Mostra Ativos + Disponíveis Concluídos (que já vieram filtrados)
+                        TotalItens = AssuntosAtivos.Count + AssuntosDisponiveis.Count;
                     }
                     else
                     {
-                        // Se houver texto de pesquisa, o total será ajustado pelo método de filtro
-                        if (string.IsNullOrWhiteSpace(SearchText))
-                        {
-                            TotalItens = listaAtivosCompleta.Count;
-                        }
+                        // Modo Normal: Apenas ativos
+                        TotalItens = AssuntosAtivos.Count;
                     }
 
+                    // Calculamos as páginas com base no total real (para a paginação VISUAL funcionar)
                     TotalPaginas = (int)Math.Ceiling((double)TotalItens / ItensPorPagina);
+                    if (TotalPaginas < 1) TotalPaginas = 1;
 
-                    if (PaginaAtual > TotalPaginas && TotalPaginas > 0)
-                        PaginaAtual = TotalPaginas;
-                    else if (PaginaAtual == 0 && TotalPaginas > 0)
-                        PaginaAtual = 1;
+                    if (PaginaAtual > TotalPaginas) PaginaAtual = 1;
 
-                    // Aplicar filtro ou paginação
+                    // 4. Atualiza a lista visual (AssuntosPaginados)
                     if (!string.IsNullOrWhiteSpace(SearchText) && !IsEditingAssuntos)
                     {
                         AtualizarAssuntosPaginadosComFiltro();
@@ -720,7 +725,6 @@ namespace StudyMinder.ViewModels
                         AtualizarAssuntosPaginados();
                     }
                 });
-#pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
             }
             catch (Exception ex)
             {
@@ -745,43 +749,49 @@ namespace StudyMinder.ViewModels
                     _selecoesPorAssuntoId[assuntoId] = isSelected;
                 };
 
-                // Combinar assuntos ativos com apenas assuntos disponíveis CONCLUÍDOS para exibição na lista de edição
+                // 1. COMBINAÇÃO
+                // Pega os ativos + disponíveis (que já foram filtrados por "Concluído" no carregamento anterior)
                 var assuntosDisponiveisConcluidos = AssuntosDisponiveis.Where(a => a.Concluido).ToList();
-                var todosAssuntos = AssuntosAtivos.Concat(assuntosDisponiveisConcluidos).ToList();
+                var todosAssuntos = AssuntosAtivos.Concat(assuntosDisponiveisConcluidos);
 
-                // Filtrar assuntos baseado no texto de pesquisa (case-insensitive e sem acentos)
-                var assuntosFiltrados = todosAssuntos.Where(a =>
+                // 2. FILTRO DE PESQUISA
+                if (!string.IsNullOrWhiteSpace(SearchText))
                 {
-                    if (string.IsNullOrWhiteSpace(SearchText))
-                        return true;
+                    todosAssuntos = todosAssuntos.Where(a =>
+                        StringNormalizationHelper.ContainsIgnoreCaseAndAccents(a.Nome, SearchText) ||
+                        (a.Disciplina != null && StringNormalizationHelper.ContainsIgnoreCaseAndAccents(a.Disciplina.Nome, SearchText))
+                    );
+                }
 
-                    return StringNormalizationHelper.ContainsIgnoreCaseAndAccents(a.Nome, SearchText) ||
-                           (a.Disciplina != null && StringNormalizationHelper.ContainsIgnoreCaseAndAccents(a.Disciplina.Nome, SearchText));
-                }).ToList();
+                // 3. ORDENAÇÃO (CORREÇÃO AQUI)
+                // Ordena a lista FINAL combinada por Disciplina e depois por Nome
+                var listaFinalOrdenada = todosAssuntos
+                    .OrderBy(a => a.Nome)
+                    .ToList();
 
-                System.Diagnostics.Debug.WriteLine($"[DEBUG] Assuntos após filtro: {assuntosFiltrados.Count}");
-
-                TotalItens = assuntosFiltrados.Count;
+                // Atualizar contadores
+                TotalItens = listaFinalOrdenada.Count;
                 TotalPaginas = (int)Math.Ceiling((double)TotalItens / ItensPorPagina);
+                if (TotalPaginas < 1) TotalPaginas = 1;
 
-                if (PaginaAtual > TotalPaginas && TotalPaginas > 0)
-                    PaginaAtual = TotalPaginas;
+                if (PaginaAtual > TotalPaginas) PaginaAtual = TotalPaginas;
 
-                System.Diagnostics.Debug.WriteLine($"[DEBUG] Paginação - TotalItens: {TotalItens}, TotalPaginas: {TotalPaginas}, PaginaAtual: {PaginaAtual}");
-
+                // Paginação da memória
                 var startIndex = (PaginaAtual - 1) * ItensPorPagina;
-                var endIndex = Math.Min(startIndex + ItensPorPagina, assuntosFiltrados.Count);
-
-                System.Diagnostics.Debug.WriteLine($"[DEBUG] Carregando itens {startIndex + 1} a {endIndex} de {assuntosFiltrados.Count}");
+                var endIndex = Math.Min(startIndex + ItensPorPagina, listaFinalOrdenada.Count);
+                if (startIndex < 0) startIndex = 0;
 
                 AssuntosDisponiveisSelecionaveis.Clear();
 
+                // Criar os objetos selecionáveis para a página atual
+                // Note que iteramos sobre 'listaFinalOrdenada', não mais sobre a concatenação bruta
                 for (int i = startIndex; i < endIndex; i++)
                 {
-                    var assunto = assuntosFiltrados[i];
-                    System.Diagnostics.Debug.WriteLine($"[DEBUG] Processando assunto: {assunto.Nome}");
+                    if (i >= listaFinalOrdenada.Count) break;
 
-                    // Assuntos ativos devem estar marcados por padrão
+                    var assunto = listaFinalOrdenada[i];
+
+                    // Manter estado de seleção
                     bool isSelected = _selecoesPorAssuntoId.ContainsKey(assunto.Id)
                         ? _selecoesPorAssuntoId[assunto.Id]
                         : AssuntosAtivos.Any(a => a.Id == assunto.Id);
@@ -789,20 +799,19 @@ namespace StudyMinder.ViewModels
                     var selecionavel = new AssuntoSelecionavel(assunto, isSelected, onSelectionChanged);
                     AssuntosDisponiveisSelecionaveis.Add(selecionavel);
 
-                    _selecoesPorAssuntoId[assunto.Id] = isSelected;
+                    // Garante que o estado inicial esteja no dicionário
+                    if (!_selecoesPorAssuntoId.ContainsKey(assunto.Id))
+                    {
+                        _selecoesPorAssuntoId[assunto.Id] = isSelected;
+                    }
                 }
 
-                System.Diagnostics.Debug.WriteLine($"[DEBUG] AssuntosDisponiveisSelecionaveis.Count: {AssuntosDisponiveisSelecionaveis.Count}");
-
                 AssuntosDisponiveisView = CollectionViewSource.GetDefaultView(AssuntosDisponiveisSelecionaveis);
-                System.Diagnostics.Debug.WriteLine($"[DEBUG] AssuntosDisponiveisView criada com {AssuntosDisponiveisSelecionaveis.Count} itens");
-
                 IsEditingAssuntos = true;
             }
             catch (Exception ex)
             {
                 System.Diagnostics.Debug.WriteLine($"[ERROR] Erro em CarregarAssuntosDisponiveisParaSelecao: {ex.Message}");
-                System.Diagnostics.Debug.WriteLine($"[ERROR] Stack trace: {ex.StackTrace}");
             }
             finally
             {

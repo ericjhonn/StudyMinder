@@ -166,25 +166,15 @@
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="4" />
                                         <ColumnDefinition Width="*" />
-                                        <ColumnDefinition Width="Auto" />
-                                        <ColumnDefinition Width="Auto" />
                                     </Grid.ColumnDefinitions>
-                                    <Grid.RowDefinitions>
-                                        <RowDefinition Height="Auto" />
-                                        <RowDefinition Height="Auto" />
-                                    </Grid.RowDefinitions>
 
                                     <!-- Barra de cor lateral esquerda (cor da disciplina) -->
                                     <Border Grid.Column="0"
-                                            Grid.Row="0"
-                                            Grid.RowSpan="2"
                                             Background="{Binding Disciplina.Cor}"
                                             CornerRadius="8,0,0,8" />
 
                                     <!-- Conteúdo principal -->
                                     <Border Grid.Column="1"
-                                            Grid.Row="0"
-                                            Grid.RowSpan="2"
                                             Padding="16,8"
                                             Background="Transparent">
 
@@ -192,94 +182,71 @@
                                             <Grid.ColumnDefinitions>
                                                 <ColumnDefinition Width="*" />
                                                 <ColumnDefinition Width="Auto" />
-                                                <ColumnDefinition Width="Auto" />
                                             </Grid.ColumnDefinitions>
                                             <Grid.RowDefinitions>
                                                 <RowDefinition Height="Auto" />
                                                 <RowDefinition Height="Auto" />
                                             </Grid.RowDefinitions>
 
-                                            <!-- Nome da Disciplina - Assunto -->
+                                            <!-- Nome do Assunto -->
                                             <TextBlock Grid.Column="0"
                                                        Grid.Row="0"
                                                        Style="{DynamicResource Title3Style}"
-                                                       Margin="0">
-                                                <TextBlock.Text>
-                                                    <MultiBinding StringFormat="{}{0} - {1}">
-                                                        <Binding Path="Disciplina.Nome" />
-                                                        <Binding Path="Nome" />
-                                                    </MultiBinding>
-                                                </TextBlock.Text>
-                                            </TextBlock>
+                                                       Margin="0"
+                                                       Text="{Binding Nome}" />
 
-                                            <!-- Informações do Assunto -->
-                                            <StackPanel Grid.Column="0"
-                                                        Grid.Row="1"
-                                                        Orientation="Horizontal"
-                                                        Margin="0,8,12,0"
-                                                        VerticalAlignment="Center">
+                                            <!-- Nome da Disciplina -->
+                                            <TextBlock Grid.Column="0"
+                                                       Grid.Row="1"
+                                                       Style="{DynamicResource Title4Style}"
+                                                       Margin="0"
+                                                       Text="{Binding Disciplina.Nome}" />
+
+                                            <StackPanel Grid.Column="1"
+                                                        Grid.Row="0"
+                                                        Grid.RowSpan="2"
+                                                        Orientation="Horizontal">
                                                 
-                                                <!-- Data do Último Estudo (se disponível) -->
-                                                <StackPanel Orientation="Horizontal"
+                                                <!-- Data do Último Estudo -->
+                                                <StackPanel Grid.Column="0"
+                                                            Grid.Row="2"
+                                                            Orientation="Horizontal"
                                                             VerticalAlignment="Center"
                                                             Width="120"
                                                             Margin="0,0,16,0">
+
                                                     <icon:PackIconMaterial Style="{DynamicResource CalendarioIconStyle}" />
                                                     <TextBlock Text="{Binding DataUltimoEstudo, StringFormat='{}{0:dd/MM/yyyy}', TargetNullValue='Nunca estudado'}"
                                                                Style="{DynamicResource Title4Style}"
                                                                Margin="0" />
+
                                                 </StackPanel>
 
-                                                <!-- Status do Assunto no Ciclo (Próximo/Nunca Estudado) -->
-                                                <Border CornerRadius="12"
-                                                        Padding="8,4"
-                                                        Margin="0,0,16,0"
-                                                        Visibility="{Binding StatusNoCiclo, Converter={StaticResource StringToVisibilityConverter}}">
-                                                    <Border.Style>
-                                                        <Style TargetType="Border">
-                                                            <Setter Property="Background" Value="{DynamicResource WarningBrush}" />
-                                                            <Style.Triggers>
-                                                                <DataTrigger Binding="{Binding StatusNoCiclo}" Value="Próximo">
-                                                                    <Setter Property="Background" Value="{DynamicResource ErrorBrush}" />
-                                                                </DataTrigger>
-                                                                <DataTrigger Binding="{Binding StatusNoCiclo}" Value="Nunca Estudado">
-                                                                    <Setter Property="Background" Value="{DynamicResource WarningBrush}" />
-                                                                </DataTrigger>
-                                                            </Style.Triggers>
-                                                        </Style>
-                                                    </Border.Style>
-                                                    <TextBlock Foreground="White"
-                                                               FontSize="12"
-                                                               FontWeight="SemiBold"
-                                                               Text="{Binding StatusNoCiclo}" />
-                                                </Border>
+                                                <!-- Botões de Ação -->
+                                                <StackPanel Orientation="Horizontal"
+                                                            VerticalAlignment="Center"
+                                                            HorizontalAlignment="Right">
+
+                                                    <!-- Botão Iniciar Estudo -->
+                                                    <Button Style="{StaticResource IconButtonStyle}"
+                                                            Command="{Binding DataContext.IniciarEstudoFilaCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                            CommandParameter="{Binding}"
+                                                            ToolTip="Iniciar Estudo"
+                                                            Margin="0,0,8,0">
+                                                        <icon:PackIconMaterial Kind="Play"
+                                                                               Style="{DynamicResource EditarIconStyle}" />
+                                                    </Button>
+
+                                                    <!-- Botão Remover do Ciclo -->
+                                                    <Button Style="{StaticResource IconButtonStyle}"
+                                                            Command="{Binding DataContext.RemoverAssuntoDoCicloCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                            CommandParameter="{Binding}"
+                                                            ToolTip="Remover do Ciclo">
+                                                        <icon:PackIconMaterial Style="{DynamicResource ExcluirIconStyle}" />
+                                                    </Button>
+                                                </StackPanel>
                                             </StackPanel>
 
-                                            <!-- Botões de Ação -->
-                                            <StackPanel Grid.Column="2"
-                                                        Grid.Row="1"
-                                                        Orientation="Horizontal"
-                                                        VerticalAlignment="Center"
-                                                        HorizontalAlignment="Right">
-
-                                                <!-- Botão Iniciar Estudo -->
-                                                <Button Style="{StaticResource IconButtonStyle}"
-                                                        Command="{Binding DataContext.IniciarEstudoFilaCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
-                                                        CommandParameter="{Binding}"
-                                                        ToolTip="Iniciar Estudo"
-                                                        Margin="0,0,8,0">
-                                                    <icon:PackIconMaterial Kind="Play"
-                                                                           Style="{DynamicResource EditarIconStyle}" />
-                                                </Button>
-
-                                                <!-- Botão Remover do Ciclo -->
-                                                <Button Style="{StaticResource IconButtonStyle}"
-                                                        Command="{Binding DataContext.RemoverAssuntoDoCicloCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
-                                                        CommandParameter="{Binding}"
-                                                        ToolTip="Remover do Ciclo">
-                                                    <icon:PackIconMaterial Style="{DynamicResource ExcluirIconStyle}" />
-                                                </Button>
-                                            </StackPanel>
                                         </Grid>
                                     </Border>
                                 </Grid>
@@ -301,35 +268,61 @@
                     <ListView.ItemTemplate>
                         <DataTemplate DataType="{x:Type viewmodels:AssuntoSelecionavel}">
                             <Border Style="{DynamicResource SecondaryCardStyle}"
-                                    Margin="0,0,0,8">
+                                    Margin="0,0,0,8"
+                                    Padding="0">
                                 <Grid>
                                     <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="4" />
                                         <ColumnDefinition Width="*" />
                                     </Grid.ColumnDefinitions>
 
-                                    <!-- CheckBox de Seleção -->
-                                    <CheckBox Grid.Column="0"
-                                              IsChecked="{Binding IsSelected}"
-                                              VerticalAlignment="Center"
-                                              Margin="0,0,12,0"
-                                              Style="{DynamicResource RoundedCheckBoxStyle}" />
+                                    <!-- Barra de cor lateral esquerda (cor da disciplina) -->
+                                    <Border Grid.Column="0"
+                                            Background="{Binding Assunto.Disciplina.Cor}"
+                                            CornerRadius="8,0,0,8" />
 
-                                    <!-- Informações do Assunto -->
-                                    <StackPanel Grid.Column="1"
-                                                Orientation="Vertical"
-                                                VerticalAlignment="Center">
-                                        <TextBlock FontWeight="SemiBold"
-                                                   FontSize="14"
-                                                   Foreground="{DynamicResource TextPrimaryBrush}">
-                                            <TextBlock.Text>
-                                                <MultiBinding StringFormat="{}{0} - {1}">
-                                                    <Binding Path="Assunto.Disciplina.Nome" />
-                                                    <Binding Path="Assunto.Nome" />
-                                                </MultiBinding>
-                                            </TextBlock.Text>
-                                        </TextBlock>
-                                    </StackPanel>
+                                    <!-- Conteúdo principal -->
+                                    <Border Grid.Column="1"
+                                            Padding="16,8"
+                                            Background="Transparent">
+
+                                        <Grid>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="*" />
+                                                <ColumnDefinition Width="Auto" />
+                                                <ColumnDefinition Width="Auto" />
+                                            </Grid.ColumnDefinitions>
+                                            <Grid.RowDefinitions>
+                                                <RowDefinition Height="Auto" />
+                                                <RowDefinition Height="Auto" />
+                                            </Grid.RowDefinitions>
+
+                                            <!-- Nome do Assunto -->
+                                            <TextBlock Grid.Column="0"
+                                                       Grid.Row="0"
+                                                       Style="{DynamicResource Title3Style}"
+                                                       Margin="0"
+                                                       Text="{Binding Assunto.Nome}" />
+
+                                            <!-- Nome da Disciplina -->
+                                            <TextBlock Grid.Column="0"
+                                                       Grid.Row="1"
+                                                       Style="{DynamicResource Title4Style}"
+                                                       Margin="0"
+                                                       Text="{Binding Assunto.Disciplina.Nome}" />
+
+                                            <!-- CheckBox de Seleção -->
+                                            <CheckBox Grid.Column="2"
+                                                      Grid.Row="0"
+                                                      Grid.RowSpan="2"
+                                                      IsChecked="{Binding IsSelected}"
+                                                      VerticalAlignment="Center"
+                                                      Margin="0"
+                                                      Style="{DynamicResource RoundedCheckBoxStyle}" />
+
+                                        </Grid>
+                                    </Border>
+
                                 </Grid>
                             </Border>
                         </DataTemplate>

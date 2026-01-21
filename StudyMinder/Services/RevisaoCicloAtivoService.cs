@@ -9,7 +9,7 @@ namespace StudyMinder.Services
     {
         private readonly StudyMinderContext _context;
         private readonly AuditoriaService _auditoriaService;
-        
+
         // OTIMIZAÇÃO: Cache com timestamp para invalidação
         private List<Assunto>? _cacheAssuntosAtivos;
         private DateTime _cacheAssuntosAtivosTimestamp = DateTime.MinValue;
@@ -20,7 +20,7 @@ namespace StudyMinder.Services
             _context = context;
             _auditoriaService = auditoriaService;
         }
-        
+
         /// <summary>
         /// Invalida o cache de assuntos ativos
         /// </summary>
@@ -35,7 +35,7 @@ namespace StudyMinder.Services
             try
             {
                 Debug.WriteLine($"[RevisaoCicloAtivoService] Iniciando AdicionarAssuntoAoCicloAsync para AssuntoId: {assuntoId}");
-                
+
                 // Verificar se já existe
                 var existente = await _context.RevisoesCicloAtivo
                     .FirstOrDefaultAsync(rca => rca.AssuntoId == assuntoId);
@@ -54,7 +54,7 @@ namespace StudyMinder.Services
 
                 _context.RevisoesCicloAtivo.Add(revisaoCicloAtivo);
                 Debug.WriteLine($"[RevisaoCicloAtivoService] Entidade adicionada ao contexto para AssuntoId: {assuntoId}");
-                
+
                 await _context.SaveChangesAsync();
                 Debug.WriteLine($"[RevisaoCicloAtivoService] ✅ AssuntoId {assuntoId} persistido com sucesso no banco de dados");
                 InvalidarCache(); // Invalidar cache após adicionar
@@ -65,14 +65,14 @@ namespace StudyMinder.Services
                 Debug.WriteLine($"[RevisaoCicloAtivoService] ❌ ERRO ao adicionar AssuntoId {assuntoId}: {ex.GetType().Name}");
                 Debug.WriteLine($"[RevisaoCicloAtivoService] Mensagem: {ex.Message}");
                 Debug.WriteLine($"[RevisaoCicloAtivoService] Stack Trace: {ex.StackTrace}");
-                
+
                 var errorMessage = ex.Message;
                 if (ex.InnerException != null)
                 {
                     Debug.WriteLine($"[RevisaoCicloAtivoService] InnerException: {ex.InnerException.Message}");
                     errorMessage = ex.InnerException.Message;
                 }
-                
+
                 return (false, errorMessage);
             }
         }
@@ -82,7 +82,7 @@ namespace StudyMinder.Services
             try
             {
                 Debug.WriteLine($"[RevisaoCicloAtivoService] Iniciando RemoverAssuntoDoCicloAsync para AssuntoId: {assuntoId}");
-                
+
                 var existente = await _context.RevisoesCicloAtivo
                     .FirstOrDefaultAsync(rca => rca.AssuntoId == assuntoId);
 
@@ -94,7 +94,7 @@ namespace StudyMinder.Services
 
                 _context.RevisoesCicloAtivo.Remove(existente);
                 Debug.WriteLine($"[RevisaoCicloAtivoService] Entidade marcada para remoção para AssuntoId: {assuntoId}");
-                
+
                 await _context.SaveChangesAsync();
                 Debug.WriteLine($"[RevisaoCicloAtivoService] ✅ AssuntoId {assuntoId} removido com sucesso do banco de dados");
                 InvalidarCache(); // Invalidar cache após remover
@@ -105,14 +105,14 @@ namespace StudyMinder.Services
                 Debug.WriteLine($"[RevisaoCicloAtivoService] ❌ ERRO ao remover AssuntoId {assuntoId}: {ex.GetType().Name}");
                 Debug.WriteLine($"[RevisaoCicloAtivoService] Mensagem: {ex.Message}");
                 Debug.WriteLine($"[RevisaoCicloAtivoService] Stack Trace: {ex.StackTrace}");
-                
+
                 var errorMessage = ex.Message;
                 if (ex.InnerException != null)
                 {
                     Debug.WriteLine($"[RevisaoCicloAtivoService] InnerException: {ex.InnerException.Message}");
                     errorMessage = ex.InnerException.Message;
                 }
-                
+
                 return (false, errorMessage);
             }
         }
@@ -122,8 +122,9 @@ namespace StudyMinder.Services
             // OTIMIZAÇÃO: Carregar todos os últimos estudos em UMA query (evita N+1)
             var ultimosEstudosPorAssunto = await _context.Estudos
                 .GroupBy(e => e.AssuntoId)
-                .Select(g => new { 
-                    AssuntoId = g.Key, 
+                .Select(g => new
+                {
+                    AssuntoId = g.Key,
                     UltimoDataTicks = g.OrderByDescending(e => e.DataTicks).Select(e => e.DataTicks).First()
                 })
                 .ToDictionaryAsync(x => x.AssuntoId, x => x.UltimoDataTicks);
@@ -178,7 +179,7 @@ namespace StudyMinder.Services
             try
             {
                 Debug.WriteLine($"[RevisaoCicloAtivoService] Iniciando DefinirAssuntosAtivosAsync com {assuntoIds.Count} assuntos");
-                
+
                 // Remover todos os assuntos ativos atuais
                 var atuais = await _context.RevisoesCicloAtivo.ToListAsync();
                 Debug.WriteLine($"[RevisaoCicloAtivoService] Removendo {atuais.Count} assuntos ativos anteriores");
@@ -224,78 +225,83 @@ namespace StudyMinder.Services
                 .AnyAsync(rca => rca.AssuntoId == assuntoId);
         }
 
-        public async Task<PagedResult<Assunto>> ObterAssuntosPaginadoAsync(int paginaAtual, int itensPorPagina)
+        public async Task<PagedResult<Assunto>> ObterAssuntosDisponiveisPaginadoAsync(int paginaAtual, int itensPorPagina)
         {
-            // Contar total de assuntos ativos
-            var totalCount = await _context.RevisoesCicloAtivo
-                .Include(rca => rca.Assunto)
-                .CountAsync(rca => !rca.Assunto.Arquivado);
+            // CRITÉRIO 1: LISTAR APENAS ASSUNTOS CONCLUÍDOS E NÃO ARQUIVADOS
+            // NOTA: Ignoramos os parâmetros de paginação do banco para trazer a lista completa e permitir filtro na UI
 
-            // Obter assuntos da página solicitada com dados do último estudo
-            var assuntosComData = await _context.RevisoesCicloAtivo
-                .Include(rca => rca.Assunto)
-                .ThenInclude(a => a.Disciplina)
-                .Where(rca => !rca.Assunto.Arquivado)
-                .Select(rca => new
-                {
-                    Assunto = rca.Assunto,
-                    UltimoEstudoDataTicks = _context.Estudos
-                        .Where(e => e.AssuntoId == rca.Assunto.Id)
-                        .OrderByDescending(e => e.DataTicks)
-                        .Select(e => e.DataTicks)
-                        .FirstOrDefault()
-                })
-                .OrderBy(x => x.UltimoEstudoDataTicks == 0 ? 0 : 1)  // Nunca estudados primeiro
-                .ThenBy(x => x.UltimoEstudoDataTicks)                // Depois por data (antigos primeiro)
-                .ThenBy(x => x.Assunto.Nome)                         // Desempate: alfabético
-                .Skip((paginaAtual - 1) * itensPorPagina)
-                .Take(itensPorPagina)
+            // 1. Obter IDs que já estão no ciclo (para excluir da lista)
+            var idsNoCiclo = await _context.RevisoesCicloAtivo
+                .Select(rca => rca.AssuntoId)
                 .ToListAsync();
 
-            // Adicionar a data do último estudo como propriedade calculada
-            var assuntos = new List<Assunto>();
-            foreach (var item in assuntosComData)
-            {
-                item.Assunto.DataUltimoEstudo = item.UltimoEstudoDataTicks == 0 ? null : new DateTime(item.UltimoEstudoDataTicks);
-                assuntos.Add(item.Assunto);
-            }
+            // 2. Buscar TODOS os assuntos que atendem aos critérios
+            var todosAssuntos = await _context.Assuntos
+                .Include(a => a.Disciplina)
+                .Where(a => !a.Arquivado
+                       && a.Concluido == true  // <--- Correção: Filtra apenas concluídos no banco
+                       && !idsNoCiclo.Contains(a.Id))
+                .OrderBy(a => a.Nome)
+                .ToListAsync();
 
+            // 3. Retornar tudo envelopado em um PagedResult "falso" (página única contendo tudo)
             return new PagedResult<Assunto>
             {
-                Items = assuntos,
-                TotalCount = totalCount,
-                TotalItems = totalCount,
-                PageNumber = paginaAtual,
-                PageSize = itensPorPagina
+                Items = todosAssuntos,
+                TotalCount = todosAssuntos.Count,
+                TotalItems = todosAssuntos.Count,
+                PageNumber = 1,
+                PageSize = todosAssuntos.Count > 0 ? todosAssuntos.Count : 100
             };
         }
 
-        public async Task<PagedResult<Assunto>> ObterAssuntosDisponiveisPaginadoAsync(int paginaAtual, int itensPorPagina)
+        public async Task<PagedResult<Assunto>> ObterAssuntosPaginadoAsync(int paginaAtual, int itensPorPagina)
         {
-            // OTIMIZAÇÃO: Usar subquery em vez de carregar IDs em memória
-            // Isso evita 2 queries separadas e usa apenas 1 query otimizada
-            
-            var query = _context.Assuntos
-                .Where(a => !a.Arquivado && !_context.RevisoesCicloAtivo.Any(rca => rca.AssuntoId == a.Id))
-                .Include(a => a.Disciplina);
+            // CRITÉRIO 2: LISTAR TODOS ATIVOS, PRIORIZANDO OS MAIS ANTIGOS (OU NUNCA ESTUDADOS)
 
-            // Contar total (sem paginação)
-            var totalCount = await query.CountAsync();
+            // 1. OTIMIZAÇÃO: Carregar data do último estudo em UMA query agrupada
+            var ultimosEstudosDict = await _context.Estudos
+                .GroupBy(e => e.AssuntoId)
+                .Select(g => new {
+                    AssuntoId = g.Key,
+                    UltimoDataTicks = g.Max(x => x.DataTicks)
+                })
+                .ToDictionaryAsync(k => k.AssuntoId, v => v.UltimoDataTicks);
 
-            // Obter página com paginação no banco
-            var assuntos = await query
-                .OrderBy(a => a.Nome)
-                .Skip((paginaAtual - 1) * itensPorPagina)
-                .Take(itensPorPagina)
+            // 2. Carregar TODOS os assuntos ativos
+            var assuntosDoCiclo = await _context.RevisoesCicloAtivo
+                .Include(rca => rca.Assunto)
+                .ThenInclude(a => a.Disciplina)
+                .Select(rca => rca.Assunto)
                 .ToListAsync();
 
+            // 3. Preencher a data e Ordenar em Memória
+            foreach (var assunto in assuntosDoCiclo)
+            {
+                if (ultimosEstudosDict.TryGetValue(assunto.Id, out long ticks))
+                {
+                    assunto.DataUltimoEstudo = new DateTime(ticks);
+                }
+                else
+                {
+                    assunto.DataUltimoEstudo = null; // Nunca estudado
+                }
+            }
+
+            // Ordenação: Nulos primeiro (nunca estudado), depois datas antigas primeiro
+            var listaOrdenada = assuntosDoCiclo
+                .OrderBy(a => a.DataUltimoEstudo.HasValue) // false (null) vem antes
+                .ThenBy(a => a.DataUltimoEstudo)
+                .ToList();
+
+            // 4. Retornar tudo envelopado
             return new PagedResult<Assunto>
             {
-                Items = assuntos,
-                TotalCount = totalCount,
-                TotalItems = totalCount,
-                PageNumber = paginaAtual,
-                PageSize = itensPorPagina
+                Items = listaOrdenada,
+                TotalCount = listaOrdenada.Count,
+                TotalItems = listaOrdenada.Count,
+                PageNumber = 1,
+                PageSize = listaOrdenada.Count > 0 ? listaOrdenada.Count : 100
             };
         }
     }
